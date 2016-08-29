@@ -1,0 +1,1 @@
+Please select the <b>device</b>, <b>country</b> and <b>date</b> you want to observe.

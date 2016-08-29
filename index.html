@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <script src="jquery-ui-1.11.4.custom/external/jquery/jquery.js"></script>
+        <script src="jquery-ui-1.11.4.custom/jquery-ui.js"></script>
+        <link rel="stylesheet" href="jquery-ui-1.11.4.custom/jquery-ui.css" />
+        
+        <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+        
+        <!--JQuery icon-->
+        <!-- http://mkkeck.github.io/jquery-ui-iconfont/ -->
+        <link rel="stylesheet" type="text/css" href="lib/jquery-ui-iconfont-master/jquery-ui.icon-font.css" />
+        <!--<link rel="stylesheet" href="leaflet-src/leaflet.css" />
+        <script src="leaflet-src/leaflet.js"></script>-->
+        
+        <!--ChartJS-->
+        <!-- modified chartjs with duo axes-->
+        <script src="https://raw.githack.com/leighquince/Chart.js/master/Chart.js"></script>
+        <!--<script src="Chart.js-master/Chart.js"></script>-->
+        <script src="lib/lineOption.js"></script>
+        
+        <!--leaflet(cartoDB)-->
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+
+        <!--Marker cluster-->
+        <script src="PruneCluster-master/dist/PruneCluster.js"></script>
+        <link rel="stylesheet" href="PruneCluster-master/dist/LeafletStyleSheet.css" />
+        
+        <!--for filter collapsible ui-->
+        <script type="text/javascript" src="collapsible/jquery.collapsible.js"></script>
+        <script type="text/javascript" src="lib/jquery.ba-outside-events.min.js"></script>
+
+        <!--geojson topojson converter-->
+        <script src="http://d3js.org/topojson.v1.min.js"></script>
+        <script src="lib/geojson-vt-dev.js"></script>
+        <script src="lib/L.CanvasTiles.js"></script>
+        <script src='lib/leaflet-pip-custom.js'></script>
+        <script src='lib/simplifygeometry-0.0.2.min.js'></script>
+        
+        <!--map search-->
+        <!--https://github.com/smeijer/L.GeoSearch-->
+        <script src="lib/L.GeoSearch-develop/src/js/l.control.geosearch.js"></script>
+		<script src="lib/L.GeoSearch-develop/src/js/l.geosearch.provider.google.js"></script>
+		<link rel="stylesheet" href="lib/L.GeoSearch-develop/src/css/l.geosearch.css" />
+        
+        <!--data Table-->
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/dataTables.bootstrap.min.js"></script>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="//cdn.datatables.net/1.10.12/css/dataTables.bootstrap.min.css" />
+        
+        <!--data Table - export-->
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js"></script>
+        
+        
+<!--        <link rel="stylesheet" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />-->
+        <link rel="stylesheet" href="//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css" />
+
+        <!--DATA-->
+        <script src="world_country_min.js"></script>
+
+        <!--FUNCTION-->
+        <script src="workset.js"></script>
+        
+        <script src="ajax.js"></script>
+        <script src="chartInMap.js"></script>
+        <script src="map.js"></script>
+        <script src="markerMap.js"></script>
+        <script src="comparisionMap.js"></script>
+        <script src="overlay.js"></script>
+        <script src="functions.js"></script>
+        <script src="lineOption.js"></script>
+        
+
+        <script src="buttonSetting.js"></script>
+        <script src="bookmarkBtn.js"></script>
+        <script src="filter.js"></script>
+        <script src="variable.js"></script>
+        <link rel="stylesheet" href="css.css" />
+        <!--VAR-->
+        <script>
+            
+            $(document).ready(function() {
+                //collapsible management
+                $('.collapsible').collapsible({
+                    defaultOpen: 'section_target',
+                });
+                
+                //jquery dialog
+                $( "#alertDialog" ).dialog({
+                    position: { my: "center", at: "center", of: 'body' },
+                    autoOpen: false,
+                    modal: true,
+                    resizable: false,
+                    height: "auto",
+                });
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class='toast' style="display: none"></div>
+        <!--use for all chart-->
+        <div id="popupChartContainer"></div>
+         
+        <!--left side-->
+        <div id="toggle">
+            <span id="toggleIcon" class="ui-icon ui-icon-carat-1-w"></span>
+        </div>
+        <div id="selector" style="float:left">
+                <!--show me section-->
+                <!--<div class="panel">
+                    <div class="panel-heading" onclick=toggle('selector_showme')>
+                        <span class="glyphicon glyphicon-stats"></span>
+                        Show Me
+                    </div>
+                    <div id="selector_showme" class="selector panel-body" style="text-align: center;">
+                            <img id="map" src="img/map.png" height="30" width="42">
+                            <img id="pie" height="30" width="42" style="opacity: 0.2; background-color: grey;">
+                            <img id="storage" height="30" width="42" style="opacity: 0.2; background-color: grey;">
+                    </div>
+                </div>-->
+                
+                <div class="filter_wrapper panel">
+                    <div class="panel-heading">Filter</div>
+                    <div class="panel-body">
+                        <button class="selector submit" id="submit">Apply</button>
+
+                        <!--filter-->
+                        <div class="filter_section collapsible" id="section_target">Device<span></span></div>
+                        <div id="selector_target" class="selector">
+                            <div id ="deviceFilter"></div>
+                        </div>
+
+                        <div class="filter_section collapsible" id="section_country">Country<span></span></div>
+                        <div id="selector_location" class="selector">
+<!--
+                            <div id="locset">     
+                                <button class="locset active" id="country">Country</button>
+                                <button class="locset" id="branch">Branch</button>
+                                <button class="locset" id="dist">Dist</button>
+                            </div>
+-->
+                            <div id ="locationFilter"></div>
+                        </div>
+
+                        <div class="filter_section collapsible hardware_filter" id="section_cpu">CPU<span></span></div>
+                        <div id="selector_cpu" class="selector">
+                            <div id ="cpuFilter" class ="specFilter"></div>
+                        </div>
+
+                        <div class="filter_section collapsible hardware_filter" id="section_color">Color<span></span></div>
+                        <div id="selector_color" class="selector">
+                            <div id ="colorFilter" class ="specFilter"></div>
+                        </div>
+
+                        <div class="filter_section collapsible hardware_filter" id="section_rear_camera">Rear Camera<span></span></div>
+                        <div id="selector_rear_camera" class="selector">
+                            <div id ="rearCameraFilter" class ="specFilter"></div>
+                        </div>
+
+                        <div class="filter_section collapsible hardware_filter" id="section_front_camera">Front Camera<span></span></div>
+                        <div id="selector_front_camera" class="selector">
+                            <div id ="frontCameraFilter" class ="specFilter"></div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+        
+        
+        <div ><!--style="margin-left:1.4%;"-->
+        <!--up side-->
+        <div id="control_Panel">
+            <!--right side function button-->
+            <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>
+            <div class="control_panel_btn_area_right" style="float:right;">
+                Date Range
+                <button class="date">Date</button>
+                    <div id="dateDropdown" class="selector"> 
+                        <div id="timeSection">
+                            <button class="btn_unpressed" id="btnToday">Today</button>
+                            <button class="btn_unpressed" id="btnYesterday">Yesterday</button>
+                            <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
+                            <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
+                            <button class="btn_unpressed" id="btnThisMonth">This Month</button>
+                            <button class="btn_unpressed" id="btnLastMonth">Last Month</button>
+<!--                            <button class="btn_unpressed" id="btnAllTime">All Time</button>-->
+                        </div>
+                        <p style="margin-left:3%"><b>Custom date range</b></p>
+                        <div id = "date_selection_zone_1">
+                                <input value="From Time" type="text" id="from" name="from" >
+                                - 
+                                <input value="To Time" type="text" id="to" name="to">
+                        </div>
+                        <input id="compare" type="checkbox" >Compare to</input>
+                        <div id = "date_selection_zone_2" style="display:none">
+                                <input value="From Time" type="text" id="from_compare" name="from" >
+                                -
+                                <input value="To Time" type="text" id="to_compare" name="to">
+                        </div>
+                        <div style="display: block;">
+                            <button class="submit">Apply</button><button class="submit">Cancel</button>
+                        </div>
+                    </div>
+                <button class="featureBtn" id="bookmark"/>
+                <button class="featureBtn" id="savebookmark" />
+                <!--<button class="featureBtn" id="snapshot" />-->
+            </div>
+        
+            <!--left side function button-->
+            <div class="control_panel_btn_area">
+                <label class="buttonSetLable" for="dataset">Data Set</label>
+               <div id="dataset">     
+                    <button class="dataset" id="activation">Activation</button>
+                    <button class="dataset" id="lifezone">LifeZone</button>
+                </div>
+                
+                
+                <div id="mode" style="margin-top: 3px;">
+                    <label class="buttonSetLable" for="mode">Mode</label>
+                    <button class="mode" id="region">Region</button>
+                    <button class="mode" id="marker">Marker</button>
+                    <!--<button class="mode" id="marker_lifecircle">Marker(LifeCircle)</button>-->
+                    <button class="mode" id="comparison">Comparison</button>
+                    <button class="mode" id="table">Table</button>
+                </div>
+                
+<!--
+                <div id="serviceDropdown" class="selector"></div>
+                
+                <div id="dealerDropdown" class="selector"></div>
+                
+-->
+                <div id="overlay" style="margin-top: 3px;">
+                    <label class="buttonSetLable" for="overlay">Overlay</label>
+                    <button class="overlay" id="dealer">Dealer</button>
+                    <button class="overlay" id="service">Service</button>
+                </div>
+                
+                <div id="filterResult" style="margin-top: 10px;" >
+                    <label class="buttonSetLable" for="filterresult">Filters</label>
+                    <span id="filterBarResults"></span>
+                </div>
+            </div>
+        </div>
+        
+        <!--workset-->
+        <div id="mapContainer" style="float:left">
+            <div id="workset" style="display: none">
+                <div id="mapid"></div>
+                <div id="mapidComparison" style="display: none"></div>
+                <div id="updatetime"></div>
+            </div>
+            <div id="homepage" style="overflow: overlay;text-align: left;padding-top: 20px;margin-left:30px;">
+                <h2>Welcome</h2>
+                <div id="notice"></div>
+            </div>
+        </div>
+        
+        </div>
+        
+        <!--save bookmark dialog-->
+        <div id = "bookmarkDialog" style= "display:none;">
+            <div id = "addBookmarkDialog" >
+                Title:<br>
+                <textarea style="resize:none" rows="1" cols="55" id = "bookmark_title"></textarea><br>
+                Description:<br>
+                <textarea style="resize:none" rows="7" cols="55" id = "bookmark_description"></textarea><br>
+            </div>
+            <div id = "bookmarkList"><ul id = "bk-ul"></ul></div>
+        </div>
+        
+        <div id="alertDialog">
+          <p></p>
+        </div>
+        <script>
+            (function(){
+                checkSSOCookie();
+                init_();
+            }());
+        </script>
+    </body>
+</html>
