@@ -32,7 +32,7 @@
 //                    console.log(json);
                     allDevicesList = jQuery.extend({}, json.allDevices);
                     checkboxDeviceInit();
-                    console.log(allDevicesList);
+//                    console.log(allDevicesList);
 
                     allLoc = jQuery.extend({}, json.allLoc);
                     checkboxLocationInit();

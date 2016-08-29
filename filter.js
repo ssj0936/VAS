@@ -185,7 +185,7 @@ function checkboxDeviceInit() {
             var checktarget = $("#check_device_li");
             checkDevicePush(checktarget);
             
-            console.log(observeTargetTmp);
+//            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
             
 //            console.log(specDeviceTmp);

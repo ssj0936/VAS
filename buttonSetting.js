@@ -2,7 +2,30 @@
 
 function buttonInit() {
     $(".control_panel_btn_area_right button,#mode button,#overlay button,#filterResult button,button.date").button();
-    $('#dataset').buttonset();
+    //$('#dataset').buttonset();
+    
+    $( "#dataset" ).selectmenu({
+        width: '100px',
+        change: function( event, data ) {
+            //not allow switching while loading
+            if (isLoading()) return;
+            var dataSet = data.item.value;
+
+            //not allow to switch if invalid country is been checked
+            var checkAttr = (dataSet == "activation") ? "inActivation" : "inLifezone";
+            //var isInvalid = checkInvalidCountryAlert(checkAttr);
+
+            if (checkInvalidCountryAlert(checkAttr)) return;
+            setDataset(dataSet);
+
+            if (mapHasShowsUp()) {
+                $(".submit").trigger("click");
+            }
+            var updatetime = (getDataset() == DATA_ACTIVATION) ? updateTime.activation : updateTime.lifezone;
+            setUpdateTime(updatetime);
+        }
+     });
+    
     $('#locset').buttonset();
 
     $('.locset').each(function () {
@@ -87,30 +110,6 @@ function buttonInit() {
             $(this).addClass("active");
             activeModeBtn($(this));
         }
-    });
-
-    //init dataset
-    var datasetBtns = $("#dataset button");
-    datasetBtns.click(function () {
-        //not allow switching while loading
-        if (isLoading()) return;
-
-        //not allow to switch if invalid country is been checked
-        var checkAttr = ($(this).attr('id') == "activation") ? "inActivation" : "inLifezone";
-        //var isInvalid = checkInvalidCountryAlert(checkAttr);
-
-        if (checkInvalidCountryAlert(checkAttr)) return;
-        datasetBtns.removeClass("active");
-
-        $(this).addClass("active");
-        setDataset($(this).attr('id'));
-
-        if (mapHasShowsUp()) {
-            console.log("datasetBtns");
-            $(".submit").trigger("click");
-        }
-        var updatetime = (getDataset() == DATA_ACTIVATION) ? updateTime.activation : updateTime.lifezone;
-        setUpdateTime(updatetime);
     });
 
     $("#activation").addClass("active");

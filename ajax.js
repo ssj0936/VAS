@@ -37,11 +37,11 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
     var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
     //console.log(JSON.stringify(observeSpec.color));
-    console.log(JSON.stringify(observeTarget));
-    console.log(JSON.stringify(observeSpec.color));
-    console.log(JSON.stringify(observeSpec.cpu));
-    console.log(JSON.stringify(observeSpec.rear_camera));
-    console.log(JSON.stringify(observeSpec.front_camera));
+//    console.log(JSON.stringify(observeTarget));
+//    console.log(JSON.stringify(observeSpec.color));
+//    console.log(JSON.stringify(observeSpec.cpu));
+//    console.log(JSON.stringify(observeSpec.rear_camera));
+//    console.log(JSON.stringify(observeSpec.front_camera));
     var URLs = "php/_dbqueryCntGroupByISO.php";
     $.ajax({
         url: URLs,
