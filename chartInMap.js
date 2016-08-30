@@ -151,7 +151,7 @@ function updateRegionChart(json, displayname, displaynum) {
 
                     //table remove
                     $('#table_wrapper').remove();
-                    disableScroll();
+//                    disableScroll();
 
                     $('#trendContainer').css({
                         'opacity': 0
@@ -277,7 +277,7 @@ function updateTrendChart(json) {
 
                     //table remove
                     $('#table_wrapper').remove();
-                    disableScroll();
+//                    disableScroll();
 
                     $('#trendContainer').css({
                         'opacity': 0
@@ -663,6 +663,10 @@ function createFilterDisplayer() {
                 class: 'selector',
                 filterName: filterName,
             })
+            .css({
+                'max-height': '300px',
+                'overflow': 'auto',
+            })
             .appendTo(body).hide();
 
         $container.click(function ($content, $container) {
@@ -713,7 +717,7 @@ function popupChartShow(needToLockScroll) {
         "opacity": 0.99,
         'z-index': 1,
         //set height to full document size to cover workset
-        'height': ''+getDocumentFullHeight()+'px',
+//        'max-height': ''+getDocumentFullHeight()+'px',
     });
 
     //<span class="ui-icon ui-icon-circle-close" style="font-size: 4em; color: rgb(127, 127, 127);"></span>
