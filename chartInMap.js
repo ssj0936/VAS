@@ -43,15 +43,39 @@ function createFunctionalBtn(){
     return container;
 }
 
+function resetTotalToggleBtn(){
+    $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
+    isTotalShowing = true;
+}
+
 function updateRegionChart(json, displayname, displaynum) {
     if (json.groupByRegionResults.length == 0) return;
 
+    var leftPopup = jQuery('<div/>', {
+            id: 'leftPopupContainer',
+        }).css({
+            'display':'inline-block',
+            'width': '15%',
+            'height': '100%',
+            'vertical-align':'top',
+            'position': 'relative',
+        }).appendTo($('#popupChartContainer'));
+
+    var rightPopup = jQuery('<div/>', {
+            id: 'rightPopupContainer',
+        }).css({
+            'display':'inline-block',
+            'width': '84%',
+            'height': '100%',
+            'vertical-align':'top',
+            'position': 'relative',
+        }).appendTo($('#popupChartContainer'));
+    
     //title container
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
-            //        class: "w3-center",
         })
-        .appendTo($('#popupChartContainer'));
+        .appendTo(rightPopup);
 
     createFunctionalBtn().appendTo(title);
 
@@ -140,7 +164,7 @@ function updateRegionChart(json, displayname, displaynum) {
             }(trendList[i]));
     }
     var filterDisplayer = createFilterDisplayer();
-    filterDisplayer.appendTo($('#popupChartContainer'));
+    filterDisplayer.appendTo(leftPopup);
 
     //chart
     createsingleRegionChart(json, TREND_REGION, displayname);
@@ -160,14 +184,35 @@ function updateTrendChart(json) {
 
     //chart
     var defaultTrendMode = TREND_MODEL;
-    createTrendChart(json, defaultTrendMode);
+    
+    var leftPopup = jQuery('<div/>', {
+            id: 'leftPopupContainer',
+        }).css({
+            'display':'inline-block',
+            'width': '15%',
+            'height': '100%',
+            'vertical-align':'top',
+            'position': 'relative',
+        }).appendTo($('#popupChartContainer'));
 
+    var rightPopup = jQuery('<div/>', {
+            id: 'rightPopupContainer',
+        }).css({
+            'display':'inline-block',
+            'width': '84%',
+            'height': '100%',
+            'vertical-align':'top',
+            'position': 'relative',
+        }).appendTo($('#popupChartContainer'));
+    
+    createTrendChart(json, defaultTrendMode);
+    
     //title container
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
             //        class: "w3-center",
         })
-        .appendTo($('#popupChartContainer'));
+        .appendTo(rightPopup);
 
     createFunctionalBtn().appendTo(title);
 
@@ -242,7 +287,7 @@ function updateTrendChart(json) {
             }(trendList[i]));
     }
     var filterDisplayer = createFilterDisplayer();
-    filterDisplayer.appendTo($('#popupChartContainer'));
+    filterDisplayer.appendTo(leftPopup);
 
     //title re-position
     var top = title.offset().top;
@@ -444,69 +489,8 @@ function createDeviceFilter(dataObj, container) {
             }
         }
     }
-    
-    
-//    var ul = jQuery('<ul/>').appendTo(container);
-//    if (dataObj.all != undefined) {
-//        var li = jQuery('<li/>').appendTo($(ul));
-//        jQuery('<span/>', {
-//            class: 'ui-icon ui-icon-bullet',
-//        }).appendTo(li);
-//
-//        jQuery('<label/>', {
-//            text: "All",
-//        }).appendTo(li);
-//    } else {
-//        //        var allUl = jQuery('<ul/>').appendTo(ul);
-//        for (var name in dataObj) {
-//            var allmodelSelected = dataObj[name].length == 0
-//
-//            var li = jQuery('<li/>').appendTo($(ul));
-//            //devices
-//            //collapse icon
-//            jQuery('<span />', {
-//                    class: (!allmodelSelected) ? "ui-icon ui-icon-circlesmall-plus" : "",
-//                })
-//                .click(function (allmodelSelected) {
-//                    return function () {
-//                        if (!allmodelSelected) {
-//                            if ($(this).hasClass('ui-icon-circlesmall-plus')) {
-//                                $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
-//                            } else {
-//                                $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
-//                            }
-//                            $(this).parent().next('ul').slideToggle();
-//                        }
-//                    }
-//                }(allmodelSelected))
-//                .appendTo(li)
-//
-//            //icon
-//            jQuery('<span/>', {
-//                class: 'ui-icon ui-icon-bullet',
-//            }).appendTo(li);
-//
-//            jQuery('<label/>', {
-//                text: name,
-//            }).appendTo(li);
-//
-//            if (!allmodelSelected) {
-//                var n_ul = jQuery('<ul/>').appendTo($(ul)).hide();
-//                //model
-//                for (var i = 0; i < dataObj[name].length; ++i) {
-//                    var li = jQuery('<li/>').appendTo($(n_ul));
-//
-//                    jQuery('<span/>', {
-//                        class: 'ui-icon ui-icon-bullet',
-//                    }).appendTo(li);
-//
-//                    jQuery('<label/>', {
-//                        text: dataObj[name][i],
-//                    }).appendTo(li);
-//                }
-//            }
-//        }
-//    }
+
+    container.show();
 }
 
 function createTwoLevelFilter(dataArray, container) {
@@ -514,13 +498,6 @@ function createTwoLevelFilter(dataArray, container) {
 
 
     if (dataArray == observeLocFullName) {
-        //        jQuery('<label/>',{
-        //            text: "World",
-        //        }).appendTo(li);
-        //    
-        //
-        //        var allUl = jQuery('<ul/>').appendTo(ul);
-
         for (var i = 0; i < dataArray.length; ++i) {
             var li = jQuery('<li/>').appendTo($(ul));
 
@@ -532,6 +509,8 @@ function createTwoLevelFilter(dataArray, container) {
                 text: dataArray[i],
             }).appendTo(li);
         }
+
+        container.show();
     } else {
         if (dataArray[0] == 'all') {
             var li = jQuery('<li/>').appendTo(ul);
@@ -556,6 +535,7 @@ function createTwoLevelFilter(dataArray, container) {
                     text: dataArray[i],
                 }).appendTo(li);
             }
+            container.show();
         }
     }
 }
@@ -637,9 +617,9 @@ function createFilterDisplayer() {
         class: 'filter_wrapper panel',
     }).css({
         'position': 'absolute',
-        'top': '25%',
-        'left': '3%',
-        'width': '12%',
+        'top': '15%',
+        'right': '0px',
+        'width': '90%',
         'border-radius': '5px',
         'z-index': 5,
     });
@@ -682,14 +662,14 @@ function createFilterDisplayer() {
         $container.click(function ($content, $container) {
             return function () {
                 //only one filter can be opend
-                $('div[id^="displayFilter_content_"]').each(function () {
-                    if ($(this).attr('id') != $content.attr('id')) {
-                        if ($('#displayFilter_title_' + $(this).attr('filterName')).hasClass('trendCollapsible-open')) {
-                            $(this).stop(true, true).slideUp('medium');
-                            $('#displayFilter_title_' + $(this).attr('filterName')).removeClass('trendCollapsible-open').addClass('trendCollapsible-close');
-                        }
-                    }
-                });
+//                $('div[id^="displayFilter_content_"]').each(function () {
+//                    if ($(this).attr('id') != $content.attr('id')) {
+//                        if ($('#displayFilter_title_' + $(this).attr('filterName')).hasClass('trendCollapsible-open')) {
+//                            $(this).stop(true, true).slideUp('medium');
+//                            $('#displayFilter_title_' + $(this).attr('filterName')).removeClass('trendCollapsible-open').addClass('trendCollapsible-close');
+//                        }
+//                    }
+//                });
 
                 $content.stop(true, true).slideToggle('medium');
                 $container.toggleClass('trendCollapsible-close trendCollapsible-open');
@@ -1032,8 +1012,8 @@ function createChartElement(){
     $(container).css({
         "position": "absolute",
         "top": "25%",
-        "left": "15%",
-        "width": "65%",
+        "left": "5%",
+        "width": "80%",
         "overflow-x": "scroll",
         "overflow-y": "hidden",
         "display": "inline-block",
@@ -1044,14 +1024,15 @@ function createChartElement(){
             id: 'trendColorInfo',
             class: "w3-light-grey",
         })
-        .appendTo($("#popupChartContainer"));
+        .appendTo($("#rightPopupContainer"));
 
     container.appendChild(node);
     
     node.style.height = '' + chartHeight + 'px';
     node.style.width = (30 * trendObj.labels.length > 32500) ? ('32500px') : '' + (30 * trendObj.labels.length) + 'px';
 
-    document.getElementById("popupChartContainer").appendChild(container);
+//    document.getElementById("popupChartContainer").appendChild(container);
+    $('#rightPopupContainer').append($(container));
     var ctx = node.getContext("2d");
     linechart = new Chart(ctx).Overlay(trendObj, newOptions);
 }
@@ -1059,7 +1040,7 @@ function createChartElement(){
 function createsingleRegionChart(json, trendMode, regionName) {
     //data reset
     chartDestroy(true);
-
+    resetTotalToggleBtn();
     //fetch data
     trendObj = new lineDataObj();
     setTrendLable(json);
@@ -1109,7 +1090,8 @@ function chartDestroy(dataNeedToSetNull){
 function createTrendChart(json, trendMode) {
     //destroy old chart
     chartDestroy(true);
-
+    resetTotalToggleBtn();
+    
     trendObj = new lineDataObj();
     setTrendLable(json);
 
@@ -1140,7 +1122,8 @@ function createTrendChart(json, trendMode) {
 function updateColorInfo() {
     var infoDiv = $('#trendColorInfo');
     infoDiv.css({
-        'overflow-y': '',
+        'width': '12%',
+        'overflow-y': 'auto',
     });
 
     var totalHeight = 0;
@@ -1171,19 +1154,20 @@ function updateColorInfo() {
         totalHeight += oneColorInfo.height();
     }
 
-    if (totalHeight > chartHeight) {
-        console.log('overflow');
-        infoDiv.css({
-            'width': '10%',
-            'overflow-y': 'auto',
-        });
-    } else {
-        console.log('not overflow');
-        infoDiv.css({
-            'width': 'auto',
-            'overflow-y': 'auto',
-        });
-    }
+//    $('#trendContainer').offset().bottom
+//    if (totalHeight > chartHeight) {
+//        console.log('overflow');
+//        infoDiv.css({
+//            'width': '12%',
+//            'overflow-y': 'auto',
+//        });
+//    } else {
+//        console.log('not overflow');
+//        infoDiv.css({
+//            'width': 'auto',
+//            'overflow-y': 'auto',
+//        });
+//    }
 
 }
 
