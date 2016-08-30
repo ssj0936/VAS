@@ -3,6 +3,46 @@
 var chartHeight = 400;
 var filterInTrendIconWidth = 12;
 var filterInTrendIconmarginright = 3;
+var isTotalShowing = true;
+var totalName = 'Total';
+var totalDataset = null;
+
+function createFunctionalBtn(){
+    var container = jQuery('<div/>', {
+        id: "functionalBtnContainer",
+    }).append(
+        jQuery('<button/>', {
+            id: "btnExport",
+        })
+        .text('EXPORT')
+        .click(function () {
+            return exportFile(getActiveTrend(), true);
+        })
+        .button()
+    ).append(
+        jQuery('<button/>', {
+            id: "btnTotalToggle",
+        })
+        .text('Hide Total')
+        .click(function () {
+            //hide
+            if(isTotalShowing){
+                removeTotalLine();
+                $(this).button('option', 'label', 'Show Total');
+                isTotalShowing = false;
+            }
+            //show
+            else{
+                addTotalLine();
+                $(this).button('option', 'label', 'Hide Total');
+                isTotalShowing = true;
+            }
+        })
+        .button()
+    )
+    return container;
+}
+
 function updateRegionChart(json, displayname, displaynum) {
     if (json.groupByRegionResults.length == 0) return;
 
@@ -13,15 +53,7 @@ function updateRegionChart(json, displayname, displaynum) {
         })
         .appendTo($('#popupChartContainer'));
 
-    var exportBtn = jQuery('<button/>', {
-            id: "btnExport",
-        })
-        .text('EXPORT')
-        .click(function () {
-            return exportFile(getActiveTrend(), true);
-        })
-        .button()
-        .appendTo(title);
+    createFunctionalBtn().appendTo(title);
 
     //title content
     jQuery('<div/>', {
@@ -137,15 +169,7 @@ function updateTrendChart(json) {
         })
         .appendTo($('#popupChartContainer'));
 
-    var exportBtn = jQuery('<button/>', {
-            id: "btnExport",
-        })
-        .text('EXPORT')
-        .click(function () {
-            return exportFile(getActiveTrend(), true);
-        })
-        .button()
-        .appendTo(title);
+    createFunctionalBtn().appendTo(title);
 
     jQuery('<div/>', {
             id: "currentTrendTitle",
@@ -310,7 +334,7 @@ function exportFile(ReportTitle, ShowLabel) {
     document.body.removeChild(link);
 }
 
-function createThreeLevelFilter(dataObj, container) {
+function createDeviceFilter(dataObj, container) {
     var ul = jQuery('<ul/>').appendTo(container);
 
     var li = jQuery('<li/>').attr("id", "check_device_li").appendTo($(ul));
@@ -586,7 +610,7 @@ function addingContent(filterName, container) {
 //            }
         }
         console.log(deviceObj);
-        createThreeLevelFilter(deviceObj, container);
+        createDeviceFilter(deviceObj, container);
         break;
 
     case 'Country':
@@ -812,25 +836,14 @@ function popupChartClose(needToLockScroll) {
     $('#popupChartContainer').empty();
 
     //for line chart
-    if (linechart && linechart != null)
-        linechart.destroy();
+    chartDestroy(true);
 
     if (needToLockScroll) {
         enableScroll();
     }
 
-    //free variable
-    if (linechart != null) {
-        //console.log("linechart!=null");
-        linechart.destroy();
-    }
-
-    if (trendObj != null) {
-        //console.log("trendObj!=null");
-        trendObj = null;
-    }
-
     enableScroll();
+    totalDataset = null;
 }
 
 function showTrend(mapObj) {
@@ -964,14 +977,13 @@ function setTrendDataByRegion(jsonObj, regionName) {
 }
 
 function addingTotalLine(totalJson) {
-    var totalName = 'Total';
     var totalData = totalJson;
 
     //    console.log(totalData);
     var color = getRandomColor();
     var highlight = ColorLuminance(color, 0.5);
     var transparentColor = colorHexToRGBString(color, 0.2);
-    var totalDataset = new lineDatasetsObj(totalName, transparentColor, color, highlight, true);
+    totalDataset = new lineDatasetsObj(totalName, transparentColor, color, highlight, false);
 
     var totalDataDateIndex = 0
     for (var i = 0; i < trendObj.labels.length; ++i) {
@@ -986,6 +998,23 @@ function addingTotalLine(totalJson) {
     trendObj.datasets.push(totalDataset);
 }
 
+function removeTotalLine(){
+    var index = trendObj.datasets.indexOf(totalDataset);
+    if (index > -1) {
+        trendObj.datasets.splice(index, 1);
+    }
+    chartDestroy(false);
+    createChartElement();
+    updateColorInfo();
+}
+
+function addTotalLine(){
+    trendObj.datasets.push(totalDataset);
+    chartDestroy(false);
+    createChartElement();
+    updateColorInfo();
+}
+
 function setActiveTrend(trend) {
     activeTrend = trend;
 }
@@ -994,18 +1023,7 @@ function getActiveTrend(trend) {
     return activeTrend;
 }
 
-function createsingleRegionChart(json, trendMode, regionName) {
-    if (linechart != null) {
-        linechart.destroy();
-    }
-
-    if (trendObj != null) {
-        trendObj = null;
-    }
-
-    $('#trendContainer').remove();
-    $('#trendColorInfo').remove();
-
+function createChartElement(){
     var node = document.createElement("canvas");
     node.className = "chart";
     node.id = 'trendChart';
@@ -1029,9 +1047,23 @@ function createsingleRegionChart(json, trendMode, regionName) {
         .appendTo($("#popupChartContainer"));
 
     container.appendChild(node);
+    
+    node.style.height = '' + chartHeight + 'px';
+    node.style.width = (30 * trendObj.labels.length > 32500) ? ('32500px') : '' + (30 * trendObj.labels.length) + 'px';
+
+    document.getElementById("popupChartContainer").appendChild(container);
+    var ctx = node.getContext("2d");
+    linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+}
+
+function createsingleRegionChart(json, trendMode, regionName) {
+    //data reset
+    chartDestroy(true);
+
+    //fetch data
     trendObj = new lineDataObj();
     setTrendLable(json);
-
+    
     switch (trendMode) {
     case TREND_MODEL:
         setTrendDataByModel(json.groupByModelResults);
@@ -1050,54 +1082,34 @@ function createsingleRegionChart(json, trendMode, regionName) {
         setActiveTrend(TREND_DEVICE);
         break;
     }
-    node.style.height = '' + chartHeight + 'px';
-    node.style.width = (30 * trendObj.labels.length > 32500) ? ('32500px') : '' + (30 * trendObj.labels.length) + 'px';
-
-    document.getElementById("popupChartContainer").appendChild(container);
-    var ctx = node.getContext("2d");
-    linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+    
+    //create chart element
+    createChartElement();
 
     updateColorInfo();
     loadingDismiss();
 }
 
-function createTrendChart(json, trendMode) {
+function chartDestroy(dataNeedToSetNull){
     //destroy old chart
+    if(dataNeedToSetNull){
+        if (trendObj != null) {
+            trendObj = null;
+        }
+    }
+    
     if (linechart != null) {
         linechart.destroy();
     }
 
-    if (trendObj != null) {
-        trendObj = null;
-    }
-
     $('#trendContainer').remove();
     $('#trendColorInfo').remove();
+}
 
+function createTrendChart(json, trendMode) {
+    //destroy old chart
+    chartDestroy(true);
 
-    var node = document.createElement("canvas");
-    node.className = "chart";
-    node.id = 'trendChart';
-
-    var container = document.createElement("div");
-    $(container).css({
-        "position": "absolute",
-        "top": "25%",
-        "left": "15%",
-        "width": "65%",
-        "overflow-x": "scroll",
-        "overflow-y": "hidden",
-        "display": "inline-block",
-    }).attr('id', 'trendContainer');
-
-    //color info
-    jQuery('<div/>', {
-            id: 'trendColorInfo',
-            class: "w3-light-grey",
-        })
-        .appendTo($("#popupChartContainer"));
-
-    container.appendChild(node);
     trendObj = new lineDataObj();
     setTrendLable(json);
 
@@ -1120,12 +1132,7 @@ function createTrendChart(json, trendMode) {
         setActiveTrend(TREND_DEVICE);
         break;
     }
-    node.style.height = '' + chartHeight + 'px';
-    node.style.width = (30 * trendObj.labels.length > 32500) ? ('32500px') : '' + (30 * trendObj.labels.length) + 'px';
-
-    document.getElementById("popupChartContainer").appendChild(container);
-    var ctx = node.getContext("2d");
-    linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+    createChartElement();
 
     updateColorInfo();
 }

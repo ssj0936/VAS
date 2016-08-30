@@ -17,7 +17,7 @@ function lineDataObj() {
     this.labels = [];
     this.datasets = [];
     this.yAxes = [{
-        name: "total",
+        name: "rightAxis",
         scalePositionLeft: false,
         scaleFontColor: "#666"
      }, {
@@ -27,10 +27,10 @@ function lineDataObj() {
      }];
 }
 
-function lineDatasetsObj(label, fillColor, pointColor, highlightColor, isTotal) {
+function lineDatasetsObj(label, fillColor, pointColor, highlightColor, rightAxis) {
     this.label = label;
     this.type = 'line';
-    this.yAxesGroup = (isTotal ? 'total' : 'normal');
+    this.yAxesGroup = (rightAxis ? 'rightAxis' : 'normal');
     this.fillColor = fillColor;
     this.strokeColor = pointColor;
     this.pointColor = pointColor;
