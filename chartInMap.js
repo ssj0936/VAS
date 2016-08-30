@@ -75,6 +75,9 @@ function updateRegionChart(json, displayname, displaynum) {
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
         })
+        .css({
+            'top':'' + getWindowHeightPercentagePx(0.1) + 'px',
+        })
         .appendTo(rightPopup);
 
     createFunctionalBtn().appendTo(title);
@@ -170,11 +173,11 @@ function updateRegionChart(json, displayname, displaynum) {
     createsingleRegionChart(json, TREND_REGION, displayname);
 
     //title re-position
-    var top = title.offset().top;
-    title.css({
-        'top': '' + top + 'px',
-        'bottom': '',
-    });
+//    var top = title.offset().top;
+//    title.css({
+//        'top': '' + top + 'px',
+//        'bottom': '',
+//    });
 }
 
 function updateTrendChart(json) {
@@ -211,6 +214,9 @@ function updateTrendChart(json) {
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
             //        class: "w3-center",
+        })
+        .css({
+            'top':'' + getWindowHeightPercentagePx(0.1) + 'px',
         })
         .appendTo(rightPopup);
 
@@ -617,7 +623,7 @@ function createFilterDisplayer() {
         class: 'filter_wrapper panel',
     }).css({
         'position': 'absolute',
-        'top': '15%',
+        'top': '' + getWindowHeightPercentagePx(0.15) + 'px',
         'right': '0px',
         'width': '90%',
         'border-radius': '5px',
@@ -678,76 +684,6 @@ function createFilterDisplayer() {
 
         addingContent(filterName, $content);
     }
-    //
-    //    var container = jQuery('<div/>', {
-    //        id: 'filterContentContainer',
-    //    }).css({
-    //        'position': 'absolute',
-    //        'top': '25%',
-    //        'left': '3%',
-    //        'border-radius': '5px',
-    //        'z-index': 5,
-    //    })
-    //    .hover(
-    //        function(){
-    //            $('#trendContainer').fadeTo( "fast", 0.3 );
-    //        },
-    //        function(){
-    //            $('#trendContainer').fadeTo( "fast", 1);
-    //        }
-    //    );
-    //
-    //    var filterContent = getCurrentFilterTitle();
-    //    var filterArray = Object.keys(filterContent);
-    //    for(var i in filterArray){
-    //        var filterName = filterArray[i];
-    //
-    //        var subContainer = jQuery('<div/>', {
-    //            id : 'subcontainer'+filterName,
-    //            class: 'subcontainer',
-    //        })
-    //        //.css({'display':'inline-block'})
-    //        .appendTo(container)
-    //        .hover(
-    //            function(filterName){
-    //                return function(){
-    //                    $('#filterMenu'+filterName).stop(true,true).fadeIn(300);
-    //                }
-    //            }(filterName),
-    //            function(filterName){
-    //                return function(){
-    //                    $('#filterMenu'+filterName).hide();
-    //                }
-    //            }(filterName)
-    //        );
-    //
-    //        jQuery('<div/>', {
-    //            class: 'w3-hover-shadow w3-padding-4 w3-center lablecard',
-    //        })
-    //        .css({
-    //            'background':'#d9d9d9',
-    //        })
-    //        .html('<p>' + filterName + '</p>')
-    //        .appendTo(subContainer);
-    //
-    //        var subsubContainer = jQuery('<div/>', {
-    //            id: 'filterMenu'+filterName,
-    //            class: 'subsubcontainer',
-    //        })
-    //        .css({
-    //            "display": "inline-block",
-    //        })
-    //        .appendTo(subContainer)
-    //        .hide();
-    //
-    //        for(var j in filterContent[filterName]){
-    //            jQuery('<div/>', {
-    //                class: "w3-light-grey w3-hover-shadow w3-padding-4 w3-center card",
-    //            })
-    //            .html('<p>' + filterContent[filterName][j] + '</p>')
-    //            .appendTo(subsubContainer);
-    //        }
-    //    }
 
     return container;
 }
@@ -776,6 +712,8 @@ function popupChartShow(needToLockScroll) {
         "min-height": screen.height,
         "opacity": 0.99,
         'z-index': 1,
+        //set height to full document size to cover workset
+        'height': ''+getDocumentFullHeight()+'px',
     });
 
     //<span class="ui-icon ui-icon-circle-close" style="font-size: 4em; color: rgb(127, 127, 127);"></span>
@@ -797,8 +735,8 @@ function popupChartShow(needToLockScroll) {
             popupChartClose(needToLockScroll);
         });
 
-    if (needToLockScroll)
-        disableScroll();
+//    if (needToLockScroll)
+//        disableScroll();
 
 }
 
@@ -811,6 +749,8 @@ function popupChartClose(needToLockScroll) {
         "min-height": '0px',
         "opacity": 0,
         'z-index': -1,
+        //set height to 0 in order not to influence workset height
+        'height': '0px',
     });
 
     $('#popupChartContainer').empty();
@@ -1011,7 +951,7 @@ function createChartElement(){
     var container = document.createElement("div");
     $(container).css({
         "position": "absolute",
-        "top": "25%",
+        "top": "" + getWindowHeightPercentagePx(0.25) + 'px',
         "left": "5%",
         "width": "80%",
         "overflow-x": "scroll",
@@ -1124,6 +1064,7 @@ function updateColorInfo() {
     infoDiv.css({
         'width': '12%',
         'overflow-y': 'auto',
+        'top': '' + getWindowHeightPercentagePx(0.15) + 'px',
     });
 
     var totalHeight = 0;
@@ -1153,21 +1094,6 @@ function updateColorInfo() {
 
         totalHeight += oneColorInfo.height();
     }
-
-//    $('#trendContainer').offset().bottom
-//    if (totalHeight > chartHeight) {
-//        console.log('overflow');
-//        infoDiv.css({
-//            'width': '12%',
-//            'overflow-y': 'auto',
-//        });
-//    } else {
-//        console.log('not overflow');
-//        infoDiv.css({
-//            'width': 'auto',
-//            'overflow-y': 'auto',
-//        });
-//    }
 
 }
 

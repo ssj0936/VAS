@@ -407,6 +407,14 @@ function filterDataNull() {
     //delete allDealerCountry;
 }
 
+function getWindowHeightPercentagePx(float){
+    return ($(window).height() * float);
+}
+
+function getDocumentFullHeight(){
+    return $(document).height();
+}
+
 var QuickHull = {
 
     /*
