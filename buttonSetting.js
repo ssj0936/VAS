@@ -600,7 +600,7 @@ function collapseBtnInit() {
     var selector = $(".filter_wrapper");
     var toggleBtn = $("#toggle");
     var toggleBtnIcon = $("#toggle #toggleIcon");
-    var mapContainer = $("#mapContainer");
+    var rightSideArea = $("#rightSideArea");
     var pos = selector.offset();
     var toggleBtnPos = pos.left + selector.width() + 5;
     toggleBtn.css({
@@ -612,7 +612,6 @@ function collapseBtnInit() {
         //collapse
         if (selector.is(":visible")) {
             toggleBtnIcon.removeClass("ui-icon-carat-1-w").addClass("ui-icon-carat-1-e");
-            //toggleBtn.text('+');
             selector.hide("slide", {
                 direction: "left"
             }, 300, function () {
@@ -623,7 +622,7 @@ function collapseBtnInit() {
                 toggleBtn.fadeIn();
 
                 //layout update
-                mapContainer.animate({
+                rightSideArea.animate({
                     width: "100%"
                 }, 200, "linear", function () {
                     comparisionMapResize();
@@ -632,9 +631,8 @@ function collapseBtnInit() {
         }
         //show up
         else {
-            mapContainer.css("width", "82%");
+            rightSideArea.css("width", "80%");
             toggleBtnIcon.removeClass("ui-icon-carat-1-e").addClass("ui-icon-carat-1-w");
-            //toggleBtn.text('-');
             selector.show("slide", {
                 direction: "left"
             }, 300, function () {

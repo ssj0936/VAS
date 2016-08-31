@@ -1,10 +1,10 @@
     html{
-        height: 100%; 
+        height: auto; 
         width: 100%;
     }
 
     body{
-        height: 100%; 
+        height: auto; 
         width: 100%;
         margin: 0px;
         font-family: Segoe UI;
@@ -14,7 +14,7 @@
 
     #mapid { height: 100%;width:100% ;display: inline-block;}
     #mapidComparison { height: 100%;width:100%;display: inline-block;}
-    #mapContainer { width:82% }
+    #mapContainer { width:100% }
     #workset {height: 100%;width:100%}
     #slider { width: 35%; }
     .click_item{
@@ -32,6 +32,14 @@
         width:15%;
         margin-left:0.1%;
         margin-right:1.4%;
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    #rightSideArea{
+        display: inline-block;
+        vertical-align: top;
+        width: 80%;
     }
     
     #dateDropdown input[type="button"], #dateDropdown input[type="text"] ,#dateDropdown select, button#submit{
@@ -78,7 +86,7 @@
     }
     
     #control_Panel{
-        width:97%;
+/*        width:97%;*/
         margin-bottom:20px;
     }
      
@@ -293,7 +301,7 @@
         box-shadow: 0px 0px 24px -1px rgba(56, 56, 56, 1);
     }
 
-    #deviceFilter, #locationFilter, #colorFilter{
+    #deviceFilter, #locationFilter, #colorFilter, div.specFilter{
         max-height: 250px;
         overflow: auto;
     }
@@ -619,7 +627,7 @@ div#lineChartTitle{
     left: 5%;
     padding-left: 5px;
     padding-right: 5px;
-    background: white;
+/*    background: white;*/
 }
 
 div#trendOptionContainer{

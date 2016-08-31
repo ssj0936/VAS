@@ -172,6 +172,7 @@ function updateRegionChart(json, displayname, displaynum) {
     //chart
     createsingleRegionChart(json, TREND_REGION, displayname);
 
+//    bodyHide();
     //title re-position
 //    var top = title.offset().top;
 //    title.css({
@@ -302,8 +303,26 @@ function updateTrendChart(json) {
         'bottom': '',
     });
 
+    //resize document-size
+//    bodyHide();
+    console.log($('#popupChartContainer').outerHeight(true));
+    
     //End
     loadingDismiss();
+}
+
+function bodyHide(){
+    $('body').css({
+        'height' : '0px',
+        'overflow' : 'hidden',
+    });
+}
+
+function bodyShow(){
+    $('body').css({
+        'height' : 'auto',
+        'overflow' : 'auto',
+    });
 }
 
 function exportFile(ReportTitle, ShowLabel) {
@@ -385,7 +404,7 @@ function exportFile(ReportTitle, ShowLabel) {
     document.body.removeChild(link);
 }
 
-function createDeviceFilter(dataObj, container) {
+function createDeviceFilter(dataObj, container, titleContainer) {
     var ul = jQuery('<ul/>').appendTo(container);
 
     var li = jQuery('<li/>').attr("id", "check_device_li").appendTo($(ul));
@@ -497,9 +516,10 @@ function createDeviceFilter(dataObj, container) {
     }
 
     container.show();
+    titleContainer.toggleClass('trendCollapsible-close trendCollapsible-open');
 }
 
-function createTwoLevelFilter(dataArray, container) {
+function createTwoLevelFilter(dataArray, container, titleContainer) {
     var ul = jQuery('<ul/>').appendTo(container);
 
 
@@ -517,6 +537,7 @@ function createTwoLevelFilter(dataArray, container) {
         }
 
         container.show();
+        titleContainer.toggleClass('trendCollapsible-close trendCollapsible-open');
     } else {
         if (dataArray[0] == 'all') {
             var li = jQuery('<li/>').appendTo(ul);
@@ -542,11 +563,12 @@ function createTwoLevelFilter(dataArray, container) {
                 }).appendTo(li);
             }
             container.show();
+            titleContainer.toggleClass('trendCollapsible-close trendCollapsible-open');
         }
     }
 }
 
-function addingContent(filterName, container) {
+function addingContent(filterName, container, titleContainer) {
     //    console.log(container.get(0));
 
     switch (filterName) {
@@ -586,33 +608,25 @@ function addingContent(filterName, container) {
                 if(deviceObj[product] == undefined)
                     deviceObj[product]= null;
             }
-//            if (deviceObj[devices] != undefined) {
-//                deviceObj[devices].push(model);
-//            } else {
-//                deviceObj[devices] = [];
-//                if (dataType != "model") {
-//                    deviceObj[devices].push(model);
-//                }
-//            }
         }
         console.log(deviceObj);
-        createDeviceFilter(deviceObj, container);
+        createDeviceFilter(deviceObj, container, titleContainer);
         break;
 
     case 'Country':
-        createTwoLevelFilter(observeLocFullName, container);
+        createTwoLevelFilter(observeLocFullName, container, titleContainer);
         break;
     case 'CPU':
-        createTwoLevelFilter(observeSpec.cpu, container);
+        createTwoLevelFilter(observeSpec.cpu, container, titleContainer);
         break;
     case 'Color':
-        createTwoLevelFilter(observeSpec.color, container);
+        createTwoLevelFilter(observeSpec.color, container, titleContainer);
         break;
     case 'RearCamera':
-        createTwoLevelFilter(observeSpec.rear_camera, container);
+        createTwoLevelFilter(observeSpec.rear_camera, container, titleContainer);
         break;
     case 'FrontCamera':
-        createTwoLevelFilter(observeSpec.front_camera, container);
+        createTwoLevelFilter(observeSpec.front_camera, container, titleContainer);
         break;
     }
 }
@@ -686,7 +700,7 @@ function createFilterDisplayer() {
             }
         }($content, $container));
 
-        addingContent(filterName, $content);
+        addingContent(filterName, $content, $container);
     }
 
     return container;
@@ -717,7 +731,8 @@ function popupChartShow(needToLockScroll) {
         "opacity": 0.99,
         'z-index': 1,
         //set height to full document size to cover workset
-//        'max-height': ''+getDocumentFullHeight()+'px',
+//        'height': ''+getDocumentFullHeight()+'px',
+//        'height': 'auto',
     });
 
     //<span class="ui-icon ui-icon-circle-close" style="font-size: 4em; color: rgb(127, 127, 127);"></span>
@@ -738,7 +753,7 @@ function popupChartShow(needToLockScroll) {
         .click(function () {
             popupChartClose(needToLockScroll);
         });
-
+    bodyHide();
 //    if (needToLockScroll)
 //        disableScroll();
 
@@ -754,7 +769,7 @@ function popupChartClose(needToLockScroll) {
         "opacity": 0,
         'z-index': -1,
         //set height to 0 in order not to influence workset height
-        'height': '0px',
+//        'height': '0px',
     });
 
     $('#popupChartContainer').empty();
@@ -767,6 +782,7 @@ function popupChartClose(needToLockScroll) {
     }
 
     enableScroll();
+    bodyShow();
     totalDataset = null;
 }
 
