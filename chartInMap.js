@@ -321,7 +321,7 @@ function bodyHide(){
 function bodyShow(){
     $('body').css({
         'height' : 'auto',
-        'overflow' : 'auto',
+        'overflow' : 'initial',
     });
 }
 
