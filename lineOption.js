@@ -14,7 +14,12 @@ var line_data = {
 };
 
 function lineDataObj() {
-    this.labels = [];
+    this.labelsByDate = [];
+    this.labelsByWeek = [];
+    this.labelsByMonth = [];
+    //default by date
+    this.labels =null;
+    
     this.datasets = [];
     this.yAxes = [{
         name: "rightAxis",
@@ -37,7 +42,11 @@ function lineDatasetsObj(label, fillColor, pointColor, highlightColor, rightAxis
     this.pointStrokeColor = "#fff";
     this.pointHighlightFill = "#fff";
     this.pointHighlightStroke = highlightColor;
-    this.data = [];
+    this.dataByDate = [];
+    this.dataByWeek = [];
+    this.dataByMonth = [];
+    //default by date
+    this.data = this.dataByDate;
 }
 //
 //Chart.types.Line.extend({

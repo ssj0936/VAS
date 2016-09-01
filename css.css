@@ -8,7 +8,7 @@
         width: 100%;
         margin: 0px;
         font-family: Segoe UI;
-        padding: 8px;
+        margin: 8px;
         font-size: 13px;
     }
 
@@ -624,7 +624,7 @@ div#lineChartTitle{
     position: absolute;
 /*    top: 20%;*/
 /*    bottom: 80%;*/
-    left: 5%;
+    left: 2%;
     padding-left: 5px;
     padding-right: 5px;
 /*    background: white;*/
@@ -681,4 +681,8 @@ div#trendColorInfo{
 div#dataset{
 /*    margin-left: 3px;*/
     display: inline-block;
+}
+
+.trendFunctionBtn{
+    vertical-align: top;
 }

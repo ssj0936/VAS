@@ -6,27 +6,39 @@ var filterInTrendIconmarginright = 3;
 var isTotalShowing = true;
 var totalName = 'Total';
 var totalDataset = null;
+var chartSpacing = 30;
+var axisWidth = 50;
+var groupByMode = ['byDate', 'byMonth'];
+var defaultGroupBy = groupByMode[0];
 
 function createFunctionalBtn(){
     var container = jQuery('<div/>', {
         id: "functionalBtnContainer",
-    }).append(
+    })
+    //export Btn
+    .append(
         jQuery('<button/>', {
             id: "btnExport",
+            class: "trendFunctionBtn",
         })
         .text('EXPORT')
         .click(function () {
             return exportFile(getActiveTrend(), true);
         })
         .button()
-    ).append(
+    )
+    //total line toggle btn
+    .append(
         jQuery('<button/>', {
             id: "btnTotalToggle",
+            class: "trendFunctionBtn",
         })
         .text('Hide Total')
         .click(function () {
             //hide
             if(isTotalShowing){
+                if(getActiveTrend() == TREND_REGION) return;
+                
                 removeTotalLine();
                 $(this).button('option', 'label', 'Show Total');
                 isTotalShowing = false;
@@ -40,12 +52,73 @@ function createFunctionalBtn(){
         })
         .button()
     )
+    
+    var selectMenu = jQuery('<select/>', {
+            id: "btnTimePeriodSelect",
+            class: "trendFunctionBtn",
+        })
+        .append(
+            jQuery('<option/>', {
+                value: "byDate",
+                selected: "selected",
+            })
+            .text('byDate')
+        )
+        .append(
+            jQuery('<option/>', {
+                value: "byMonth",
+            })
+            .text('byMonth')
+        )
+        .appendTo(container);
+
+    selectMenu.selectmenu({
+        width: '100px',
+        change: function( event, data ) {
+            var groupBy = data.item.value;
+            switch(groupBy){
+                case 'byDate' :
+                    labelChange(groupBy);
+                    //totalDataset is null in Region trend mode
+                    if(totalDataset){
+                        totalDataset.data = totalDataset.dataByDate;
+                    }
+                    for(var i in trendObj.datasets){
+                        trendObj.datasets[i].data = trendObj.datasets[i].dataByDate;
+                    }
+                    chartDestroy(false);
+                    createChartElement();
+                    updateColorInfo();
+                    break;
+                
+                case 'byMonth' :
+                    labelChange(groupBy);
+                    //totalDataset is null in Region trend mode
+                    if(totalDataset){
+                        totalDataset.data = totalDataset.dataByMonth;
+                    }
+                    for(var i in trendObj.datasets){
+                        trendObj.datasets[i].data = trendObj.datasets[i].dataByMonth;
+                    }
+                    chartDestroy(false);
+                    createChartElement();
+                    updateColorInfo();
+                    break;
+            }
+        }
+    });
+    
     return container;
 }
 
 function resetTotalToggleBtn(){
     $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
     isTotalShowing = true;
+}
+
+function resetGroupByDelectMenu(){
+    $('#btnTimePeriodSelect').val('byDate');
+    $('#btnTimePeriodSelect').selectmenu("refresh");
 }
 
 function updateRegionChart(json, displayname, displaynum) {
@@ -93,7 +166,7 @@ function updateRegionChart(json, displayname, displaynum) {
             .text(displayname + " : " + displaynum)
             .css({
                 'margin': '0px',
-                'font-size': '42px',
+                'font-size': '36px',
                 'text-align': 'left',
             })
         )
@@ -302,10 +375,6 @@ function updateTrendChart(json) {
         'top': '' + top + 'px',
         'bottom': '',
     });
-
-    //resize document-size
-//    bodyHide();
-    console.log($('#popupChartContainer').outerHeight(true));
     
     //End
     loadingDismiss();
@@ -573,7 +642,7 @@ function addingContent(filterName, container, titleContainer) {
 
     switch (filterName) {
     case 'Device':
-        console.log(observeTarget);
+//        console.log(observeTarget);
         var deviceObj = {};
         for (var j in observeTarget) {
             var targetObj = observeTarget[j];
@@ -609,7 +678,7 @@ function addingContent(filterName, container, titleContainer) {
                     deviceObj[product]= null;
             }
         }
-        console.log(deviceObj);
+//        console.log(deviceObj);
         createDeviceFilter(deviceObj, container, titleContainer);
         break;
 
@@ -797,99 +866,123 @@ function showTrend(mapObj) {
 }
 
 function setTrendLable(json) {
+//    console.log('setTrendLable[start]:'+getCurrentTime());
     trendObj = new lineDataObj();
 
     var startDate = json.start_time;
     var endDate = json.end_time;
     var tmpDate = startDate;
 
+    //label by date
     while (parseDate(tmpDate) < parseDate(endDate)) {
-        trendObj.labels.push(tmpDate);
+        trendObj.labelsByDate.push(tmpDate);
 
         var tomorrow = new Date(tmpDate);
         tomorrow.setDate(tomorrow.getDate() + 1);
         tmpDate = parseDateToStr(tomorrow);
 
     }
-    trendObj.labels.push(endDate);
-}
-
-function setTrendDataByModel(jsonObj) {
-    //group by model
-    trendObj.datasets.length = 0;
-    var modelArray = Object.keys(jsonObj);
-    for (var index in modelArray) {
-        var modelName = modelArray[index];
-        var modelData = jsonObj[modelName];
-
-        var color = getRandomColor();
-        var highlight = ColorLuminance(color, 0.5);
-        var transparentColor = colorHexToRGBString(color, 0.2);
-        var modelDataset = new lineDatasetsObj(modelName, transparentColor, color, highlight, false);
-
-        var modelDataDateIndex = 0
-        for (var i = 0; i < trendObj.labels.length; ++i) {
-            if (modelDataDateIndex < modelData.length && trendObj.labels[i] == modelData[modelDataDateIndex].date) {
-                modelDataset.data.push(modelData[modelDataDateIndex].count);
-                ++modelDataDateIndex;
-            } else {
-                modelDataset.data.push(0);
-            }
+    trendObj.labelsByDate.push(endDate);
+    
+    //label by month
+    var currentM = null;
+    var currentY = null;
+    for(var i in trendObj.labelsByDate){
+        var date = trendObj.labelsByDate[i];
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var month = d.getMonth()+1;
+        
+        if(currentM != month || currentY != year){
+            trendObj.labelsByMonth.push(year+'-'+month);
+            currentM = month;
+            currentY = year;
         }
-
-        trendObj.datasets.push(modelDataset);
     }
+    
+//    console.log(trendObj.labelsByDate);
+//    console.log(trendObj.labelsByMonth);
+    
+    labelChange(defaultGroupBy);
+    
+//    console.log('setTrendLable[end]:'+getCurrentTime());
 }
 
-function setTrendDataByCountry(jsonObj) {
-    //group by country
-    trendObj.datasets.length = 0;
-    var countryArray = Object.keys(jsonObj);
-    for (var index in countryArray) {
-        var isoName = countryArray[index];
-        var isoData = jsonObj[isoName];
-
-        var color = getRandomColor();
-        var highlight = ColorLuminance(color, 0.5);
-        var transparentColor = colorHexToRGBString(color, 0.2);
-        var isoDataset = new lineDatasetsObj(isoName, transparentColor, color, highlight, false);
-
-        var isoDataDateIndex = 0
-        for (var i = 0; i < trendObj.labels.length; ++i) {
-            if (isoDataDateIndex < isoData.length && trendObj.labels[i] == isoData[isoDataDateIndex].date) {
-                isoDataset.data.push(isoData[isoDataDateIndex].count);
-                ++isoDataDateIndex;
-            } else {
-                isoDataset.data.push(0);
-            }
-        }
-        trendObj.datasets.push(isoDataset);
+function labelChange(chanegTo){
+    switch(chanegTo){
+        case 'byDate':
+            trendObj.labels = trendObj.labelsByDate.slice();
+            break;
+        case 'byMonth':
+            trendObj.labels = trendObj.labelsByMonth.slice();
+            break;
     }
+    
+    //in order to adding space
+    trendObj.labels.push(" ");
+    trendObj.labels.push(" ");
+    trendObj.labels.push(" ");
 }
 
-function setTrendDataByDevice(jsonObj) {
-    //group by country
+function setTrendData(jsonObj){
+    //clean
     trendObj.datasets.length = 0;
-    var deviceArray = Object.keys(jsonObj);
-    for (var index in deviceArray) {
-        var deviceName = deviceArray[index];
-        var deviceData = jsonObj[deviceName];
+    
+    var jsonArray = Object.keys(jsonObj);
+    for (var index in jsonArray) {
+        var name = jsonArray[index];
+        var data = jsonObj[name];
 
         var color = getRandomColor();
         var highlight = ColorLuminance(color, 0.5);
         var transparentColor = colorHexToRGBString(color, 0.2);
-        var deviceDataset = new lineDatasetsObj(deviceName, transparentColor, color, highlight, false);
-
-        var deviceDataDateIndex = 0
+        var dataset = new lineDatasetsObj(name, transparentColor, color, highlight, false);
+        
+        //first
+        //handle the data group by date 
+        var DateIndex = 0
         for (var i = 0; i < trendObj.labels.length; ++i) {
-            if (deviceDataDateIndex < deviceData.length && trendObj.labels[i] == deviceData[deviceDataDateIndex].date) {
-                deviceDataset.data.push(deviceData[deviceDataDateIndex].count);
-                ++deviceDataDateIndex;
+            if (DateIndex < data.length && trendObj.labels[i] == data[DateIndex].date) {
+                dataset.dataByDate.push(data[DateIndex].count);
+                ++DateIndex;
             } else {
-                deviceDataset.data.push(0);
+                dataset.dataByDate.push(0);
             }
         }
-        trendObj.datasets.push(deviceDataset);
+        
+        //second 
+        //group by month
+        var currentM = null;
+        var currentY = null;
+        var sumInThatMonth = 0;
+        var first = true;
+
+        for (var i = 0; i < trendObj.labels.length; ++i) {
+            var date = trendObj.labels[i];
+            var cnt = dataset.dataByDate[i];
+            
+            var d = new Date(date);
+            var year = d.getFullYear();
+            var month = d.getMonth()+1;
+            
+            if(currentM != month || currentY != year){
+                if(first){
+                    first = false;
+                }else{
+                    dataset.dataByMonth.push(sumInThatMonth);
+                    sumInThatMonth = 0;
+                }
+                currentM = month;
+                currentY = year;
+            }
+            
+            sumInThatMonth += cnt;
+        }
+        //last one
+        dataset.dataByMonth.push(sumInThatMonth);
+        
+        trendObj.datasets.push(dataset);
+//        console.log(dataset);
     }
 }
 
@@ -907,13 +1000,44 @@ function setTrendDataByRegion(jsonObj, regionName) {
     var regionDataDateIndex = 0
     for (var i = 0; i < trendObj.labels.length; ++i) {
         if (regionDataDateIndex < regionData.length && trendObj.labels[i] == regionData[regionDataDateIndex].date) {
-            regionDataset.data.push(regionData[regionDataDateIndex].count);
+            regionDataset.dataByDate.push(regionData[regionDataDateIndex].count);
             ++regionDataDateIndex;
         } else {
-            regionDataset.data.push(0);
+            regionDataset.dataByDate.push(0);
         }
     }
+    
+    var currentM = null;
+    var currentY = null;
+    var sumInThatMonth = 0;
+    var first = true;
+
+    for (var i = 0; i < trendObj.labels.length; ++i) {
+        var date = trendObj.labels[i];
+        var cnt = regionDataset.dataByDate[i];
+
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var month = d.getMonth()+1;
+
+        if(currentM != month || currentY != year){
+            if(first){
+                first = false;
+            }else{
+                regionDataset.dataByMonth.push(sumInThatMonth);
+                sumInThatMonth = 0;
+            }
+            currentM = month;
+            currentY = year;
+        }
+
+        sumInThatMonth += cnt;
+    }
+    //last one
+    regionDataset.dataByMonth.push(sumInThatMonth);
+
     trendObj.datasets.push(regionDataset);
+//    console.log(regionDataset);
 }
 
 function addingTotalLine(totalJson) {
@@ -928,14 +1052,46 @@ function addingTotalLine(totalJson) {
     var totalDataDateIndex = 0
     for (var i = 0; i < trendObj.labels.length; ++i) {
         if (totalDataDateIndex < totalData.length && trendObj.labels[i] == totalData[totalDataDateIndex].date) {
-            totalDataset.data.push(totalData[totalDataDateIndex].count);
+            totalDataset.dataByDate.push(totalData[totalDataDateIndex].count);
             ++totalDataDateIndex;
         } else {
-            totalDataset.data.push(0);
+            totalDataset.dataByDate.push(0);
         }
     }
-    //    console.log(totalDataset);
+    
+    //second 
+    //group by month
+    var currentM = null;
+    var currentY = null;
+    var sumInThatMonth = 0;
+    var first = true;
+
+    for (var i = 0; i < trendObj.labels.length; ++i) {
+        var date = trendObj.labels[i];
+        var cnt = totalDataset.dataByDate[i];
+
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var month = d.getMonth()+1;
+
+        if(currentM != month || currentY != year){
+            if(first){
+                first = false;
+            }else{
+                totalDataset.dataByMonth.push(sumInThatMonth);
+                sumInThatMonth = 0;
+            }
+            currentM = month;
+            currentY = year;
+        }
+
+        sumInThatMonth += cnt;
+    }
+    //last one
+    totalDataset.dataByMonth.push(sumInThatMonth);
+
     trendObj.datasets.push(totalDataset);
+    console.log(totalDataset);
 }
 
 function removeTotalLine(){
@@ -971,8 +1127,8 @@ function createChartElement(){
     var container = document.createElement("div");
     $(container).css({
         "position": "absolute",
-        "top": "" + getWindowHeightPercentagePx(0.25) + 'px',
-        "left": "5%",
+        "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
+        "left": "2%",
         "width": "80%",
         "overflow-x": "scroll",
         "overflow-y": "hidden",
@@ -989,7 +1145,9 @@ function createChartElement(){
     container.appendChild(node);
     
     node.style.height = '' + chartHeight + 'px';
-    node.style.width = (30 * trendObj.labels.length > 32500) ? ('32500px') : '' + (30 * trendObj.labels.length) + 'px';
+    node.style.width = (axisWidth + chartSpacing * trendObj.labels.length > 32500) 
+            ? ('32500px') 
+            : '' + (axisWidth + chartSpacing * trendObj.labels.length) + 'px';
 
 //    document.getElementById("popupChartContainer").appendChild(container);
     $('#rightPopupContainer').append($(container));
@@ -1001,13 +1159,14 @@ function createsingleRegionChart(json, trendMode, regionName) {
     //data reset
     chartDestroy(true);
     resetTotalToggleBtn();
+    resetGroupByDelectMenu();
     //fetch data
     trendObj = new lineDataObj();
     setTrendLable(json);
     
     switch (trendMode) {
     case TREND_MODEL:
-        setTrendDataByModel(json.groupByModelResults);
+        setTrendData(json.groupByModelResults);
         addingTotalLine(json.groupByRegionResults);
         setActiveTrend(TREND_MODEL);
         break;
@@ -1018,7 +1177,7 @@ function createsingleRegionChart(json, trendMode, regionName) {
         break;
 
     case TREND_DEVICE:
-        setTrendDataByDevice(json.groupByDeviceResults);
+        setTrendData(json.groupByDeviceResults);
         addingTotalLine(json.groupByRegionResults);
         setActiveTrend(TREND_DEVICE);
         break;
@@ -1051,32 +1210,38 @@ function createTrendChart(json, trendMode) {
     //destroy old chart
     chartDestroy(true);
     resetTotalToggleBtn();
+    resetGroupByDelectMenu();
     
     trendObj = new lineDataObj();
     setTrendLable(json);
 
+//    console.log('setTrendData[start]:'+getCurrentTime());
     switch (trendMode) {
     case TREND_MODEL:
-        setTrendDataByModel(json.groupByModelResults);
+        setTrendData(json.groupByModelResults);
         addingTotalLine(json.groupByDateResults);
         setActiveTrend(TREND_MODEL);
         break;
 
     case TREND_COUNTRY:
-        setTrendDataByCountry(json.groupByCountryResults);
+        setTrendData(json.groupByCountryResults);
         addingTotalLine(json.groupByDateResults);
         setActiveTrend(TREND_COUNTRY);
         break;
 
     case TREND_DEVICE:
-        setTrendDataByDevice(json.groupByDeviceResults);
+        setTrendData(json.groupByDeviceResults);
         addingTotalLine(json.groupByDateResults);
         setActiveTrend(TREND_DEVICE);
         break;
     }
+//    console.log('setTrendData[end]:'+getCurrentTime());
+//    console.log('createChartElement[start]:'+getCurrentTime());
     createChartElement();
-
+//    console.log('createChartElement[end]:'+getCurrentTime());
+//    console.log('updateColorInfo[start]:'+getCurrentTime());
     updateColorInfo();
+//    console.log('updateColorInfo[end]:'+getCurrentTime());
 }
 
 function updateColorInfo() {
