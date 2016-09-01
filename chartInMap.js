@@ -1133,6 +1133,8 @@ function createChartElement(){
         "overflow-x": "scroll",
         "overflow-y": "hidden",
         "display": "inline-block",
+        //hide first
+        "opacity": "0",
     }).attr('id', 'trendContainer');
 
 
@@ -1149,10 +1151,14 @@ function createChartElement(){
             ? ('32500px') 
             : '' + (axisWidth + chartSpacing * trendObj.labels.length) + 'px';
 
-//    document.getElementById("popupChartContainer").appendChild(container);
     $('#rightPopupContainer').append($(container));
     var ctx = node.getContext("2d");
     linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+    
+    //show up
+    $(container).animate({
+        opacity: 1,
+    },'slow');
 }
 
 function createsingleRegionChart(json, trendMode, regionName) {
