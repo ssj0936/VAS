@@ -1124,13 +1124,17 @@ function createChartElement(){
     node.className = "chart";
     node.id = 'trendChart';
 
-    var container = document.createElement("div");
-    $(container).css({
+    var container = jQuery('<div/>',{
+        class : 'customScrollBar',
+    });
+//    var container = document.createElement("div");
+    container.css({
         "position": "absolute",
         "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
         "left": "2%",
         "width": "80%",
-        "overflow-x": "scroll",
+        'border': '10px solid rgba(255,255,255,0)',
+//        "overflow-x": "scroll",
         "overflow-y": "hidden",
         "display": "inline-block",
         //hide first
@@ -1140,23 +1144,24 @@ function createChartElement(){
 
     jQuery('<div/>', {
             id: 'trendColorInfo',
-            class: "w3-light-grey",
+            class: "w3-light-grey customScrollBar",
         })
         .appendTo($("#rightPopupContainer"));
 
-    container.appendChild(node);
+    container.append($(node));
+//    container.appendChild(node);
     
     node.style.height = '' + chartHeight + 'px';
     node.style.width = (axisWidth + chartSpacing * trendObj.labels.length > 32500) 
             ? ('32500px') 
             : '' + (axisWidth + chartSpacing * trendObj.labels.length) + 'px';
 
-    $('#rightPopupContainer').append($(container));
+    $('#rightPopupContainer').append(container);
     var ctx = node.getContext("2d");
     linechart = new Chart(ctx).Overlay(trendObj, newOptions);
     
     //show up
-    $(container).animate({
+    container.animate({
         opacity: 1,
     },'slow');
 }
@@ -1254,7 +1259,7 @@ function updateColorInfo() {
     var infoDiv = $('#trendColorInfo');
     infoDiv.css({
         'width': '12%',
-        'overflow-y': 'auto',
+//        'overflow-y': 'auto',
         'top': '' + getWindowHeightPercentagePx(0.15) + 'px',
     });
 
