@@ -8,7 +8,7 @@ var totalName = 'Total';
 var totalDataset = null;
 var chartSpacing = 30;
 var axisWidth = 50;
-var groupByMode = ['byDate', 'byMonth'];
+var groupByMode = ['byDate', 'byMonth', 'byWeek'];
 var defaultGroupBy = groupByMode[0];
 
 function createFunctionalBtn(){
@@ -57,21 +57,18 @@ function createFunctionalBtn(){
             id: "btnTimePeriodSelect",
             class: "trendFunctionBtn",
         })
-        .append(
-            jQuery('<option/>', {
-                value: "byDate",
-                selected: "selected",
-            })
-            .text('byDate')
-        )
-        .append(
-            jQuery('<option/>', {
-                value: "byMonth",
-            })
-            .text('byMonth')
-        )
         .appendTo(container);
 
+    for(var i in groupByMode){
+        var Mode = groupByMode[i];
+        
+        jQuery('<option/>', {
+            value: Mode,
+        })
+        .text(Mode)
+        .appendTo(selectMenu);
+    }
+    
     selectMenu.selectmenu({
         width: '100px',
         change: function( event, data ) {
@@ -99,6 +96,20 @@ function createFunctionalBtn(){
                     }
                     for(var i in trendObj.datasets){
                         trendObj.datasets[i].data = trendObj.datasets[i].dataByMonth;
+                    }
+                    chartDestroy(false);
+                    createChartElement();
+                    updateColorInfo();
+                    break;
+                    
+                case 'byWeek' :
+                    labelChange(groupBy);
+                    //totalDataset is null in Region trend mode
+                    if(totalDataset){
+                        totalDataset.data = totalDataset.dataByWeek;
+                    }
+                    for(var i in trendObj.datasets){
+                        trendObj.datasets[i].data = trendObj.datasets[i].dataByWeek;
                     }
                     chartDestroy(false);
                     createChartElement();
@@ -743,12 +754,12 @@ function createFilterDisplayer() {
 
         var $content = $('<div/>', {
                 id: 'displayFilter_content_' + filterName,
-                class: 'selector',
+                class: 'selector customScrollBar',
                 filterName: filterName,
             })
             .css({
-                'max-height': '300px',
-                'overflow': 'auto',
+                'max-height': '250px',
+//                'overflow': 'auto',
             })
             .appendTo(body).hide();
 
@@ -900,8 +911,24 @@ function setTrendLable(json) {
         }
     }
     
+    //label by week
+    var currentW = null;
+    var currentY = null;
+    for(var i in trendObj.labelsByDate){
+        var date = trendObj.labelsByDate[i];
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var week = d.getWeek();
+        
+        if(currentW != week || currentY != year){
+            trendObj.labelsByWeek.push(year+'- W'+week);
+            currentW = week;
+            currentY = year;
+        }
+    }
 //    console.log(trendObj.labelsByDate);
 //    console.log(trendObj.labelsByMonth);
+//    console.log(trendObj.labelsByWeek);
     
     labelChange(defaultGroupBy);
     
@@ -915,6 +942,9 @@ function labelChange(chanegTo){
             break;
         case 'byMonth':
             trendObj.labels = trendObj.labelsByMonth.slice();
+            break;
+        case 'byWeek':
+            trendObj.labels = trendObj.labelsByWeek.slice();
             break;
     }
     
@@ -941,8 +971,8 @@ function setTrendData(jsonObj){
         //first
         //handle the data group by date 
         var DateIndex = 0
-        for (var i = 0; i < trendObj.labels.length; ++i) {
-            if (DateIndex < data.length && trendObj.labels[i] == data[DateIndex].date) {
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            if (DateIndex < data.length && trendObj.labelsByDate[i] == data[DateIndex].date) {
                 dataset.dataByDate.push(data[DateIndex].count);
                 ++DateIndex;
             } else {
@@ -957,8 +987,8 @@ function setTrendData(jsonObj){
         var sumInThatMonth = 0;
         var first = true;
 
-        for (var i = 0; i < trendObj.labels.length; ++i) {
-            var date = trendObj.labels[i];
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            var date = trendObj.labelsByDate[i];
             var cnt = dataset.dataByDate[i];
             
             var d = new Date(date);
@@ -981,6 +1011,38 @@ function setTrendData(jsonObj){
         //last one
         dataset.dataByMonth.push(sumInThatMonth);
         
+        
+        //thrid 
+        //group by week
+        var currentW = null;
+        var currentY = null;
+        var sumInThatWeek = 0;
+        var first = true;
+
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            var date = trendObj.labelsByDate[i];
+            var cnt = dataset.dataByDate[i];
+            
+            var d = new Date(date);
+            var year = d.getFullYear();
+            var week = d.getWeek();
+            
+            if(currentW != week || currentY != year){
+                if(first){
+                    first = false;
+                }else{
+                    dataset.dataByWeek.push(sumInThatWeek);
+                    sumInThatWeek = 0;
+                }
+                currentW = week;
+                currentY = year;
+            }
+            
+            sumInThatWeek += cnt;
+        }
+        //last one
+        dataset.dataByWeek.push(sumInThatWeek);
+        
         trendObj.datasets.push(dataset);
 //        console.log(dataset);
     }
@@ -997,9 +1059,10 @@ function setTrendDataByRegion(jsonObj, regionName) {
     var transparentColor = colorHexToRGBString(color, 0.2);
     var regionDataset = new lineDatasetsObj(regionName, transparentColor, color, highlight, false);
 
+    //group by date
     var regionDataDateIndex = 0
-    for (var i = 0; i < trendObj.labels.length; ++i) {
-        if (regionDataDateIndex < regionData.length && trendObj.labels[i] == regionData[regionDataDateIndex].date) {
+    for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        if (regionDataDateIndex < regionData.length && trendObj.labelsByDate[i] == regionData[regionDataDateIndex].date) {
             regionDataset.dataByDate.push(regionData[regionDataDateIndex].count);
             ++regionDataDateIndex;
         } else {
@@ -1007,13 +1070,14 @@ function setTrendDataByRegion(jsonObj, regionName) {
         }
     }
     
+    //group by month
     var currentM = null;
     var currentY = null;
     var sumInThatMonth = 0;
     var first = true;
 
-    for (var i = 0; i < trendObj.labels.length; ++i) {
-        var date = trendObj.labels[i];
+    for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        var date = trendObj.labelsByDate[i];
         var cnt = regionDataset.dataByDate[i];
 
         var d = new Date(date);
@@ -1036,6 +1100,37 @@ function setTrendDataByRegion(jsonObj, regionName) {
     //last one
     regionDataset.dataByMonth.push(sumInThatMonth);
 
+    
+    //group by week
+    var currentW = null;
+    var currentY = null;
+    var sumInThatWeek = 0;
+    var first = true;
+
+    for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        var date = trendObj.labelsByDate[i];
+        var cnt = regionDataset.dataByDate[i];
+
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var week = d.getWeek();
+
+        if(currentW != week || currentY != year){
+            if(first){
+                first = false;
+            }else{
+                regionDataset.dataByWeek.push(sumInThatWeek);
+                sumInThatWeek = 0;
+            }
+            currentW = week;
+            currentY = year;
+        }
+
+        sumInThatWeek += cnt;
+    }
+    //last one
+    regionDataset.dataByWeek.push(sumInThatWeek);
+    
     trendObj.datasets.push(regionDataset);
 //    console.log(regionDataset);
 }
@@ -1050,8 +1145,8 @@ function addingTotalLine(totalJson) {
     totalDataset = new lineDatasetsObj(totalName, transparentColor, color, highlight, false);
 
     var totalDataDateIndex = 0
-    for (var i = 0; i < trendObj.labels.length; ++i) {
-        if (totalDataDateIndex < totalData.length && trendObj.labels[i] == totalData[totalDataDateIndex].date) {
+    for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        if (totalDataDateIndex < totalData.length && trendObj.labelsByDate[i] == totalData[totalDataDateIndex].date) {
             totalDataset.dataByDate.push(totalData[totalDataDateIndex].count);
             ++totalDataDateIndex;
         } else {
@@ -1066,8 +1161,8 @@ function addingTotalLine(totalJson) {
     var sumInThatMonth = 0;
     var first = true;
 
-    for (var i = 0; i < trendObj.labels.length; ++i) {
-        var date = trendObj.labels[i];
+    for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        var date = trendObj.labelsByDate[i];
         var cnt = totalDataset.dataByDate[i];
 
         var d = new Date(date);
@@ -1089,9 +1184,41 @@ function addingTotalLine(totalJson) {
     }
     //last one
     totalDataset.dataByMonth.push(sumInThatMonth);
+    
+    
+    //second 
+    //group by week
+    var currentW = null;
+    var currentY = null;
+    var sumInThatWeek = 0;
+    var first = true;
+
+    for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        var date = trendObj.labelsByDate[i];
+        var cnt = totalDataset.dataByDate[i];
+
+        var d = new Date(date);
+        var year = d.getFullYear();
+        var week = d.getWeek();
+
+        if(currentW != week || currentY != year){
+            if(first){
+                first = false;
+            }else{
+                totalDataset.dataByWeek.push(sumInThatWeek);
+                sumInThatWeek = 0;
+            }
+            currentW = week;
+            currentY = year;
+        }
+
+        sumInThatWeek += cnt;
+    }
+    //last one
+    totalDataset.dataByWeek.push(sumInThatWeek);
 
     trendObj.datasets.push(totalDataset);
-    console.log(totalDataset);
+//    console.log(totalDataset);
 }
 
 function removeTotalLine(){
