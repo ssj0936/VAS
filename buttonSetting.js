@@ -570,6 +570,9 @@ function submitComparision() {
     mapInit();
     mapComparisionInit();
     if (observeTarget.length == 0) {
+        firstMap.info.update();
+        comparisonMap.info.update();
+        
         firstMap.cleanMap();
         comparisonMap.cleanMap();
 
@@ -581,6 +584,8 @@ function submitComparision() {
             if (observeTarget.length != 0) {
                 ajaxFetchMapValue(true, false);
             } else {
+                firstMap.info.update();
+                comparisonMap.info.update();
                 firstMap.cleanMap();
                 comparisonMap.cleanMap();
                 loadingDismiss();

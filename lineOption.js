@@ -37,6 +37,7 @@ function lineDatasetsObj(label, fillColor, pointColor, highlightColor, rightAxis
     this.type = 'line';
     this.yAxesGroup = (rightAxis ? 'rightAxis' : 'normal');
     this.fillColor = fillColor;
+//    this.fillColor = "rgba(0,0,0,0)";
     this.strokeColor = pointColor;
     this.pointColor = pointColor;
     this.pointStrokeColor = "#fff";

@@ -415,6 +415,7 @@ function getDocumentFullHeight(){
     return $(document).height();
 }
 
+//REF: http://www.epochconverter.com/weeknumbers
 Date.prototype.getWeek = function () {
     var target  = new Date(this.valueOf());
     var dayNr   = (this.getDay() + 6) % 7;

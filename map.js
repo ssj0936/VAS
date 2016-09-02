@@ -284,6 +284,7 @@ function MapObject(mapname) {
             if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION))
                 $('#showModelCount' + mapObj.mapName).hide();
 
+            console.log(observeTarget);
             if (observeTarget.length == 0) {
                 //                console.log(observeTarget);
                 $('.infoDiv').hide();
