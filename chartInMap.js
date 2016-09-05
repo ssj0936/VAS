@@ -8,8 +8,13 @@ var totalName = 'Total';
 var totalDataset = null;
 var chartSpacing = 30;
 var axisWidth = 50;
-var groupByMode = ['byDate', 'byMonth', 'byWeek'];
+var groupByMode = ['By Day', 'By Month', 'By Week'];
 var defaultGroupBy = groupByMode[0];
+
+var rightPopupContainerWidthP = 0.84;
+var trendContainerWidthP = 0.8;
+
+var trendContainerWidthR = $(window).width() * rightPopupContainerWidthP * trendContainerWidthP;
 
 function createFunctionalBtn(){
     var container = jQuery('<div/>', {
@@ -74,7 +79,7 @@ function createFunctionalBtn(){
         change: function( event, data ) {
             var groupBy = data.item.value;
             switch(groupBy){
-                case 'byDate' :
+                case 'By Day' :
                     labelChange(groupBy);
                     //totalDataset is null in Region trend mode
                     if(totalDataset){
@@ -88,7 +93,7 @@ function createFunctionalBtn(){
                     updateColorInfo();
                     break;
                 
-                case 'byMonth' :
+                case 'By Month' :
                     labelChange(groupBy);
                     //totalDataset is null in Region trend mode
                     if(totalDataset){
@@ -102,7 +107,7 @@ function createFunctionalBtn(){
                     updateColorInfo();
                     break;
                     
-                case 'byWeek' :
+                case 'By Week' :
                     labelChange(groupBy);
                     //totalDataset is null in Region trend mode
                     if(totalDataset){
@@ -128,7 +133,7 @@ function resetTotalToggleBtn(){
 }
 
 function resetGroupByDelectMenu(){
-    $('#btnTimePeriodSelect').val('byDate');
+    $('#btnTimePeriodSelect').val(defaultGroupBy);
     $('#btnTimePeriodSelect').selectmenu("refresh");
 }
 
@@ -149,7 +154,7 @@ function updateRegionChart(json, displayname, displaynum) {
             id: 'rightPopupContainer',
         }).css({
             'display':'inline-block',
-            'width': '84%',
+            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
@@ -287,7 +292,7 @@ function updateTrendChart(json) {
             id: 'rightPopupContainer',
         }).css({
             'display':'inline-block',
-            'width': '84%',
+            'width': '' + rightPopupContainerWidthP*100 + '%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
@@ -937,21 +942,21 @@ function setTrendLable(json) {
 
 function labelChange(chanegTo){
     switch(chanegTo){
-        case 'byDate':
+        case 'By Day':
             trendObj.labels = trendObj.labelsByDate.slice();
             break;
-        case 'byMonth':
+        case 'By Month':
             trendObj.labels = trendObj.labelsByMonth.slice();
             break;
-        case 'byWeek':
+        case 'By Week':
             trendObj.labels = trendObj.labelsByWeek.slice();
             break;
     }
     
     //in order to adding space
     trendObj.labels.push(" ");
-    trendObj.labels.push(" ");
-    trendObj.labels.push(" ");
+//    trendObj.labels.push(" ");
+//    trendObj.labels.push(" ");
 }
 
 function setTrendData(jsonObj){
@@ -1259,7 +1264,7 @@ function createChartElement(){
         "position": "absolute",
         "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
         "left": "2%",
-        "width": "80%",
+        "width": ""+ trendContainerWidthP * 100 +"%",
         'border': '10px solid rgba(255,255,255,0)',
 //        "overflow-x": "scroll",
         "overflow-y": "hidden",
@@ -1278,10 +1283,17 @@ function createChartElement(){
     container.append($(node));
 //    container.appendChild(node);
     
+    //width cal
+    var labelCount = trendObj.labels.length;
+//    console.log(container.width());
+//    console.log($(window).width()*0.84*0.8);
+    var tmpSpacing = trendContainerWidthR / labelCount;
+    var spacing = (tmpSpacing < chartSpacing) ? chartSpacing : tmpSpacing ;
+    
     node.style.height = '' + chartHeight + 'px';
-    node.style.width = (axisWidth + chartSpacing * trendObj.labels.length > 32500) 
+    node.style.width = (axisWidth + spacing * trendObj.labels.length > 32500) 
             ? ('32500px') 
-            : '' + (axisWidth + chartSpacing * trendObj.labels.length) + 'px';
+            : '' + (axisWidth + spacing * trendObj.labels.length) + 'px';
 
     $('#rightPopupContainer').append(container);
     var ctx = node.getContext("2d");
