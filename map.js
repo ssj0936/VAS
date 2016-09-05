@@ -405,7 +405,7 @@ function MapObject(mapname) {
                             }
 
                             var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
-                            var buttonHTML = "<button class ='showChart' " + "onclick =showChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "','" + mapObj.fromFormatStr + "','" + mapObj.toFormatStr + "')>show chart</button>";
+                            var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
                             var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
                             mapObj.map.openPopup(popup, e.latlng);
 

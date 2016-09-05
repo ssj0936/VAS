@@ -770,3 +770,7 @@
         overflow-x: auto;
         overflow-y: auto;
     }
+
+    #functionalBtnContainer .ui-widget {
+        margin-right: 5px;
+    }
