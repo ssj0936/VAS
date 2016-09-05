@@ -110,6 +110,7 @@ function openService() {
 
 function closeService() {
     scTileIndex = null;
+    isServiceLayerShowing=false;
     updatePointTileLayer();
 
     if ($("button#service").hasClass("active"))
@@ -198,6 +199,7 @@ function openDealer() {
 
 function closeDealer() {
     dealerTileIndex = null;
+    isDealerLayerShowing=false;
     updatePointTileLayer();
 
     if ($("button#dealer").hasClass("active"))
