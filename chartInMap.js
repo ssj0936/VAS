@@ -14,7 +14,7 @@ var defaultGroupBy = groupByMode[0];
 var rightPopupContainerWidthP = 0.84;
 var trendContainerWidthP = 0.8;
 
-var trendContainerWidthR = $(window).width() * rightPopupContainerWidthP * trendContainerWidthP;
+var trendContainerWidthR = $(window).width() * rightPopupContainerWidthP * trendContainerWidthP - 20;
 
 function createFunctionalBtn(){
     var container = jQuery('<div/>', {
@@ -1286,8 +1286,8 @@ function createChartElement(){
     //width cal
     var labelCount = trendObj.labels.length;
 //    console.log(container.width());
-//    console.log($(window).width()*0.84*0.8);
-    var tmpSpacing = trendContainerWidthR / labelCount;
+//    console.log(trendContainerWidthR);
+    var tmpSpacing = (trendContainerWidthR - axisWidth) / (labelCount+1);
     var spacing = (tmpSpacing < chartSpacing) ? chartSpacing : tmpSpacing ;
     
     node.style.height = '' + chartHeight + 'px';
