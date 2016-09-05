@@ -284,7 +284,6 @@ function MapObject(mapname) {
             if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION))
                 $('#showModelCount' + mapObj.mapName).hide();
 
-            console.log(observeTarget);
             if (observeTarget.length == 0) {
                 //                console.log(observeTarget);
                 $('.infoDiv').hide();
@@ -296,8 +295,44 @@ function MapObject(mapname) {
     //set mouse event:move and click feature
     this.setHighlightFeature = function () {
         var mapObj = this;
+        var selectDealer;
 
         this.map.off('mousemove');
+        this.map.off('click');
+        this.map.off('zoomstart');
+        this.map.on('mousemove', function (e) {
+            if (dealerTileIndex || scTileIndex) {
+                var x = e.latlng.lng;
+                var y = e.latlng.lat;
+                var tileX = deg2num(y,x,mapObj.map.getZoom())[0];
+                var tileY = deg2num(y,x,mapObj.map.getZoom())[1];
+
+                var selectCanvas = canvasArray.filter(function(params) {
+                    return params.tilePoint.x == tileX && params.tilePoint.y == tileY
+                });
+
+                if (dealerTileIndex)
+                    var dealerTile = dealerTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
+                if (scTileIndex)
+                    var scTile = scTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
+
+
+                if((dealerTile || scTile) && selectCanvas[0]) {
+                        selectDealer = selectPoint(scTile,selectCanvas[0].canvas,scTileIndex,e);
+                        selectDealer = (selectDealer.length > 0)?selectDealer:selectPoint(dealerTile,selectCanvas[0].canvas,dealerTileIndex,e);
+
+                    if (selectDealer.length > 0){
+                        $(".leaflet-container").css("cursor", "pointer");
+                        isPointPopup = true;
+                        return;
+                    }
+                }
+                $(".leaflet-container").css("cursor", "");
+            }
+            isPointPopup = false;
+        });
+        this.map.on('click',clickPoint);
+
         this.map.on('mousemove', function (e) {
             //no need to enable high light feature if observation target is not exist
             if (!isHighlightNeeded()) return;
@@ -362,21 +397,26 @@ function MapObject(mapname) {
                     })
                     .on('click', function (e) {
                         //set popup
-                        var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
-                        //                    console.log(displayName);
-                        if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                            layerJson.properties.NAME_1;
+                        if (!isPointPopup) {
+                            var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
+                            //                        console.log(displayName);
+                            if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
+                                layerJson.properties.NAME_1;
+                            }
+
+                            var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
+                            var buttonHTML = "<button class ='showChart' " + "onclick =showChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "','" + mapObj.fromFormatStr + "','" + mapObj.toFormatStr + "')>show chart</button>";
+                            var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                            mapObj.map.openPopup(popup, e.latlng);
+
+                            //zoom to location
+                            mapObj.zoomToFeature(e);
+                        } else {
+                            clickPoint(e);
                         }
-
-                        var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
-                        var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
-                        var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
-                        mapObj.map.openPopup(popup, e.latlng);
-
-                        //zoom to location
-                        mapObj.zoomToFeature(e);
                     })
                     .addTo(mapObj.map);
+                //$('.leaflet-overlay-pane svg').css( "pointer-events", "none" );
 
                 simplifyJson = null;
 
@@ -385,6 +425,28 @@ function MapObject(mapname) {
                 preLayerJson = layerJson.properties.OBJECTID;
             }
         });
+        this.map.on('zoomstart', function (e) {canvasArray = [];});
+
+        function clickPoint(e) {
+            if ((dealerTileIndex || scTileIndex) && selectDealer.length > 0) {
+                var popup = "<div class='pop'>Name:<br>" + selectDealer[0].tags.name +"</div>";
+                mapObj.map.openPopup(popup, e.latlng);
+            }
+        }
+
+        function selectPoint(tile,canvas,index,event) {
+            if (!tile) return [];
+            var select = tile.features.filter(function(dealer) {
+                var convertX = dealer.geometry[0][0]/ 4096 * 256;
+                var convertY = dealer.geometry[0][1]/ 4096 * 256;
+                convertX = convertX + canvas._leaflet_pos.x;
+                convertY = convertY + canvas._leaflet_pos.y;
+                
+                return event.layerPoint.x > (convertX - index.radius) && event.layerPoint.x < (convertX + index.radius)
+                        && event.layerPoint.y > (convertY - index.radius) && event.layerPoint.y < (convertY + index.radius);
+            });
+            return select;
+        }
     };
 
     this.zoomToFeature = function (e) {

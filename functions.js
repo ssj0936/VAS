@@ -415,6 +415,19 @@ function getDocumentFullHeight(){
     return $(document).height();
 }
 
+Math.radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
+//degree to tile number
+function deg2num(lat_deg, lon_deg, zoom) {
+  var lat_rad = Math.radians(lat_deg);
+  var n = Math.pow(2,zoom);
+  var xtile = parseInt((lon_deg + 180.0) / 360.0 * n);
+  var ytile = parseInt((1.0 - Math.log(Math.tan(lat_rad) + (1 / Math.cos(lat_rad))) / Math.PI) / 2.0 * n);
+  return [xtile, ytile];
+}
+
 //REF: http://www.epochconverter.com/weeknumbers
 Date.prototype.getWeek = function () {
     var target  = new Date(this.valueOf());

@@ -488,3 +488,42 @@ function ajaxFetchTableValue(isComparison) {
         }
     });
 }
+
+//Ajax to get dealer's geoJson of select countries
+function ajaxGetDealer(){
+    $.ajax({
+        type:'GET',
+        url: 'php/_dbqueryGetDealer.php',
+        dataType: 'json',
+        data: {
+            country:JSON.stringify(observeLocFullName)
+        },
+        success: function(json){
+            allDealer = json;
+            json = null;
+            dealerLayer();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {},
+    });
+
+}
+
+//Ajax to get SC's geoJson of select countries
+function ajaxGetSC(){
+    $.ajax({
+        type:'GET',
+        url: 'php/_dbqueryGetSC.php',
+        dataType: 'json',
+        data: {
+            country:JSON.stringify(observeLoc),
+            products:JSON.stringify(defaultProductList)
+        },
+        success: function(json){
+            allSC = json;
+            json = null;
+            scLayer();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {},
+    });
+
+}
