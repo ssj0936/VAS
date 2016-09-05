@@ -8,7 +8,7 @@ var totalName = 'Total';
 var totalDataset = null;
 var chartSpacing = 30;
 var axisWidth = 50;
-var groupByMode = ['By Day', 'By Month', 'By Week'];
+var groupByMode = ['By Day', 'By Week', 'By Month'];
 var defaultGroupBy = groupByMode[0];
 
 var rightPopupContainerWidthP = 0.84;
