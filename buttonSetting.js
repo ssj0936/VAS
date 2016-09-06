@@ -424,6 +424,8 @@ function submitBtnSetting() {
             console.log("observeTarget:");
             console.log(observeTarget);
 
+            observeTargetDeviceOnly = observeTargetDeviceOnlyTmp.slice();
+            
             observeLoc = observeLocTmp.slice();
             console.log("observeLoc:");
             console.log(observeLoc);

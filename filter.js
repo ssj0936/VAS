@@ -184,10 +184,8 @@ function checkboxDeviceInit() {
             specDeviceTmp.length = 0;
             var checktarget = $("#check_device_li");
             checkDevicePush(checktarget);
-            
 //            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
-            
 //            console.log(specDeviceTmp);
             ajaxGetDeviceSpec(specDeviceTmp);
             disableSubmit();
@@ -399,6 +397,13 @@ function updateSpecFilter(el) {
             specDeviceTmp.push(
                 $("input", el).val()
             );
+            //used for filter in trend
+            observeTargetDeviceOnlyTmp.push({
+                model: $("input", el).attr("data-modelName"),
+                devices: $("input", el).val(),
+                product: $("input", el).attr("data-productName"),
+                datatype: $("input", el).attr("datatype"),
+            });
         }
     } else {
         el.next("ul").children("li").each(function () {

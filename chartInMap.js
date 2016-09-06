@@ -660,8 +660,8 @@ function addingContent(filterName, container, titleContainer) {
     case 'Device':
 //        console.log(observeTarget);
         var deviceObj = {};
-        for (var j in observeTarget) {
-            var targetObj = observeTarget[j];
+        for (var j in observeTargetDeviceOnly) {
+            var targetObj = observeTargetDeviceOnly[j];
             var dataType = targetObj.datatype;
             //top level
             var devices = targetObj.devices;
