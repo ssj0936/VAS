@@ -527,3 +527,66 @@ function ajaxGetSC(){
     });
 
 }
+
+function ajaxLoadBranchDist(){
+    $.ajax({
+        type:'GET',
+        url: 'php/_dbqueryLoadDistBranch.php',
+        dataType: 'json',
+        success: function(json){
+            
+            //order by dist
+            distBranch.length = 0;
+            var currentDist = null;
+            var branchList = [];
+            var first = true;
+            for(var i in json){
+                var dist = json[i].dist;
+                var branch = json[i].branch;
+                
+                if(dist != currentDist){
+                    if(!first){
+                        distBranch.push({dist:currentDist, branch:branchList.slice()});
+                        branchList.length = 0;
+                        currentDist = dist;
+                    }else{
+                        first = false;
+                        currentDist = dist;
+                    }
+                }
+                
+                branchList.push(branch);
+            }
+            //last one
+            distBranch.push({dist:currentDist, branch:branchList.slice()});
+//            console.log(distBranch);
+            
+            //sort order by branch
+            json.sort(function(a,b) {return (a.branch > b.branch) ? 1 : ((b.branch > a.branch) ? -1 : 0);} ); 
+            var currentBranch = null;
+            var DistList = [];
+            var first = true;
+            for(var i in json){
+                var dist = json[i].dist;
+                var branch = json[i].branch;
+                
+                if(branch != currentBranch){
+                    if(!first){
+                        branchDist.push({branch:currentBranch, dist:DistList.slice()});
+                        DistList.length = 0;
+                        currentBranch = branch;
+                    }else{
+                        first = false;
+                        currentBranch = branch;
+                    }
+                }
+                
+                DistList.push(dist);
+            }
+            //last one
+            branchDist.push({branch:currentBranch, dist:DistList.slice()});
+//            console.log(branchDist);
+            createDistBranchCheckBox();
+        },
+    })
+}

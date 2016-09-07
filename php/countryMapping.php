@@ -9,7 +9,8 @@
     $table = Array();
     $cnt=0;
     for($i=0;$i<count($file);++$i){
-        if(preg_match('/"NAME":"(.+?)".*"ISO_A2":"(.+?)".*"ISO_A3":"(.+?)"/',$file[$i],$match)){
+        $str = substr($file[$i],0,2000);
+        if(preg_match('/"NAME":"(.+?)".*"ISO_A2":"(.+?)".*"ISO_A3":"(.+?)"/',$str,$match)){
             //print_r($match);
             $table[$cnt]['name']=$match[1];
             $table[$cnt]['isoa2']=$match[2];

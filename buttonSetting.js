@@ -26,15 +26,29 @@ function buttonInit() {
         }
      });
     
+    //branch / Dist
     $('#locset').buttonset();
 
     $('.locset').each(function () {
         $(this).click(function ($this) {
             return function () {
-                $('.locset').removeClass('active');
-                $this.addClass('active');
+                if(!$this.hasClass('active'))
+                {
+                    $('.locset').removeClass('active');
+                    $this.addClass('active');
 
-                cleanLocFilter();
+                    cleanDistBranchFilter();
+                    switch($this.attr('id')){
+                        case 'branch':
+                            $('#distToBranch').stop(true,true).fadeOut('medium');
+                            $('#branchToDist').stop(true,true).fadeIn('medium');
+                            break;
+                        case 'dist':
+                            $('#distToBranch').stop(true,true).fadeIn('medium');
+                            $('#branchToDist').stop(true,true).fadeOut('medium');
+                            break;
+                    }
+                }
             }
         }($(this)));
 

@@ -10,9 +10,24 @@ class DB
         //do nothing
     }
     
-    function connect_db($host, $user, $pwd, $dbname)
+    function connect_db()
     {
-		$connectionInfo = array( "Database"=>$dbname, "UID"=>$user, "PWD"=>$pwd, "ReturnDatesAsStrings"=> true, "CharacterSet" => "UTF-8");
+        $connectionInfo = null;
+        if(func_num_args() == 4){
+            $host = func_get_arg(0);
+            $user = func_get_arg(1);
+            $pwd = func_get_arg(2);
+            $dbname = func_get_arg(3);
+            
+            $connectionInfo = array( "Database"=>$dbname, "UID"=>$user, "PWD"=>$pwd, "ReturnDatesAsStrings"=> true, "CharacterSet" => "UTF-8");
+        }
+        else if(func_num_args() == 3){
+            $host = func_get_arg(0);
+            $user = func_get_arg(1);
+            $pwd = func_get_arg(2);
+            
+            $connectionInfo = array( "UID"=>$user, "PWD"=>$pwd, "ReturnDatesAsStrings"=> true, "CharacterSet" => "UTF-8");
+        }
         $dbConn = sqlsrv_connect( $host, $connectionInfo);
 		//mysql_connect($host, $user, $pwd);
         if (! $dbConn)

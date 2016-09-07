@@ -1,5 +1,7 @@
 "use strict";
 
+var countryNeedToShowDistBranch = ['IND'];
+
 function checkChild(el, check) {
     var nextUl = $(el).parent().next("ul");
     //console.log(nextUl);
@@ -255,8 +257,6 @@ function checkboxLocationInit() {
                 $(this).prop('checked', false);
             }
 
-
-
             checkChild(this, ($(this).prop("checked") ? true : false));
             checkParent(this);
 
@@ -265,6 +265,25 @@ function checkboxLocationInit() {
             var checktarget = $("#check_location_li");
             checkLocPush(checktarget);
             //console.log(JSON.stringify(observeTargetTmp));
+            
+            var needToShowDistBranch = false;
+            for(var i in observeLocTmp){
+                if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+                    needToShowDistBranch = true;
+                    break;
+                }
+            }
+            
+            
+            if(needToShowDistBranch){
+                if(!isDistBranchFilterShowing){
+//                    console.log("AAAA");
+                    isDistBranchFilterShowing = true;
+                    ajaxLoadBranchDist();
+                }
+            }else{
+                destroyDistBranchCheckBox();
+            }
         });
     });
 }
@@ -353,6 +372,210 @@ function checkboxSpecInit(checkOption) {
         }
     );
 }
+
+function createDistBranchCheckBox(){
+    $('#section_branch_dist').fadeIn('medium');
+    
+    //dist -> branch
+    var container = $('#distToBranch');
+    
+    var ul = jQuery('<ul/>').appendTo(container);
+    var li = jQuery('<li/>').attr("id", "filter_distBranch_li").appendTo(ul);
+    jQuery('<input/>', {
+        id: 'filter_distBranch_' + "all",
+        type: 'checkbox',
+        value: 'all',
+        'data-dist':'all',
+        'data-branch':'all',
+        name: "distBranch",
+    }).appendTo($(li));
+    jQuery('<label/>', {
+        text: "All",
+        for: 'filter_distBranch_' + "all",
+    }).appendTo(li);
+
+    var distUl = jQuery('<ul/>').appendTo(ul);
+    
+    
+    for(var i in distBranch){
+        var dist = distBranch[i].dist;
+        var branchList = distBranch[i].branch;
+        
+        var li = jQuery('<li/>').appendTo(distUl);
+        //all product
+        //collapse icon
+        jQuery('<span />', {
+                class: "ui-icon ui-icon-circlesmall-plus",
+            })
+            .css({
+                'display': 'inline-block',
+                'font-size': '18px',
+                'height': '12px',
+                'width': '12px',
+                'margin-right': '3px',
+            })
+            .click(function () {
+                if ($(this).hasClass('ui-icon-circlesmall-plus')) {
+                    $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
+                } else {
+                    $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+                }
+                $(this).parent().next('ul').slideToggle();
+            })
+            .appendTo(li)
+
+        jQuery('<input/>', {
+            id: 'filter_distBranch_' + dist,
+            type: 'checkbox',
+            value: dist,
+            'data-dist':dist,
+            'data-branch':dist,
+            name: "distBranch",
+        }).css('display', 'inline-block').appendTo($(li));
+
+        jQuery('<label/>', {
+            text: dist,
+            for: 'filter_distBranch_' + dist,
+        }).appendTo(li);
+
+        var branchUl = jQuery('<ul/>').appendTo(distUl).hide();
+
+        for(var index in branchList){
+            var branchName = branchList[index]
+            var li = jQuery('<li/>').appendTo(branchUl);
+            jQuery('<input/>', {
+                id: 'filter_distBranch_' + dist + '_' + branchName,
+                type: 'checkbox',
+                value: branchName,
+                'data-dist':dist,
+                'data-branch':branchName,
+                name: "distBranch",
+            }).css('display', 'inline-block').appendTo($(li));
+
+            jQuery('<label/>', {
+                text: branchName,
+                for: 'filter_distBranch_' + dist + '_' + branchName,
+            }).appendTo(li);
+        }
+    }
+    
+    
+    //branch -> dist
+    var container = $('#branchToDist');
+    
+    var ul = jQuery('<ul/>').appendTo(container);
+    var li = jQuery('<li/>').attr("id", "filter_branchDist_li").appendTo(ul);
+    jQuery('<input/>', {
+        id: 'filter_branchDist' + "all",
+        type: 'checkbox',
+        value: 'all',
+        'data-dist':'all',
+        'data-branch':'all',
+        name: "branchDist",
+    }).appendTo($(li));
+    jQuery('<label/>', {
+        text: "All",
+        for: 'filter_branchDist' + "all",
+    }).appendTo(li);
+
+    var branchUl = jQuery('<ul/>').appendTo(ul);
+    
+    
+    for(var i in branchDist){
+        var distList = branchDist[i].dist;
+        var branch = branchDist[i].branch;
+        
+        var li = jQuery('<li/>').appendTo(branchUl);
+        //all product
+        //collapse icon
+        jQuery('<span />', {
+                class: "ui-icon ui-icon-circlesmall-plus",
+            })
+            .css({
+                'display': 'inline-block',
+                'font-size': '18px',
+                'height': '12px',
+                'width': '12px',
+                'margin-right': '3px',
+            })
+            .click(function () {
+                if ($(this).hasClass('ui-icon-circlesmall-plus')) {
+                    $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
+                } else {
+                    $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+                }
+                $(this).parent().next('ul').slideToggle();
+            })
+            .appendTo(li)
+
+        jQuery('<input/>', {
+            id: 'filter_branchDist' + branch,
+            type: 'checkbox',
+            value: branch,
+            'data-dist':branch,
+            'data-branch':branch,
+            name: "branchDist",
+        }).css('display', 'inline-block').appendTo($(li));
+
+        jQuery('<label/>', {
+            text: branch,
+            for: 'filter_branchDist' + branch,
+        }).appendTo(li);
+
+        var distUl = jQuery('<ul/>').appendTo(branchUl).hide();
+
+        for(var index in distList){
+            var distName = distList[index]
+            var li = jQuery('<li/>').appendTo(distUl);
+            jQuery('<input/>', {
+                id: 'filter_branchDist' + branch + '_' + distName,
+                type: 'checkbox',
+                value: distName,
+                'data-dist':branch,
+                'data-branch':distName,
+                name: "branchDist",
+            }).css('display', 'inline-block').appendTo($(li));
+
+            jQuery('<label/>', {
+                text: distName,
+                for: 'filter_branchDist' + branch + '_' + distName,
+            }).appendTo(li);
+        }
+    }
+    
+    
+    $("#branchDistFilter input").each(function () {
+        $(this).on("click", function () {
+            checkChild(this, ($(this).prop("checked") ? true : false));
+            checkParent(this);
+        })
+    });
+    
+    //filter show up
+    $('#section_branch_dist').collapsible('open');
+}
+
+function destroyDistBranchCheckBox(){
+    
+    //clean
+    $('#distToBranch').empty();
+    $('#distToBranch').hide();
+    $('#branchToDist').empty();
+    $('#branchToDist').hide();
+    distBranch.length = 0;
+    branchDist.length = 0;
+    
+    
+    $('#locset button').removeClass('active');
+    
+    //filter show up
+    if(!$('#section_branch_dist').collapsible('collapsed'))
+        $('#section_branch_dist').collapsible('close');
+    $('#section_branch_dist').fadeOut('medium');
+    
+    isDistBranchFilterShowing = false;
+}
+
 function checkDevicePush(el) {
     if ($("input", el).prop("checked")) {
         observeTargetTmp.push({
@@ -455,4 +678,9 @@ function cleanLocFilter() {
     $("input[datatype='country']").prop('checked', false);
     observeLocTmp.length = 0;
     observeLocFullNameTmp.length = 0;
+}
+
+function cleanDistBranchFilter() {
+    $("input[name='distBranch']").prop('checked', false);
+    $("input[name='branchDist']").prop('checked', false);
 }

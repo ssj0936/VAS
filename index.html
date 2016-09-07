@@ -145,14 +145,19 @@
 
                         <div class="filter_section collapsible" id="section_country">Country<span></span></div>
                         <div id="selector_location" class="selector">
-<!--
-                            <div id="locset">     
-                                <button class="locset active" id="country">Country</button>
+                            <div id ="locationFilter" class="customScrollBar"></div>
+                        </div>
+                        
+                        <div class="filter_section collapsible" id="section_branch_dist">Branch / Dist<span></span></div>
+                        <div id="selector_branch_dist" class="selector">
+                            <div id="locset">
                                 <button class="locset" id="branch">Branch</button>
                                 <button class="locset" id="dist">Dist</button>
                             </div>
--->
-                            <div id ="locationFilter" class="customScrollBar"></div>
+                            <div id ="branchDistFilter" class="customScrollBar">
+                                <div id = "distToBranch" style="display:none"></div>
+                                <div id = "branchToDist" style="display:none"></div>
+                            </div>
                         </div>
 
                         <div class="filter_section collapsible hardware_filter" id="section_cpu">CPU<span></span></div>
