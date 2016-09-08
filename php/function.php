@@ -80,4 +80,23 @@ function getSQLInStr($dataArray){
     }
     return $SQLInStr;
 }
+
+function getSQLDistBranchStr($distBranchObj){
+    $distBranch = '';
+    if(count($distBranchObj) > 0){
+        $distBranch .= '(';
+
+        for($i=0 ; $i<count($distBranchObj) ; ++$i){
+            $dist = $distBranchObj[$i]->dist;
+            $branch = $distBranchObj[$i]->branch;
+
+            $distBranch .= "(disti = '$dist' AND branch = '$branch') ";
+            if($i != count($distBranchObj)-1)
+                $distBranch .= "OR ";
+        }
+
+        $distBranch .= ')';
+    }
+    return $distBranch;
+}
 ?>

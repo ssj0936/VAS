@@ -44,8 +44,8 @@ function buttonInit() {
                             $('#branchToDist').stop(true,true).fadeIn('medium');
                             break;
                         case 'dist':
-                            $('#distToBranch').stop(true,true).fadeIn('medium');
                             $('#branchToDist').stop(true,true).fadeOut('medium');
+                            $('#distToBranch').stop(true,true).fadeIn('medium');
                             break;
                     }
                 }
@@ -443,6 +443,10 @@ function submitBtnSetting() {
             observeLoc = observeLocTmp.slice();
             console.log("observeLoc:");
             console.log(observeLoc);
+            
+            observeDistBranch = observeDistBranchTmp.slice();
+            console.log("observeDistBranch:");
+            console.log(observeDistBranch);
 
             observeLocFullName = observeLocFullNameTmp.slice();
             console.log("observeLocFullName:");

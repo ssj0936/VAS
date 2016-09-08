@@ -275,14 +275,18 @@ function checkboxLocationInit() {
             }
             
             
-            if(needToShowDistBranch){
+            if(needToShowDistBranch && observeLocTmp.length == 1){
                 if(!isDistBranchFilterShowing){
-//                    console.log("AAAA");
                     isDistBranchFilterShowing = true;
+                    //filter show up
+                    $('#section_branch_dist').stop(true,true).fadeIn('medium');
+                    $('#section_branch_dist').collapsible('open');
+                    
                     ajaxLoadBranchDist();
                 }
             }else{
-                destroyDistBranchCheckBox();
+                if(isDistBranchFilterShowing)
+                    destroyDistBranchCheckBox();
             }
         });
     });
@@ -374,8 +378,7 @@ function checkboxSpecInit(checkOption) {
 }
 
 function createDistBranchCheckBox(){
-    $('#section_branch_dist').fadeIn('medium');
-    
+
     //dist -> branch
     var container = $('#distToBranch');
     
@@ -387,6 +390,7 @@ function createDistBranchCheckBox(){
         value: 'all',
         'data-dist':'all',
         'data-branch':'all',
+        'data-isDeepestLevel':false,
         name: "distBranch",
     }).appendTo($(li));
     jQuery('<label/>', {
@@ -430,6 +434,7 @@ function createDistBranchCheckBox(){
             value: dist,
             'data-dist':dist,
             'data-branch':dist,
+            'data-isDeepestLevel':false,
             name: "distBranch",
         }).css('display', 'inline-block').appendTo($(li));
 
@@ -449,6 +454,7 @@ function createDistBranchCheckBox(){
                 value: branchName,
                 'data-dist':dist,
                 'data-branch':branchName,
+                'data-isDeepestLevel':true,
                 name: "distBranch",
             }).css('display', 'inline-block').appendTo($(li));
 
@@ -458,7 +464,6 @@ function createDistBranchCheckBox(){
             }).appendTo(li);
         }
     }
-    
     
     //branch -> dist
     var container = $('#branchToDist');
@@ -471,6 +476,7 @@ function createDistBranchCheckBox(){
         value: 'all',
         'data-dist':'all',
         'data-branch':'all',
+        'data-isDeepestLevel':false,
         name: "branchDist",
     }).appendTo($(li));
     jQuery('<label/>', {
@@ -479,7 +485,6 @@ function createDistBranchCheckBox(){
     }).appendTo(li);
 
     var branchUl = jQuery('<ul/>').appendTo(ul);
-    
     
     for(var i in branchDist){
         var distList = branchDist[i].dist;
@@ -514,6 +519,7 @@ function createDistBranchCheckBox(){
             value: branch,
             'data-dist':branch,
             'data-branch':branch,
+            'data-isDeepestLevel':false,
             name: "branchDist",
         }).css('display', 'inline-block').appendTo($(li));
 
@@ -531,8 +537,9 @@ function createDistBranchCheckBox(){
                 id: 'filter_branchDist' + branch + '_' + distName,
                 type: 'checkbox',
                 value: distName,
-                'data-dist':branch,
-                'data-branch':distName,
+                'data-dist':distName,
+                'data-branch':branch,
+                'data-isDeepestLevel':true,
                 name: "branchDist",
             }).css('display', 'inline-block').appendTo($(li));
 
@@ -543,16 +550,21 @@ function createDistBranchCheckBox(){
         }
     }
     
-    
     $("#branchDistFilter input").each(function () {
         $(this).on("click", function () {
             checkChild(this, ($(this).prop("checked") ? true : false));
             checkParent(this);
-        })
+            
+            observeDistBranchTmp.length = 0;
+            $('input:checked[data-isdeepestlevel=true]').each(function(){
+                observeDistBranchTmp.push({
+                    dist : $(this).attr('data-dist'),
+                    branch: $(this).attr('data-branch'),
+                });
+            });
+        });
     });
     
-    //filter show up
-    $('#section_branch_dist').collapsible('open');
 }
 
 function destroyDistBranchCheckBox(){
@@ -571,7 +583,7 @@ function destroyDistBranchCheckBox(){
     //filter show up
     if(!$('#section_branch_dist').collapsible('collapsed'))
         $('#section_branch_dist').collapsible('close');
-    $('#section_branch_dist').fadeOut('medium');
+    $('#section_branch_dist').stop(true,true).fadeOut('medium');
     
     isDistBranchFilterShowing = false;
 }

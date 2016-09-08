@@ -17,9 +17,11 @@ function addPruneCluster(json) {
         firstMap.pruneCluster.RemoveMarkers();
     }
     //pruneCluster = new PruneClusterForLeaflet();
+    var totalCount = 0;
     for (var i = 0; i < json.length; ++i) {
         var count = parseInt(json[i].cnt);
         firstMap.pruneCluster.RegisterMarker(new PruneCluster.Marker(json[i].lat, json[i].lng, count));
+        totalCount+=count;
     }
     //move below section to PruneCluster src code.
     /*
@@ -90,6 +92,7 @@ function addPruneCluster(json) {
 
         return m;
     };*/
+    firstMap.totalCnt = totalCount;
     firstMap.pruneCluster.ProcessView();
 
 }
