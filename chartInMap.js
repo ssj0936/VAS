@@ -510,7 +510,7 @@ function createDeviceFilter(dataObj, container, titleContainer) {
         //collapse icon
         if(!isNoChildModel){
             jQuery('<span />', {
-                    class: "ui-icon ui-icon-circlesmall-plus",
+                    class: "ui-icon ui-icon-circlesmall-minus",
                 })
                 .css({
                     'display': 'inline-block',
@@ -544,7 +544,7 @@ function createDeviceFilter(dataObj, container, titleContainer) {
 
         if(isNoChildModel) continue;
         
-        var modelUl = jQuery('<ul/>').appendTo($(productUl)).hide();
+        var modelUl = jQuery('<ul/>').appendTo($(productUl));
         for(var modelName in dataObj[productName]){
             var isNoDeviceChild = (dataObj[productName][modelName] == null);
             
