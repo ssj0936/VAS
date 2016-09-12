@@ -275,6 +275,7 @@ function checkboxLocationInit() {
             }
             
             
+            //create dist branch filter
             if(needToShowDistBranch && observeLocTmp.length == 1){
                 if(!isDistBranchFilterShowing){
                     isDistBranchFilterShowing = true;
@@ -286,6 +287,9 @@ function checkboxLocationInit() {
                 }
             }else{
                 if(isDistBranchFilterShowing)
+                    //data delete
+                    observeDistBranchTmp.length = 0;
+                    //UI remove
                     destroyDistBranchCheckBox();
             }
         });

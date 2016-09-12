@@ -18,7 +18,7 @@
 //    $dataset = 'activation';
 //    $from = "2016-7-9";
 //    $to = "2016-8-3";    
-//    $iso ='["TWN"]';
+//    $iso ='["IND"]';
 //    $data = '[{"model":"all","devices":"all","datatype":"model"}]';
 //    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
 //$data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZENFONE-D","devices":"ZENFONE-D","product":"ZENFONE-D","datatype":"product"}]';
@@ -30,6 +30,9 @@
 //$from = "2016-7-9";
 //$to = "2016-8-3";    
 //$iso ='["TWN"]';
+//$data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
+//$distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
+
 
 
     $color = $_GET['color'];
@@ -41,6 +44,7 @@
     $to = $_GET['to'];
     $data = $_GET['data'];
     $iso = $_GET['iso'];
+    $distBranch = $_GET['distBranch'];
 
     $countryArray = array();
 
@@ -51,6 +55,10 @@
         $cpuObj = json_decode($cpu);
         $rearCameraObj = json_decode($rearCamera);
         $frontCameraObj = json_decode($frontCamera);
+        $distBranchObj = json_decode($distBranch);
+        
+        $isDistBranch = (count($distBranchObj)!=0);
+        $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
 
         $isAll = isAll($dataObj);
         
@@ -104,7 +112,9 @@
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
+                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                        .($isDistBranch ? " AND $distBranchStr " : "");
+
 			if($i != count($isoObj)-1)
 				$fromTableStr.=" UNION ALL ";
 		}

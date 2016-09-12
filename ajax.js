@@ -51,6 +51,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             rearCamera: JSON.stringify(observeSpec.rear_camera),
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
+            distBranch: JSON.stringify(observeDistBranch),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,

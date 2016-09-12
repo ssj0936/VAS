@@ -46,7 +46,7 @@
         $distBranchObj = json_decode($distBranch);
         
         $isDistBranch = (count($distBranchObj)!=0);
-        $distBranchStr = getSQLDistBranchStr($distBranchObj);
+        $distBranchStr = getSQLDistBranchStr($distBranchObj,true);
         
         $isAll = isAll($dataObj);
         

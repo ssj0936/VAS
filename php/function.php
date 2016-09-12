@@ -81,7 +81,7 @@ function getSQLInStr($dataArray){
     return $SQLInStr;
 }
 
-function getSQLDistBranchStr($distBranchObj){
+function getSQLDistBranchStr($distBranchObj,$ismarker){
     $distBranch = '';
     if(count($distBranchObj) > 0){
         $distBranch .= '(';
@@ -90,7 +90,10 @@ function getSQLDistBranchStr($distBranchObj){
             $dist = $distBranchObj[$i]->dist;
             $branch = $distBranchObj[$i]->branch;
 
-            $distBranch .= "(disti = '$dist' AND branch = '$branch') ";
+            if($ismarker)
+                $distBranch .= "(disti = '$dist' AND branch = '$branch') ";
+            else
+                $distBranch .= "(distri = '$dist' AND branch = '$branch') ";
             if($i != count($distBranchObj)-1)
                 $distBranch .= "OR ";
         }
