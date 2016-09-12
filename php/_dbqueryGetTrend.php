@@ -33,6 +33,7 @@
     $to = $_GET['to'];
     $data = $_GET['data'];
     $iso = $_GET['iso'];
+    $distBranch = $_GET['distBranch'];
 
     if($data!="[]"){
         $isoObj = json_decode($iso);
@@ -41,7 +42,11 @@
         $cpuObj = json_decode($cpu);
         $rearCameraObj = json_decode($rearCamera);
         $frontCameraObj = json_decode($frontCamera);
-
+        $distBranchObj = json_decode($distBranch);
+        
+        $isDistBranch = (count($distBranchObj)!=0);
+        $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
+        
         $isAll = isAll($dataObj);
         
         //color
@@ -94,7 +99,8 @@
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
+                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                        .($isDistBranch ? " AND $distBranchStr " : "");
 			if($i != count($isoObj)-1)
 				$fromTableStr.=" UNION ALL ";
 		}
@@ -164,6 +170,7 @@
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                        .($isDistBranch ? " AND $distBranchStr " : "")
                         .'GROUP BY date ORDER BY date';
             $db->query($queryStr);
             while($row = $db->fetch_array())

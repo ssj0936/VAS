@@ -22,6 +22,7 @@
     $data = $_GET['data'];
     $isL1 = $_GET['isL1'];
     $iso = $_GET['iso'];
+    $distBranch = $_GET['distBranch'];
 //    
 //    $color = '["all"]';
 //    $cpu = '["all"]';
@@ -40,7 +41,11 @@
     $cpuObj = json_decode($cpu);
     $rearCameraObj = json_decode($rearCamera);
     $frontCameraObj = json_decode($frontCamera);
-
+    $distBranchObj = json_decode($distBranch);
+        
+    $isDistBranch = (count($distBranchObj)!=0);
+    $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
+    
     $isAll = isAll($dataObj);
 
     //color
@@ -94,6 +99,7 @@
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+            .($isDistBranch ? " AND $distBranchStr " : "")
             ." GROUP BY date ORDER BY date";
 
 //	echo "1:".$queryStr."<br>";
@@ -134,6 +140,7 @@
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+            .($isDistBranch ? " AND $distBranchStr " : "")
             ." GROUP BY date, model_name ORDER BY date,model_name";
 //    echo "2:".$queryStr."<br>";
     $db->query($queryStr);
@@ -165,6 +172,7 @@
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+            .($isDistBranch ? " AND $distBranchStr " : "")
             ." GROUP BY date, model ORDER BY date,model";
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);

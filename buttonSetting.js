@@ -443,21 +443,18 @@ function submitBtnSetting() {
             observeLoc = observeLocTmp.slice();
             console.log("observeLoc:");
             console.log(observeLoc);
-            
-            observeDistBranch = observeDistBranchTmp.slice();
-            console.log("observeDistBranch:");
-            console.log(observeDistBranch);
 
             observeLocFullName = observeLocFullNameTmp.slice();
             console.log("observeLocFullName:");
             console.log(observeLocFullName);
 
-            //            console.log(observeSpecTmp);
             observeSpec = jQuery.extend({}, observeSpecTmp);
             console.log("observeSpec:");
             console.log(observeSpec);
-            //            console.log(observeSpec);
 
+            filterRecordClean();
+            filterRecord();
+            
             //default mode = region
             if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
                 setModeOn(MODE_COMPARISION);
@@ -550,6 +547,7 @@ function submitRegion() {
         loadingDismiss();
         //enableResultBtn();
     } else {
+        ajaxGetBranchObject();
         //same world region, no need to re-fetch
         if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc)) {
             console.log("same world region");

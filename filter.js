@@ -273,8 +273,7 @@ function checkboxLocationInit() {
                     break;
                 }
             }
-            
-            
+
             //create dist branch filter
             if(needToShowDistBranch && observeLocTmp.length == 1){
                 if(!isDistBranchFilterShowing){
@@ -288,7 +287,7 @@ function checkboxLocationInit() {
             }else{
                 if(isDistBranchFilterShowing)
                     //data delete
-                    observeDistBranchTmp.length = 0;
+                    observeDistBranch.length = 0;
                     //UI remove
                     destroyDistBranchCheckBox();
             }
@@ -558,17 +557,39 @@ function createDistBranchCheckBox(){
         $(this).on("click", function () {
             checkChild(this, ($(this).prop("checked") ? true : false));
             checkParent(this);
-            
-            observeDistBranchTmp.length = 0;
-            $('input:checked[data-isdeepestlevel=true]').each(function(){
-                observeDistBranchTmp.push({
-                    dist : $(this).attr('data-dist'),
-                    branch: $(this).attr('data-branch'),
-                });
-            });
         });
     });
     
+}
+
+function filterRecord(){
+    //dist branch
+    observeDistBranch.length = 0;
+    $('input:checked[data-isdeepestlevel=true]').each(function(){
+        observeDistBranch.push({
+            dist : $(this).attr('data-dist'),
+            branch: $(this).attr('data-branch'),
+        });
+    });
+    
+    //get selected branch
+    observeBranchName.length = 0;
+    observeBranchNameTmp.length = 0;
+    $('input:checked[name="branchDist"], input:checked[name="distBranch"]').each(function(){
+        observeBranchNameTmp.push($(this).attr('data-branch'));
+    });
+    observeBranchName = observeBranchNameTmp.filter(
+        function(value, index, self) { 
+            return self.indexOf(value) === index;
+        }
+    );
+}
+
+function filterRecordClean(){
+    //dist branch
+    observeDistBranch.length = 0;
+    observeBranchName.length = 0;
+    observeBranchNameTmp.length = 0;
 }
 
 function destroyDistBranchCheckBox(){

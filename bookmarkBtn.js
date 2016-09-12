@@ -192,7 +192,33 @@ function bookmarkSubmit(index) {
             observeLocFullName.push($(this).val());
         });
     }
+    
+    var needToShowDistBranch = false;
+    for(var i in observeLocTmp){
+        if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+            needToShowDistBranch = true;
+            break;
+        }
+    }
 
+    //create dist branch filter
+    if(needToShowDistBranch && observeLocTmp.length == 1){
+        if(!isDistBranchFilterShowing){
+            isDistBranchFilterShowing = true;
+            //filter show up
+            $('#section_branch_dist').stop(true,true).fadeIn('medium');
+            $('#section_branch_dist').collapsible('open');
+
+            ajaxLoadBranchDist();
+        }
+    }else{
+        if(isDistBranchFilterShowing)
+            //data delete
+            observeDistBranch.length = 0;
+            //UI remove
+            destroyDistBranchCheckBox();
+    }
+    
     //spec filter
     specDeviceTmp.length = 0;
     var checktarget = $("#check_device_li");

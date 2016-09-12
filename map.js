@@ -127,7 +127,7 @@ function MapObject(mapname) {
             params.tilePoint.z = params.zoom;
 
             var ctx = params.canvas.getContext('2d');
-            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalCompositeOperation = 'destination-over';
 
             var tile = obj.tileIndex.getTile(params.tilePoint.z, params.tilePoint.x, params.tilePoint.y);
             if (!tile) {
@@ -145,8 +145,19 @@ function MapObject(mapname) {
                     type = feature.type;
 
                 //style option
-                ctx.globalAlpha = 0.5;
-                ctx.fillStyle = obj.getColor(feature.tags.activationCnt);
+                ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
+                ctx.lineJoin = "round";
+                if (allBranchObject.length > 0) {
+                    if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.strokeStyle = "#FF0000";
+                        ctx.lineWidth = 2;
+                    } else {
+                        ctx.globalCompositeOperation = 'destination-over';
+                        ctx.strokeStyle = "white";
+                        ctx.lineWidth = 1;
+                    }
+                }
                 ctx.beginPath();
 
                 for (var j = 0; j < feature.geometry.length; j++) {

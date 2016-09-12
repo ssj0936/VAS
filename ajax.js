@@ -336,6 +336,7 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
             countryID: countryID,
             isL1: isL1(firstMap),
             iso: iso,
+            distBranch: JSON.stringify(observeDistBranch),
         },
         type: "GET",
         dataType: 'json',
@@ -361,6 +362,7 @@ function ajaxTrendChart(mapObj) {
             rearCamera: JSON.stringify(observeSpec.rear_camera),
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
+            distBranch: JSON.stringify(observeDistBranch),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
@@ -591,4 +593,28 @@ function ajaxLoadBranchDist(){
             createDistBranchCheckBox();
         },
     })
+}
+
+function ajaxGetBranchObject(){
+    if(observeBranchName.length==0){
+        allBranchObject=[];
+    }
+    else{
+        $.ajax({
+            type:'GET',
+            url: 'php/_dbqueryGetBranchObject.php',
+            async: "false",
+            dataType: 'json',
+            data: { 
+                branchName : JSON.stringify(observeBranchName)
+            },
+            success: function(json){
+                allBranchObject = json.union;
+                delete json.union;
+                allHighlighBranch = json;
+                json = null;
+            },
+            error: function(jqXHR, textStatus, errorThrown) {},
+        });
+    }
 }
