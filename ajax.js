@@ -566,7 +566,9 @@ function ajaxLoadBranchDist(){
 //            console.log(distBranch);
             
             //sort order by branch
-            json.sort(function(a,b) {return (a.branch > b.branch) ? 1 : ((b.branch > a.branch) ? -1 : 0);} ); 
+            json.sort(function(a,b) {
+                return (a.branch > b.branch) ? 1 : ((b.branch > a.branch) ? -1 : 
+                       (a.dist > b.dist) ? 1 : ((b.dist > a.dist) ? -1 : 0));} ); 
             var currentBranch = null;
             var DistList = [];
             var first = true;
