@@ -600,6 +600,7 @@ function ajaxLoadBranchDist(){
 function ajaxGetBranchObject(callback){
     if(observeBranchName.length==0){
         allBranchObject=[];
+        callback();
     }
     else{
         $.ajax({
@@ -651,12 +652,7 @@ function ajaxSaveLog(){
     
     //current time
     var date = new Date();
-    var dformat = [date.getMonth()+1,
-               date.getDate(),
-               date.getFullYear()].join('/')+' '+
-              [date.getHours(),
-               date.getMinutes(),
-               date.getSeconds()].join(':');
+    var dformat = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
     $.ajax({
         type:'POST',
@@ -672,7 +668,6 @@ function ajaxSaveLog(){
         },
         success: function(json){
             console.log("log saved");
-        },
-        error: function(jqXHR, textStatus, errorThrown) {},
+        }
     });
 }
