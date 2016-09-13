@@ -597,7 +597,7 @@ function ajaxLoadBranchDist(){
     })
 }
 
-function ajaxGetBranchObject(){
+function ajaxGetBranchObject(callback){
     if(observeBranchName.length==0){
         allBranchObject=[];
     }
@@ -615,6 +615,7 @@ function ajaxGetBranchObject(){
                 delete json.union;
                 allHighlighBranch = json;
                 json = null;
+                callback();
             },
             error: function(jqXHR, textStatus, errorThrown) {},
         });

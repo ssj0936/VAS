@@ -548,19 +548,20 @@ function submitRegion() {
         loadingDismiss();
         //enableResultBtn();
     } else {
-        ajaxGetBranchObject();
-        //same world region, no need to re-fetch
-        if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc)) {
-            console.log("same world region");
-            if (observeTarget.length != 0) {
-                ajaxFetchMapValue(false, false);
+        ajaxGetBranchObject(function(){
+            //same world region, no need to re-fetch
+            if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc)) {
+                console.log("same world region");
+                if (observeTarget.length != 0) {
+                    ajaxFetchMapValue(false, false);
+                } else {
+                    loadingDismiss();
+                }
             } else {
-                loadingDismiss();
+                console.log("diff world region");
+                ajaxExtractMap(false, ajaxFetchMapValue, [false, false]);
             }
-        } else {
-            console.log("diff world region");
-            ajaxExtractMap(false, ajaxFetchMapValue, [false, false]);
-        }
+        });
     }
     //button class reset
     $("#timeSection button").each(function () {
