@@ -455,6 +455,7 @@ function submitBtnSetting() {
             filterRecordClean();
             filterRecord();
             
+            saveLog();
             //default mode = region
             if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
                 setModeOn(MODE_COMPARISION);

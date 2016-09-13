@@ -620,3 +620,58 @@ function ajaxGetBranchObject(){
         });
     }
 }
+
+function ajaxSaveLog(){
+    //device filter
+    var observeTargetStr = '';
+    for(var i in observeTarget){
+        var type = observeTarget[i].datatype;
+        observeTargetStr += '['+observeTarget[i][type]+']';
+    }
+    
+    //loc filter
+    var observeLocStr = '';
+    for(var i in observeLoc){
+        observeLocStr += '['+observeLoc[i]+']';
+    }
+    
+    //observation time
+    var dateStr = '[' + firstMap.fromFormatStr + '][' + firstMap.toFormatStr + ']';
+    
+    //filter all content
+    var filter_content = {
+        observeTarget : observeTarget,
+        observeLoc : observeLoc,
+        observeSpec : observeSpec,
+    };
+    
+    if(observeDistBranch.length > 0)
+        filter_content['observeDistBranch'] = observeDistBranch;
+    
+    //current time
+    var date = new Date();
+    var dformat = [date.getMonth()+1,
+               date.getDate(),
+               date.getFullYear()].join('/')+' '+
+              [date.getHours(),
+               date.getMinutes(),
+               date.getSeconds()].join(':');
+
+    $.ajax({
+        type:'POST',
+        url: 'php/_dbquerySaveLog.php',
+        dataType: 'json',
+        data: { 
+            date : dformat,
+            username : account,
+            filter_device : observeTargetStr,
+            filter_country : observeLocStr,
+            filter_date : dateStr,
+            filter_content : JSON.stringify(filter_content),
+        },
+        success: function(json){
+            console.log("log saved");
+        },
+        error: function(jqXHR, textStatus, errorThrown) {},
+    });
+}

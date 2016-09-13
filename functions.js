@@ -428,6 +428,11 @@ function deg2num(lat_deg, lon_deg, zoom) {
   return [xtile, ytile];
 }
 
+function saveLog(){
+    if(account == "Developer") return;
+    ajaxSaveLog();
+}
+
 //REF: http://www.epochconverter.com/weeknumbers
 Date.prototype.getWeek = function () {
     var target  = new Date(this.valueOf());
