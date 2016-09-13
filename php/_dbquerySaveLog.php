@@ -17,13 +17,14 @@
     $date = $_POST['date'];
     $username = $_POST['username'];
 	$filter_device = $_POST['filter_device'];
+    $filter_model = $_POST['filter_model'];
     $filter_country = $_POST['filter_country'];
     $filter_date = $_POST['filter_date'];
     $filter_content = $_POST['filter_content'];
 
     $query="insert into ".$logTable
-        ."(date, username, filter_device, filter_country, filter_date, filter_content) "
-        ."values('$date', '$username', '$filter_device', '$filter_country', '$filter_date', '$filter_content');";
+        ."(date, username, filter_device, filter_model, filter_country, filter_date, filter_content) "
+        ."values('$date', '$username', '$filter_device', '$filter_model', '$filter_country', '$filter_date', '$filter_content');";
     echo $query;
     $db->query($query);
     echo json_encode("done");

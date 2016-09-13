@@ -571,10 +571,13 @@ function filterRecord(){
             branch: $(this).attr('data-branch'),
         });
     });
-    
+
+    //record whether dist branch mode on
+    isDistBranchModeOn = (observeDistBranch.length > 0) ? true : false;
+
     //get selected branch
     observeBranchName.length = 0;
-    observeBranchNameTmp.length = 0;
+    var observeBranchNameTmp = [];
     $('input:checked[name="branchDist"], input:checked[name="distBranch"]').each(function(){
         observeBranchNameTmp.push($(this).attr('data-branch'));
     });
@@ -589,7 +592,6 @@ function filterRecordClean(){
     //dist branch
     observeDistBranch.length = 0;
     observeBranchName.length = 0;
-    observeBranchNameTmp.length = 0;
 }
 
 function destroyDistBranchCheckBox(){
@@ -651,46 +653,31 @@ function checkSpecPush(el, hardware) {
 
 
 function updateSpecFilter(el) {
-    //loop to deepest level
-    if ($("input", el).attr("datatype") == 'devices') {
-        if ($("input", el).prop("checked")) {
-            specDeviceTmp.push(
-                $("input", el).val()
-            );
-            //used for filter in trend
-            observeTargetDeviceOnlyTmp.push({
-                model: $("input", el).attr("data-modelName"),
-                devices: $("input", el).val(),
-                product: $("input", el).attr("data-productName"),
-                datatype: $("input", el).attr("datatype"),
-            });
-        }
-    } else {
-        el.next("ul").children("li").each(function () {
-            updateSpecFilter($(this));
-        })
-    }
+    $('input:checked[name="devicesList"][datatype="devices"]').each(function(){
+        specDeviceTmp.push($(this).val());
+        
+        observeTargetDeviceOnlyTmp.push({
+            model: $(this).attr("data-modelName"),
+            devices: $(this).val(),
+            product: $(this).attr("data-productName"),
+            datatype: $(this).attr("datatype"),
+        });
+    });
 }
 
-//function getCurrentFilterTitle() {
-//    var obj = {
-//        Devices: [],
-//        ISO: observeLoc,
-//        Color: observeSpec.color,
-//        CPU: observeSpec.cpu,
-//        RearCamera: observeSpec.rear_camera,
-//        FrontCamera: observeSpec.front_camera,
-//    }
-//
-//    for (var i in observeTarget) {
-//        if (observeTarget[i].datatype == "model")
-//            obj.Devices.push(observeTarget[i].devices);
-//        else
-//            obj.Devices.push(observeTarget[i].model + '(' + observeTarget[i].devices + ')');
-//    }
-//
-//    return obj;
-//}
+function getFilterModel(){
+    var model = [];
+    $('input:checked[name="devicesList"][datatype="devices"]').each(function(){
+        model.push($(this).attr("data-modelName"));
+    });
+    
+    return model.filter(
+        function(value, index, self) { 
+            return self.indexOf(value) === index;
+        }
+    );
+}
+
 
 function resetFilterStatus() {
     $('.hardware_filter').each(

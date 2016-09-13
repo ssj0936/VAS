@@ -631,6 +631,14 @@ function ajaxSaveLog(){
         observeTargetStr += '['+observeTarget[i][type]+']';
     }
     
+    //model filter
+    var model = getFilterModel();
+    var modelStr = '';
+    for(var i in model){
+        var type = model[i].datatype;
+        modelStr += '['+model[i]+']';
+    }
+    
     //loc filter
     var observeLocStr = '';
     for(var i in observeLoc){
@@ -653,7 +661,8 @@ function ajaxSaveLog(){
     //current time
     var date = new Date();
     var dformat = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-
+    
+    
     $.ajax({
         type:'POST',
         url: 'php/_dbquerySaveLog.php',
@@ -662,6 +671,7 @@ function ajaxSaveLog(){
             date : dformat,
             username : account,
             filter_device : observeTargetStr,
+            filter_model : modelStr,
             filter_country : observeLocStr,
             filter_date : dateStr,
             filter_content : JSON.stringify(filter_content),
