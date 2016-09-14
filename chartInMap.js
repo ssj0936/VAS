@@ -11,6 +11,15 @@ var axisWidth = 50;
 var groupByMode = ['By Day', 'By Week', 'By Month'];
 var defaultGroupBy = groupByMode[0];
 
+var activeTrend;
+var TREND_MODEL = 'Model';
+var TREND_COUNTRY = 'Country';
+var TREND_DEVICE = 'Device';
+var TREND_TABLE = 'Table';
+var TREND_REGION = 'Region';
+var TREND_DIST = 'Dist';
+var TREND_BRANCH = 'Branch';
+
 var rightPopupContainerWidthP = 0.84;
 var trendContainerWidthP = 0.8;
 
@@ -217,6 +226,10 @@ function updateRegionChart(json, displayname, displaynum) {
 
     //option
     var trendList = [TREND_MODEL, TREND_DEVICE, TREND_REGION];
+    if(isDistBranchModeOn){
+        trendList.push(TREND_DIST);
+        trendList.push(TREND_BRANCH);
+    }
 
     var optionContainer = jQuery('<div/>', {
             id: 'trendOptionContainer',
@@ -344,7 +357,10 @@ function updateTrendChart(json) {
         .appendTo(title);
 
     var trendList = [TREND_MODEL, TREND_DEVICE, TREND_COUNTRY];
-
+    if(isDistBranchModeOn){
+        trendList.push(TREND_DIST);
+        trendList.push(TREND_BRANCH);
+    }
     var optionContainer = jQuery('<div/>', {
             id: 'trendOptionContainer',
         })
@@ -1318,21 +1334,29 @@ function createsingleRegionChart(json, trendMode, regionName) {
     case TREND_MODEL:
         setTrendData(json.groupByModelResults);
         addingTotalLine(json.groupByRegionResults);
-        setActiveTrend(TREND_MODEL);
         break;
 
     case TREND_REGION:
         setTrendDataByRegion(json.groupByRegionResults, regionName);
-        setActiveTrend(TREND_REGION);
         break;
 
     case TREND_DEVICE:
         setTrendData(json.groupByDeviceResults);
         addingTotalLine(json.groupByRegionResults);
-        setActiveTrend(TREND_DEVICE);
+        break;
+    
+    case TREND_DIST:
+        setTrendData(json.groupByDistResults);
+        addingTotalLine(json.groupByRegionResults);
+        break;
+            
+    case TREND_BRANCH:
+        setTrendData(json.groupByBranchResults);
+        addingTotalLine(json.groupByRegionResults);
         break;
     }
     
+    setActiveTrend(trendMode);
     //create chart element
     createChartElement();
 
@@ -1370,28 +1394,31 @@ function createTrendChart(json, trendMode) {
     case TREND_MODEL:
         setTrendData(json.groupByModelResults);
         addingTotalLine(json.groupByDateResults);
-        setActiveTrend(TREND_MODEL);
         break;
 
     case TREND_COUNTRY:
         setTrendData(json.groupByCountryResults);
         addingTotalLine(json.groupByDateResults);
-        setActiveTrend(TREND_COUNTRY);
+        
         break;
 
     case TREND_DEVICE:
         setTrendData(json.groupByDeviceResults);
         addingTotalLine(json.groupByDateResults);
-        setActiveTrend(TREND_DEVICE);
+        break;
+    case TREND_DIST:
+        setTrendData(json.groupByDistResults);
+        addingTotalLine(json.groupByDateResults);
+        break;
+            
+    case TREND_BRANCH:
+        setTrendData(json.groupByBranchResults);
+        addingTotalLine(json.groupByDateResults);
         break;
     }
-//    console.log('setTrendData[end]:'+getCurrentTime());
-//    console.log('createChartElement[start]:'+getCurrentTime());
+    setActiveTrend(trendMode);
     createChartElement();
-//    console.log('createChartElement[end]:'+getCurrentTime());
-//    console.log('updateColorInfo[start]:'+getCurrentTime());
     updateColorInfo();
-//    console.log('updateColorInfo[end]:'+getCurrentTime());
 }
 
 function updateColorInfo() {

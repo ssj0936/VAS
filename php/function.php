@@ -102,4 +102,11 @@ function getSQLDistBranchStr($distBranchObj,$ismarker){
     }
     return $distBranch;
 }
+
+function getDistColumnName($ismarker){
+    if($ismarker)
+        return 'disti';
+    else
+        return 'distri';
+}
 ?>

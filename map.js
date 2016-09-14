@@ -101,6 +101,17 @@ function MapObject(mapname) {
                 });
             }
         }
+//        check
+//        for(var i = 0; i < this.countryMapping.length; ++i){
+//            var id = this.countryMapping[i].countryID;
+//            var cnt = this.countryMapping[i].cnt;
+//            var find = this.jsonData.features.filter(function (obj) {
+//                return obj.properties.OBJECTID == id;
+//            });
+//            
+//            if(find == false)
+//                console.log('countryID:' + id + '/' + cnt + " not found");
+//        }
     };
 
     this.mapDataLoad = function () {

@@ -10,6 +10,8 @@
     $resultsGroupByRegion = array();
     $resultsGroupByModel = array();
     $resultsGroupByDevice = array();
+    $resultsGroupByDist = array();
+    $resultsGroupByBranch = array();
 
     $color = $_GET['color'];
     $cpu = $_GET['cpu'];
@@ -121,7 +123,7 @@
         $end_date = $row['date'];
     }
     
-    //Group by Device
+    //Group by Model
     $queryStr="SELECT model_name,date,SUM(count) AS count"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
@@ -185,9 +187,70 @@
         );
     }
 
+    if($isDistBranch){
+        //Group by Dist
+        $queryStr="SELECT date,SUM(count) AS count,".getDistColumnName(false)
+                ." FROM "
+                .($isColorAll ? "" : "$colorMappingTable A2,")
+                .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                ."$iso A1"
+
+                ." WHERE"
+                ." date BETWEEN '$from' AND '$to'"
+                .($isAll?"":" AND model IN($str_in)")
+                ." AND country_id='$countryID'"
+                .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                .($isDistBranch ? " AND $distBranchStr " : "")
+                ." GROUP BY date,".getDistColumnName(false)." ORDER BY date,".getDistColumnName(false).";";
+
+        $db->query($queryStr);
+        while($row = $db->fetch_array())
+        {
+           $resultsGroupByDist[$row[getDistColumnName(false)]][] = array(
+              'date' => ($row['date']),
+              'count' => ($row['count']),
+           );
+        }
+        
+        //Group by Branch
+        $queryStr="SELECT date,SUM(count) AS count,branch"
+                ." FROM "
+                .($isColorAll ? "" : "$colorMappingTable A2,")
+                .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                ."$iso A1"
+
+                ." WHERE"
+                ." date BETWEEN '$from' AND '$to'"
+                .($isAll?"":" AND model IN($str_in)")
+                ." AND country_id='$countryID'"
+                .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                .($isDistBranch ? " AND $distBranchStr " : "")
+                ." GROUP BY date,branch ORDER BY date,branch;";
+
+        $db->query($queryStr);
+        while($row = $db->fetch_array())
+        {
+           $resultsGroupByBranch[$row['branch']][] = array(
+              'date' => ($row['date']),
+              'count' => ($row['count']),
+           );
+        }
+    }
     $results['groupByRegionResults'] = $resultsGroupByRegion;
     $results['groupByModelResults'] = $resultsGroupByModel;
     $results['groupByDeviceResults'] = $resultsGroupByDevice;
+    $results['groupByDistResults'] = $resultsGroupByDist;
+    $results['groupByBranchResults'] = $resultsGroupByBranch;
     $results['start_time'] = $start_date;
     $results['end_time'] = $end_date;
     $json = json_encode($results);

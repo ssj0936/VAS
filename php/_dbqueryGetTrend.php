@@ -8,6 +8,8 @@
     $resultsGroupByDevice = array();
     $resultsGroupByCountry = array();
     $resultsGroupByDate = array();
+    $resultsGroupByDist = array();
+    $resultsGroupByBranch = array();
     $distinctModel = array();
     $db = new DB();
     
@@ -24,6 +26,18 @@
 //    $iso ='["TWN"]';
 //    $data = '[{"model":"all","devices":"all","datatype":"model"}]';
 //    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
+
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $dataset = 'activation';
+//    $from = "2016-7-9";
+//    $to = "2016-8-3";    
+//    $iso ='["IND"]';
+//    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
+//    $distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
+
     $color = $_GET['color'];
     $cpu = $_GET['cpu'];
     $rearCamera = $_GET['rearCamera'];
@@ -181,12 +195,95 @@
                 );
             }
         }
+        
+        //group by dist/branch
+        if($isDistBranch){
+            //group by dist
+            //--------------------------------------------------------------------------------
+            $fromTableStr='';
+            for($i=0;$i<count($isoObj);++$i){
+
+                $fromTableStr.="SELECT model,count,date, ".getDistColumnName(false)
+                            ." FROM "
+                            .($isColorAll ? "" : "$colorMappingTable A2,")
+                            .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                            .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                            .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                            ."$isoObj[$i] A1"
+
+                            ." WHERE "
+                            ."date BETWEEN '".$from."' AND '".$to."'"
+                            .($isAll?"":" AND model IN(".$str_in.")")
+                            .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                            .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                            .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                            .($isDistBranch ? " AND $distBranchStr " : "");
+                if($i != count($isoObj)-1)
+                    $fromTableStr.=" UNION ALL ";
+            }
+            $fromTableStrGroupByDist ="(".$fromTableStr.")data,$deviceTable mapping";
+            //echo $fromTableStr."<br>";
+
+            $queryStr = "SELECT sum(count)count,date,".getDistColumnName(false)." FROM ".$fromTableStrGroupByDist." WHERE data.model = mapping.device_name GROUP BY date, ".getDistColumnName(false)." ORDER BY date,".getDistColumnName(false).";";
+    //		echo $queryStr."<br><br><br>";
+
+            $db->query($queryStr);
+            while($row = $db->fetch_array())
+            {
+                $resultsGroupByDist[$row[getDistColumnName(false)]][] = array(
+                    'count' => ($row['count']),
+                    'date' => ($row['date'])
+                );
+            }
+            
+            //group by branch
+            //--------------------------------------------------------------------------------
+            $fromTableStr='';
+            for($i=0;$i<count($isoObj);++$i){
+
+                $fromTableStr.="SELECT model,count,date,branch"
+                            ." FROM "
+                            .($isColorAll ? "" : "$colorMappingTable A2,")
+                            .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                            .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                            .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                            ."$isoObj[$i] A1"
+
+                            ." WHERE "
+                            ."date BETWEEN '".$from."' AND '".$to."'"
+                            .($isAll?"":" AND model IN(".$str_in.")")
+                            .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                            .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                            .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                            .($isDistBranch ? " AND $distBranchStr " : "");
+                if($i != count($isoObj)-1)
+                    $fromTableStr.=" UNION ALL ";
+            }
+            $fromTableStrGroupByBranch ="(".$fromTableStr.")data,$deviceTable mapping";
+            //echo $fromTableStr."<br>";
+
+            $queryStr = "SELECT sum(count)count,date,branch FROM ".$fromTableStrGroupByBranch." WHERE data.model = mapping.device_name GROUP BY date, branch ORDER BY date,branch;";
+    //		echo $queryStr."<br><br><br>";
+
+            $db->query($queryStr);
+            while($row = $db->fetch_array())
+            {
+                $resultsGroupByBranch[$row['branch']][] = array(
+                    'count' => ($row['count']),
+                    'date' => ($row['date'])
+                );
+            }
+        }
     }
     $return = Array();
     $return['groupByDateResults'] = $resultsGroupByDate;
 	$return['groupByModelResults'] = $resultsGroupByModel;
     $return['groupByDeviceResults'] = $resultsGroupByDevice;
     $return['groupByCountryResults'] = $resultsGroupByCountry;
+    $return['groupByDistResults'] = $resultsGroupByDist;
+    $return['groupByBranchResults'] = $resultsGroupByBranch;
     $return['start_time'] = $start_date;
     $return['end_time'] = $end_date;
     $json = json_encode($return);

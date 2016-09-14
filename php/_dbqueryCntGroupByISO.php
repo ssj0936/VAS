@@ -27,9 +27,9 @@
 //$rearCamera = '["13 Mega Pixel","8 Mega Pixel","5 Mega Pixel","Unknown"]';
 //$frontCamera = '["0.3 Mega Pixel","2 Mega Pixel","8 Mega Pixel","Unknown"]';
 //$dataset = 'lifezone';
-//$from = "2016-7-9";
-//$to = "2016-8-3";    
-//$iso ='["TWN"]';
+//$from = "2015-8-15";
+//$to = "2016-9-14";    
+//$iso ='["IND"]';
 //$data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
 //$distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
 
