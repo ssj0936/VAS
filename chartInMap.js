@@ -430,7 +430,8 @@ function exportFile(ReportTitle, ShowLabel) {
     var exportArray = [];
     for (var i in trendObj.labels) {
         var date = trendObj.labels[i];
-
+        if(date == '') continue;
+        
         var Obj = {
             "date": date
         };
@@ -970,7 +971,7 @@ function labelChange(chanegTo){
     }
     
     //in order to adding space
-    trendObj.labels.push(" ");
+    trendObj.labels.push("");
 //    trendObj.labels.push(" ");
 //    trendObj.labels.push(" ");
 }
