@@ -50,12 +50,13 @@
 
     //---------------------------
     $allLoc=array();
-    $db->query("SELECT DISTINCT * FROM ".$tablenameLoc." ORDER BY NAME_0;");
+    $db->query("SELECT DISTINCT * FROM ".$tablenameLoc." ORDER BY Terrority,NAME_0;");
     while($row = $db->fetch_array()){
         $countryName = $row['NAME_0'];
-        $allLoc[$countryName][] = $row['iso'];
-        $allLoc[$countryName][] = $row['inActivation'];
-        $allLoc[$countryName][] = $row['inLifezone'];
+        $terrority = $row['Terrority'];
+        $allLoc[$terrority][$countryName][] = $row['iso'];
+        $allLoc[$terrority][$countryName][] = $row['inActivation'];
+        $allLoc[$terrority][$countryName][] = $row['inLifezone'];
     }
 //    //---------------------------
 //	

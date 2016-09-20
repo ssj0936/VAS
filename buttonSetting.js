@@ -15,7 +15,11 @@ function buttonInit() {
             var checkAttr = (dataSet == "activation") ? "inActivation" : "inLifezone";
             //var isInvalid = checkInvalidCountryAlert(checkAttr);
 
-            if (checkInvalidCountryAlert(checkAttr)) return;
+            if (checkInvalidCountryAlert(checkAttr)){
+                $(this).val('activation');
+                $(this).selectmenu("refresh");
+                return;
+            }
             setDataset(dataSet);
 
             if (mapHasShowsUp()) {

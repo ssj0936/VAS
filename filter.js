@@ -93,7 +93,7 @@ function checkboxDeviceInit() {
                 }
                 $(this).parent().next('ul').slideToggle();
             })
-            .appendTo(li)
+            .appendTo(li);
 
         jQuery('<input/>', {
             id: 'filter_device_' + productName,
@@ -136,7 +136,7 @@ function checkboxDeviceInit() {
                     }
                     $(this).parent().next('ul').slideToggle();
                 })
-                .appendTo(li)
+                .appendTo(li);
 
             jQuery('<input/>', {
                 id: 'filter_device_' + modelName,
@@ -198,16 +198,7 @@ function checkboxDeviceInit() {
 function checkboxLocationInit() {
     var worldList = [];
     //console.log(allLoc);
-    for (var name in allLoc) {
-        worldList.push({
-            name: name,
-            iso: allLoc[name][0],
-            inActivation: allLoc[name][1],
-            inLifezone: allLoc[name][2]
-        });
-    }
 
-    //console.log(worldList);
     var ul = jQuery('<ul/>').appendTo($("#locationFilter"));
 
     var li = jQuery('<li/>').attr("id", "check_location_li").appendTo($(ul));
@@ -226,45 +217,93 @@ function checkboxLocationInit() {
 
     var allUl = jQuery('<ul/>').appendTo($(ul));
 
-    for (var i = 0; i < worldList.length; ++i) {
+    for (var terrorityName in allLoc) {
         var li = jQuery('<li/>').attr("class", "filter_country").appendTo($(allUl));
+        jQuery('<span />', {
+            class: "ui-icon ui-icon-circlesmall-plus",
+        })
+        .css({
+            'display': 'inline-block',
+            'font-size': '18px',
+            'height': '12px',
+            'width': '12px',
+            'margin-right': '3px',
+        })
+        .click(function () {
+            if ($(this).hasClass('ui-icon-circlesmall-plus')) {
+                $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
+            } else {
+                $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+            }
+            $(this).parent().next('ul').slideToggle();
+        })
+        .appendTo(li);
 
-        //continents
-        jQuery('<input/>', {
-                id: 'filter_location_' + worldList[i].name,
-                type: 'checkbox',
-                value: worldList[i].name,
-                datatype: "country",
-                iso: worldList[i].iso,
-                name: "loc",
-                inActivation: worldList[i].inActivation,
-                inLifezone: worldList[i].inLifezone,
-            })
-            .css('display', 'inline-block')
-            .appendTo($(li));
+            //continents
+            jQuery('<input/>', {
+                    id: 'filter_location_' + terrorityName,
+                    type: 'checkbox',
+                    datatype: "terrority",
+                    name: "loc",
+                })
+                .css('display', 'inline-block')
+                .appendTo($(li));
 
-        jQuery('<label/>', {
-            text: worldList[i].name,
-            for: 'filter_location_' + worldList[i].name,
-        }).appendTo(li);
+            jQuery('<label/>', {
+                text: terrorityName,
+                for: 'filter_location_' + terrorityName
+            }).appendTo(li);
+        
+    
+        var terrorityUl = jQuery('<ul/>').appendTo($(allUl)).hide();
+    
+        for(var countryName in allLoc[terrorityName]){
+            var li = jQuery('<li/>').attr("class", "filter_country").appendTo($(terrorityUl));
+
+            //continents
+            jQuery('<input/>', {
+                    id: 'filter_location_' + countryName,
+                    type: 'checkbox',
+                    value: countryName,
+                    datatype: "country",
+                    iso: allLoc[terrorityName][countryName][0],
+                    name: "loc",
+                    inActivation: allLoc[terrorityName][countryName][1],
+                    inLifezone: allLoc[terrorityName][countryName][2],
+                })
+                .css('display', 'inline-block')
+                .appendTo($(li));
+
+            jQuery('<label/>', {
+                text: countryName,
+                for: 'filter_location_' + countryName,
+            }).appendTo(li);
+        }
     }
 
     //listener setting
     $("#locationFilter input").each(function (index) {
         $(this).on("click", function () {
-            if (getDataset() == DATA_LIFEZONE && $(this).prop("checked") && $(this).attr('inLifezone') == 0) {
-                showAlert("cannot choose this location<br>because <b>" + $(this).val() + "</b> is not in the dataset [<b>Lifezone</b>]");
-                $(this).prop('checked', false);
-            }
 
             checkChild(this, ($(this).prop("checked") ? true : false));
             checkParent(this);
+            
+            if (getDataset() == DATA_LIFEZONE) {
+                var locStr = '';
+                $('input:checked[name="loc"][datatype="country"][inLifezone="0"]').each(function(){
+                    locStr += $(this).val()+', ';
+                    $(this).prop('checked', false);
+                    checkParent(this);
+                });
+                
+                if(locStr != '')
+                    showAlert("cannot choose this location<br>because <b>" + locStr + "</b> is not in the dataset [<b>Lifezone</b>]");
+            }
 
             observeLocTmp.length = 0;
             observeLocFullNameTmp.length = 0;
-            var checktarget = $("#check_location_li");
-            checkLocPush(checktarget);
-            //console.log(JSON.stringify(observeTargetTmp));
+            checkLocPush();
+//            console.log(JSON.stringify(observeLocTmp));
             
             var needToShowDistBranch = false;
             for(var i in observeLocTmp){
@@ -630,15 +669,11 @@ function checkDevicePush(el) {
     }
 }
 
-function checkLocPush(el) {
-    if ($("input", el).prop("checked")) {
-        observeLocTmp.push($("input", el).attr("iso"));
-        observeLocFullNameTmp.push($("input", el).val());
-    } else {
-        el.next("ul").children("li").each(function () {
-            checkLocPush($(this));
-        })
-    }
+function checkLocPush() {
+    $('input:checked[name="loc"][datatype="country"]').each(function(){
+        observeLocTmp.push($(this).attr("iso"));
+        observeLocFullNameTmp.push($(this).val());
+    });
 }
 
 function checkSpecPush(el, hardware) {
