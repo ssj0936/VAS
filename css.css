@@ -785,3 +785,7 @@
     #section_branch_dist{
         display: none;
     }
+
+    button#gap{
+        display: none;
+    }

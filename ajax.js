@@ -413,6 +413,7 @@ function ajaxFetchTableValue(isComparison) {
             rearCamera: JSON.stringify(observeSpec.rear_camera),
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
+            distBranch: JSON.stringify(observeDistBranch),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
@@ -680,4 +681,31 @@ function ajaxSaveLog(){
             console.log("log saved");
         }
     });
+}
+
+function ajaxGetGapData(callback){
+    $.ajax({
+        type:'GET',
+        url: 'php/_dbqueryGetGap.php',
+        dataType: 'json',
+        data: { 
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            iso: JSON.stringify(observeLoc),
+            data: JSON.stringify(observeTarget),
+            from: firstMap.fromFormatStr,
+            to: firstMap.toFormatStr,
+            dataset: getDataset(),
+        },
+        success: function(json){
+            console.log(json);
+
+            if(callback)
+                callback();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {},
+    });
+    
 }

@@ -79,19 +79,19 @@ function buttonInit() {
             }
         }
 
-        var isCurrentModeComparison = (isModeActive(MODE_COMPARISION)) ? true : false;
-        var isTargetModeComparison = ($(this).attr("id") == 'comparison') ? true : false;
-
+        var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
+        var isTargetButtonSet = ($(this).attr("id") == 'region' || $(this).attr("id") == 'marker') ? true : false;
+        
         //click the same btn
-        if ((isCurrentModeComparison && isTargetModeComparison) && $(this).hasClass("active")) return;
+        if ((!isCurrentButtonSet && !isTargetButtonSet) && $(this).hasClass("active")) return;
         if ($(this).attr("id") == 'comparison' && comparisonMap.fromFormatStr == undefined && comparisonMap.toFormatStr == undefined) {
             showAlert("plz select comparison Data...");
             return;
         }
-
+        
         var pressedTarget = $(this);
-        //[marker to region] or [region to marker]
-        if (!isCurrentModeComparison && !isTargetModeComparison) {
+        //buttonset switch
+        if (isCurrentButtonSet && isTargetButtonSet) {
             if (pressedTarget.hasClass("active")) {
                 pressedTarget.removeClass("active");
                 unactiveModeBtn($(this));
@@ -100,8 +100,8 @@ function buttonInit() {
                 activeModeBtn($(this));
             }
         }
-        //[non-Comparison to Comparison]
-        else if (!isCurrentModeComparison && isTargetModeComparison) {
+        //buttonset -> unbuttonset
+        else if (isCurrentButtonSet && !isTargetButtonSet) {
             modeBtns.removeClass("active");
             modeBtns.each(function () {
                 if ($(this).attr("id") != pressedTarget.attr("id")) {
@@ -112,8 +112,8 @@ function buttonInit() {
             $(this).addClass("active");
             activeModeBtn($(this));
         }
-        //[Comparison to non-Comparison]
-        else if (isCurrentModeComparison && !isTargetModeComparison) {
+        //unbuttonset -> buttonset
+        else if (!isCurrentButtonSet && isTargetButtonSet) {
             modeBtns.removeClass("active");
             modeBtns.each(function () {
                 if ($(this).attr("id") != pressedTarget.attr("id")) {
@@ -148,17 +148,15 @@ function unactiveModeBtn($this) {
         setModeOff(MODE_MARKER);
         //resetIsClickFromFilterResult();
         break;
-        /*case "marker_lifecircle":
-            removeMarkerMap();
-            showLegend();
-            //resetIsClickFromFilterResult();
-            break;*/
     case "comparison":
         //console.log("comparison");
         setCompareCheckbox(false);
         comparisionMapShrink();
         setModeOff(MODE_COMPARISION);
         //console.log("unactiveModeBtn_comparison");
+        break;
+    case "gap":
+        setModeOff(MODE_GAP);
         break;
     }
 }
@@ -182,6 +180,10 @@ function activeModeBtn($this) {
         } else {
             submitComparision();
         }
+        break;
+    case "gap":
+        setModeOn(MODE_GAP);
+        ajaxGetGapData();
         break;
     }
 }
@@ -525,6 +527,12 @@ function submitBtnSetting() {
             clearFilterResult();
             showFilterResult();
             //observeLocLast = observeLoc.slice();
+            
+            if(isDistBranchModeOn){
+                $('button#gap').show();
+            }else{
+                $('button#gap').hide();
+            }
         }
     });
 }
