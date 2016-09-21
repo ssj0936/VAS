@@ -184,6 +184,7 @@ function checkboxDeviceInit() {
 
             observeTargetTmp.length = 0;
             specDeviceTmp.length = 0;
+            observeTargetDeviceOnlyTmp.length = 0;
             var checktarget = $("#check_device_li");
             checkDevicePush(checktarget);
 //            console.log(observeTargetTmp);
