@@ -146,6 +146,122 @@ function resetGroupByDelectMenu(){
     $('#btnTimePeriodSelect').selectmenu("refresh");
 }
 
+function updateBranchChart(json,branchName) {
+    if (json.groupByBranchResults.length == 0) return;
+
+    var leftPopup = jQuery('<div/>', {
+            id: 'leftPopupContainer',
+        }).css({
+            'display':'inline-block',
+            'width': '15%',
+            'height': '100%',
+            'vertical-align':'top',
+            'position': 'relative',
+        }).appendTo($('#popupChartContainer'));
+
+    var rightPopup = jQuery('<div/>', {
+            id: 'rightPopupContainer',
+        }).css({
+            'display':'inline-block',
+            'width': '' + rightPopupContainerWidthP * 100 + '%',
+            'height': '100%',
+            'vertical-align':'top',
+            'position': 'relative',
+        }).appendTo($('#popupChartContainer'));
+    
+    //title container
+    var title = jQuery('<div/>', {
+            id: 'lineChartTitle',
+        })
+        .css({
+            'top':'' + getWindowHeightPercentagePx(0.1) + 'px',
+        })
+        .appendTo(rightPopup);
+
+    createFunctionalBtn().appendTo(title);
+
+    //title content
+    jQuery('<div/>', {
+            id: "currentTrendTitle",
+            class: 'w3-padding-4',
+        })
+        .css('text-align', 'left')
+        .append(
+            jQuery('<p/>', {
+                'id': 'option'
+            })
+            .text("Trend by " + TREND_BRANCH)
+            .css({
+                'margin': '0px',
+                'display': 'inline-block',
+                'font-size': '42px',
+            })
+        )
+        .append(
+            jQuery('<span/>', {
+                class: 'trendIconDowu',
+            })
+        )
+        .click(
+            function () {
+                $('#trendOptionContainer').stop(true, true).slideToggle('medium');
+
+                var icon = $('#currentTrendTitle span');
+                if (icon.hasClass('trendIconDowu'))
+                    icon.removeClass('trendIconDowu').addClass('trendIconUp');
+                else
+                    icon.removeClass('trendIconUp').addClass('trendIconDowu');
+            }
+        )
+        .appendTo(title);
+
+    //option
+    var trendList = [TREND_BRANCH, TREND_MODEL, TREND_DEVICE];
+
+    var optionContainer = jQuery('<div/>', {
+            id: 'trendOptionContainer',
+        })
+        .appendTo(title).hide();
+
+    for (var i in trendList) {
+        jQuery('<div/>', {
+                id: 'trendBy' + trendList[i],
+                class: "w3-light-grey w3-hover-shadow w3-padding-4 w3-center",
+            })
+            .html('<h4>' + 'Trend by ' + trendList[i] + '</h4>')
+            .appendTo(optionContainer)
+            .click(function (activeTrend) {
+                return function () {
+                    if (getActiveTrend() == activeTrend) return;
+
+                    //if trendcontainer hide, show it
+                    if ($('#trendContainer').is(':hidden'))
+                        $('#trendContainer').slideDown('medium');
+
+                    //table remove
+                    $('#table_wrapper').remove();
+//                    disableScroll();
+
+                    $('#trendContainer').css({
+                        'opacity': 0
+                    });
+
+                    createBranchChart(json, activeTrend,branchName);
+                    $('#currentTrendTitle p#option').text("Trend by " + activeTrend);
+                    $('#trendContainer').fadeTo(300, 1);
+
+                    //menu close
+                    $('#trendOptionContainer').stop(true, true).slideToggle('medium');
+                }
+            }(trendList[i]));
+    }
+    var filterDisplayer = createFilterDisplayer();
+    filterDisplayer.appendTo(leftPopup);
+
+    //chart
+    createBranchChart(json, TREND_BRANCH, branchName);
+}
+
 function updateRegionChart(json, displayname, displaynum) {
     if (json.groupByRegionResults.length == 0) return;
 
@@ -980,6 +1096,7 @@ function setTrendData(jsonObj){
     //clean
     trendObj.datasets.length = 0;
     
+    console.log(jsonObj);
     var jsonArray = Object.keys(jsonObj);
     for (var index in jsonArray) {
         var name = jsonArray[index];
@@ -1365,6 +1482,41 @@ function createsingleRegionChart(json, trendMode, regionName) {
     loadingDismiss();
 }
 
+function createBranchChart(json, trendMode, branchName) {
+    //data reset
+    chartDestroy(true);
+    resetTotalToggleBtn();
+    resetGroupByDelectMenu();
+    //fetch data
+    trendObj = new lineDataObj();
+    setTrendLable(json);
+    
+    switch (trendMode) {
+
+    case TREND_MODEL:
+        setTrendData(json.groupByModelResults);
+//        addingTotalLine(json.groupByRegionResults);
+        break;
+
+    case TREND_DEVICE:
+        setTrendData(json.groupByDeviceResults);
+//        addingTotalLine(json.groupByRegionResults);
+        break;
+    
+    case TREND_BRANCH:
+        setTrendDataByRegion(json.groupByBranchResults,branchName);
+//        addingTotalLine(json.groupByRegionResults);
+        break;
+    }
+    
+    setActiveTrend(trendMode);
+    //create chart element
+    createChartElement();
+
+    updateColorInfo();
+    loadingDismiss();
+}
+
 function chartDestroy(dataNeedToSetNull){
     //destroy old chart
     if(dataNeedToSetNull){
@@ -1503,4 +1655,13 @@ function createTable() {
     });
 
     setActiveTrend(TREND_TABLE);
+}
+
+function showGapTrend(mapObj,branchName){
+    if (observeTarget.length > 0 && !mapObj.isEmpty) {
+//        loading("Creating Chart...");
+        scrollToTop();
+        popupChartShow(true);
+        ajaxTrendOfBranchChart(mapObj,branchName);
+    }
 }

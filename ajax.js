@@ -315,6 +315,42 @@ function ajaxRemoveBookmark(idOfBookmarkDel) {
     });
 }
 
+function ajaxTrendOfBranchChart(mapObj,branchName){
+    if (linechart != null) {
+        linechart.destroy();
+    }
+
+    var URLs = "php/_dbqueryGetTrendOfBranch.php";
+    $.ajax({
+        url: URLs,
+        data: {
+            dataset: getDataset(),
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            data: JSON.stringify(observeTarget),
+            from: mapObj.fromFormatStr,
+            to: mapObj.toFormatStr,
+            branch: branchName,
+            iso: 'IND',
+        },
+        type: "GET",
+        dataType: 'json',
+
+        success: function (json) {
+            console.log(json);
+            //empty data set
+            updateBranchChart(json,branchName);
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+        }
+    });
+}
+
 function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
 
     if (linechart != null) {

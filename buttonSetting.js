@@ -82,6 +82,13 @@ function buttonInit() {
                 return;
             }
         }
+        
+        if ($(this).attr("id") == "gaptrend") {
+            if (!$(this).hasClass('active')) {
+                showGapTrend(firstMap,'DELHI');
+                return;
+            }
+        }
 
         var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
         var isTargetButtonSet = ($(this).attr("id") == 'region' || $(this).attr("id") == 'marker') ? true : false;
@@ -445,6 +452,8 @@ function submitBtnSetting() {
             console.log(observeTarget);
 
             observeTargetDeviceOnly = observeTargetDeviceOnlyTmp.slice();
+//            console.log("observeTargetDeviceOnly:");
+//            console.log(observeTargetDeviceOnly);
             
             observeLoc = observeLocTmp.slice();
             console.log("observeLoc:");
@@ -532,7 +541,18 @@ function submitBtnSetting() {
             showFilterResult();
             //observeLocLast = observeLoc.slice();
             
-            if(isDistBranchModeOn){
+            
+            //decide whether need to show dist/branch filter or not
+            //create dist branch filter
+            var needToShowDistBranch = false;
+            for(var i in observeLoc){
+                if(countryNeedToShowDistBranch.indexOf(observeLoc[i]) != -1){
+                    needToShowDistBranch = true;
+                    break;
+                }
+            }
+
+            if(needToShowDistBranch && observeLoc.length == 1){
                 $('button#gap').show();
             }else{
                 $('button#gap').hide();
