@@ -74,7 +74,7 @@
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT country_id,count,device_model.model_name model_name"
+            $fromTableStr.="SELECT branch,count,device_model.model_name model_name"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -98,25 +98,29 @@
 		$fromTableStr ="(".$fromTableStr.")foo";
 		//echo $fromTableStr."<br>";
 		
-		$queryStr = "SELECT country_id,SUM(count) AS count,model_name FROM ".$fromTableStr." GROUP BY country_id,model_name ORDER BY count DESC;";
+		$queryStr = "SELECT branch,SUM(count) AS count,model_name FROM ".$fromTableStr." GROUP BY branch,model_name ORDER BY count DESC;";
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
 		while($row = $db->fetch_array())
 		{
-            $countryArray[$row['country_id']]['models'][$row['model_name']] = $row['count'];
-            if (empty($countryArray[$row['country_id']]['count'])) {
-                $countryArray[$row['country_id']]['count'] = $row['count'];
+            if($row['branch'] == '') continue;
+            
+            $countryArray[$row['branch']]['models'][$row['model_name']] = $row['count'];
+            if (empty($countryArray[$row['branch']]['count'])) {
+                $countryArray[$row['branch']]['count'] = $row['count'];
             } else {
-                $countryArray[$row['country_id']]['count'] += $row['count'];
+                $countryArray[$row['branch']]['count'] += $row['count'];
             }
 		}
     }
     $results['total'] = array();
     $results['total']['total'] = 0;
-    foreach($countryArray as $country_id => $countryData) {
+    foreach($countryArray as $branch => $countryData) {
         arsort($countryData['models']);
-        $results[$country_id] = array(
+        $branchName = strtoupper($branch);
+        $branchName = str_replace('_','',$branchName);
+        $results[$branchName] = array(
                 'cnt' => ($countryData['count']),
                 'models' => ($countryData['models'])
             );
@@ -131,20 +135,6 @@
             $results['total']['total'] += $modelCnt;
         }
     }
-
-    //2.get object branch mapping
-    $db->query("SELECT * from $branchObjectIDMapping ");
-    $objectBranchMapping = array();
-    while($row = $db->fetch_array()){
-        
-        $objids = json_decode($row['object_id']);
-        foreach($objids as $val){
-            if(!isset($objectBranchMapping[$val]))
-                $objectBranchMapping[$val] = $row['Loc_BranchName'];
-            else
-                $objectBranchMapping[$val] .= '/'.$row['Loc_BranchName'];
-        }
-    }
     
 
     //3.get tam of each branch and whole country
@@ -157,7 +147,9 @@
         $val = str_replace("\n", '', $val);
         $split = explode(',', $val);
         
-        $tam[$split[0]] = intval($split[1]);
+        $branchName = strtoupper($split[0]);
+        $branchName = str_replace('_','',$branchName);
+        $tam[$branchName] = intval($split[1]);
         $totalTam += intval($split[1]);
     }
 //    print_r($tam);
@@ -171,23 +163,12 @@
 
     //combine all data
     $result = array();
-    foreach($objectBranchMapping as $key => $val){
-        $objectID = $key;
-        $branch = $val;
+    foreach($results as $branchName => $dataArr){
+        if($branchName == 'total') continue;
         
-        if(isset($results[$objectID])){
-            $modelArr = $results[$objectID]['models'];
-            foreach ($modelArr as $modelName => $modelVal){
-                if(!isset($result[$branch][$modelName]))
-                    $result[$branch][$modelName] = $modelVal;
-                else
-                    $result[$branch][$modelName] += $modelVal;
-            }
-
-            if(!isset($result[$branch]['total']))
-                $result[$branch]['total'] = $results[$objectID]['cnt'];
-            else
-                $result[$branch]['total'] += $results[$objectID]['cnt'];
+        $result[$branchName]['total'] = $dataArr['cnt'];
+        foreach($dataArr['models'] as $modelName => $modelVal){
+            $result[$branchName][$modelName] = $modelVal;
         }
     }
 
@@ -199,6 +180,7 @@
             $tamResult[$branchName][$modelname] = round($tam_,4);
         }
     }
+    ksort($tamResult);
     
 
 //    $json = json_encode($results);
