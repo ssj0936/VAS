@@ -176,7 +176,7 @@
     $tamResult = array();
     foreach($result as $branchName => $modelsCnt){
         foreach($modelsCnt as $modelname => $modelCnt){
-            $tam_ = (($modelCnt/$results['total']['total'])/($tam[$branchName]/$totalTam))-1;
+            $tam_ = ($results['total']['total'] == 0) ? -1 :(($modelCnt/$results['total']['total'])/($tam[$branchName]/$totalTam))-1;
             $tamResult[$branchName][$modelname] = round($tam_,4);
         }
     }

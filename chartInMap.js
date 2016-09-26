@@ -274,6 +274,8 @@ function updateBranchChart(json,branchName) {
 function updateRegionChart(json, displayname, displaynum) {
     if (json.groupByRegionResults.length == 0) return;
 
+    var defaultTrendMode = TREND_MODEL;
+    
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
         }).css({
@@ -324,7 +326,7 @@ function updateRegionChart(json, displayname, displaynum) {
             jQuery('<p/>', {
                 'id': 'option'
             })
-            .text("Trend by " + TREND_REGION)
+            .text("Trend by " + defaultTrendMode)
             .css({
                 'margin': '0px',
                 'display': 'inline-block',
@@ -397,7 +399,7 @@ function updateRegionChart(json, displayname, displaynum) {
     filterDisplayer.appendTo(leftPopup);
 
     //chart
-    createsingleRegionChart(json, TREND_MODEL, displayname);
+    createsingleRegionChart(json, defaultTrendMode, displayname);
 
 //    bodyHide();
     //title re-position
@@ -1105,7 +1107,7 @@ function setTrendData(jsonObj){
     //clean
     trendObj.datasets.length = 0;
     
-    console.log(jsonObj);
+//    console.log(jsonObj);
     var jsonArray = Object.keys(jsonObj);
     for (var index in jsonArray) {
         var name = jsonArray[index];
@@ -1287,7 +1289,7 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
     //clean
     trendObj.datasets.length = 0;
     
-    console.log(jsonObj);
+//    console.log(jsonObj);
     var jsonArray = Object.keys(jsonObj);
     for (var index in jsonArray) {
         var name = jsonArray[index];
@@ -1414,9 +1416,8 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
             
             var total = 0;
             for(var j in data){
-                var d = data[j].date.split('-');
-//                console.log(d);
-                if(year == d[0] && month == ''+parseInt(d[1]))
+                var d = new Date(data[j].date);
+                if(year == d.getFullYear() && month == (d.getMonth+1))
                     total += data[j].count;
             }
 //            console.log(trendObj.labelsByMonth[i]+':'+total);
