@@ -85,6 +85,7 @@ function buttonInit() {
         
         if ($(this).attr("id") == "gaptrend") {
             if (!$(this).hasClass('active')) {
+                isNowBranchTrend = true;
                 showGapTrend(firstMap,'DELHI');
                 return;
             }

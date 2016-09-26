@@ -11,27 +11,43 @@
     $resultsGroupByDevice = array();
     $resultsGroupByBranch = array();
 
-    $color = $_GET['color'];
-    $cpu = $_GET['cpu'];
-    $rearCamera = $_GET['rearCamera'];
-    $frontCamera = $_GET['frontCamera'];
-    $dataset = $_GET['dataset'];
-    $branch = $_GET['branch'];
-    $from = $_GET['from'];
-    $to = $_GET['to'];
-    $data = $_GET['data'];
-    $iso = $_GET['iso'];
-//    
-//    $color = '["all"]';
-//    $cpu = '["all"]';
-//    $rearCamera = '["all"]';
-//    $frontCamera = '["all"]';
-//    $dataset = 'activation';
-//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-//    $from = "2015-8-15";
-//    $to = "2016-9-14";    
-//    $iso ='IND';
-//    $branch = 'DELHI';
+    //get Tam Data
+    $file = file('geojson/branchTam.txt');
+    $tam = array();
+    $totalTam = 0;
+    foreach($file as $val){
+        $str = $val;
+        $val = str_replace("\r", '', $val);
+        $val = str_replace("\n", '', $val);
+        $split = explode(',', $val);
+        
+        $branchName = strtoupper($split[0]);
+        $branchName = str_replace('_','',$branchName);
+        $tam[$branchName] = intval($split[1]);
+        $totalTam += intval($split[1]);
+    }
+
+//    $color = $_GET['color'];
+//    $cpu = $_GET['cpu'];
+//    $rearCamera = $_GET['rearCamera'];
+//    $frontCamera = $_GET['frontCamera'];
+//    $dataset = $_GET['dataset'];
+//    $branch = strtoupper($_GET['branch']);
+//    $from = $_GET['from'];
+//    $to = $_GET['to'];
+//    $data = $_GET['data'];
+//    $iso = $_GET['iso'];
+    
+    $color = '["all"]';
+    $cpu = '["all"]';
+    $rearCamera = '["all"]';
+    $frontCamera = '["all"]';
+    $dataset = 'activation';
+    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
+    $from = "2015-8-15";
+    $to = "2016-9-14";    
+    $iso ='IND';
+    $branch = 'DELHI';
     
     $dataObj = json_decode($data);
     $colorObj = json_decode($color);
@@ -70,7 +86,7 @@
     $str_in = substr($str_in,0,-1);
     
     //Group by branch
-    $queryStr="SELECT date,SUM(count) AS count"
+    $queryStr="SELECT date,SUM(count) AS count,branch"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -81,23 +97,29 @@
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
             .($isAll?"":" AND model IN($str_in)")
-            ." AND branch='$branch'"
+//            ." AND branch='$branch'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date ORDER BY date";
+            ." GROUP BY date,branch ORDER BY date";
 
 //	echo "1:".$queryStr."<br>";
     $first = true;
     $start_date = null;
     $end_date = null;
     $db->query($queryStr);
+    $total = 0;
     while($row = $db->fetch_array())
     {
-       $resultsGroupByBranch[] = array(
+        $total+=$row['count'];
+        
+//        if($row['branch'] != $branch) continue;
+        
+       $resultsGroupByBranch[$branch][] = array(
           'date' => ($row['date']),
           'count' => ($row['count']),
+          'isTargetBranch' => ($row['branch'] == $branch) ? true : false,
        );
         
         if($first){
@@ -106,9 +128,14 @@
         }
         $end_date = $row['date'];
     }
+
+//    for($i=0; $i<count($resultsGroupByBranch); ++$i){
+//        $tam_ = (($resultsGroupByBranch[$i]['count']/$total)/($tam[$branch]/$totalTam))-1;
+//        $resultsGroupByBranch[$i]['count'] = round($tam_,4);
+//    }
     
     //Group by Model
-    $queryStr="SELECT model_name,date,SUM(count) AS count"
+    $queryStr="SELECT model_name,date,SUM(count) AS count, branch"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -120,26 +147,41 @@
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
             .($isAll?"":" AND model IN($str_in)")
-            ." AND branch='$branch'"
+//            ." AND branch='$branch'"
             ." AND A1.model = mapping.device_name "
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date, model_name ORDER BY date,model_name";
+            ." GROUP BY date, model_name, branch ORDER BY date,model_name";
 //    echo "2:".$queryStr."<br>";
     $db->query($queryStr);
+    $totalModel = array();
     while($row = $db->fetch_array())
     {
+        if(!isset($totalModel[$row['model_name']]))
+            $totalModel[$row['model_name']] = 0;
+        $totalModel[$row['model_name']] += $row['count'];
+        
+//        if($row['branch'] != $branch) continue;
+        
         $resultsGroupByModel[$row['model_name']][] = array(
             //'model' => ($row['model_name']),
             'count' => ($row['count']),
-            'date' => ($row['date'])
+            'date' => ($row['date']),
+          'isTargetBranch' => ($row['branch'] == $branch) ? true : false,
         );
     }
 
+//    foreach($resultsGroupByModel as $model => $dataArr){  
+//        for($i=0; $i<count($dataArr); ++$i){
+//            $tam_ = (($resultsGroupByModel[$model][$i]['count']/$totalModel[$model])/($tam[$branch]/$totalTam))-1;
+//            $resultsGroupByModel[$model][$i]['count'] = round($tam_,4);
+//        }
+//    }
+
     //Group by Device
-    $queryStr="SELECT model,date,SUM(count) AS count"
+    $queryStr="SELECT model,date,SUM(count) AS count,branch"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -151,27 +193,43 @@
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
             .($isAll?"":" AND model IN($str_in)")
-            ." AND branch='$branch'"
+//            ." AND branch='$branch'"
             //." AND A1.model = mapping.device_name "
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date, model ORDER BY date,model";
+            ." GROUP BY date, model, branch ORDER BY date,model";
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);
+    $totalDevice = array();
     while($row = $db->fetch_array())
     {
+        if(!isset($totalDevice[$row['model']]))
+            $totalDevice[$row['model']] = 0;
+        $totalDevice[$row['model']] += $row['count'];
+        
+//        if($row['branch'] != $branch) continue;
+        
         $resultsGroupByDevice[$row['model']][] = array(
             //'model' => ($row['model_name']),
             'count' => ($row['count']),
-            'date' => ($row['date'])
+            'date' => ($row['date']),
+          'isTargetBranch' => ($row['branch'] == $branch) ? true : false,
         );
     }
+
+//    foreach($resultsGroupByDevice as $device => $dataArr){  
+//        for($i=0; $i<count($dataArr); ++$i){
+//            $tam_ = (($resultsGroupByDevice[$device][$i]['count']/$totalDevice[$device])/($tam[$branch]/$totalTam))-1;
+//            $resultsGroupByDevice[$device][$i]['count'] = round($tam_,4);
+//        }
+//    }
 
     $results['groupByBranchResults'] = $resultsGroupByBranch;
     $results['groupByModelResults'] = $resultsGroupByModel;
     $results['groupByDeviceResults'] = $resultsGroupByDevice;
+    $results['gapDevide'] = $tam[$branch]/$totalTam;
     $results['start_time'] = $start_date;
     $results['end_time'] = $end_date;
     $json = json_encode($results);

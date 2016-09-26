@@ -319,7 +319,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
     if (linechart != null) {
         linechart.destroy();
     }
-
+    
     var URLs = "php/_dbqueryGetTrendOfBranch.php";
     $.ajax({
         url: URLs,

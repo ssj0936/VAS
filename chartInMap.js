@@ -98,7 +98,10 @@ function createFunctionalBtn(){
                         trendObj.datasets[i].data = trendObj.datasets[i].dataByDate;
                     }
                     chartDestroy(false);
-                    createChartElement();
+                    if(isNowBranchTrend)
+                        createChartElement(negOptions);
+                    else
+                        createChartElement();
                     updateColorInfo();
                     break;
                 
@@ -112,7 +115,10 @@ function createFunctionalBtn(){
                         trendObj.datasets[i].data = trendObj.datasets[i].dataByMonth;
                     }
                     chartDestroy(false);
-                    createChartElement();
+                    if(isNowBranchTrend)
+                        createChartElement(negOptions);
+                    else
+                        createChartElement();
                     updateColorInfo();
                     break;
                     
@@ -126,7 +132,10 @@ function createFunctionalBtn(){
                         trendObj.datasets[i].data = trendObj.datasets[i].dataByWeek;
                     }
                     chartDestroy(false);
-                    createChartElement();
+                    if(isNowBranchTrend)
+                        createChartElement(negOptions);
+                    else
+                        createChartElement();
                     updateColorInfo();
                     break;
             }
@@ -998,7 +1007,7 @@ function popupChartClose(needToLockScroll) {
     if (needToLockScroll) {
         enableScroll();
     }
-
+    isNowBranchTrend = false;
     enableScroll();
     bodyShow();
     totalDataset = null;
@@ -1274,6 +1283,184 @@ function setTrendDataByRegion(jsonObj, regionName) {
 //    console.log(regionDataset);
 }
 
+function setGapTrendData(jsonObj,gapDevide,branchName){
+    //clean
+    trendObj.datasets.length = 0;
+    
+    console.log(jsonObj);
+    var jsonArray = Object.keys(jsonObj);
+    for (var index in jsonArray) {
+        var name = jsonArray[index];
+        var data = jsonObj[name];
+        
+        if(branchName){
+            name = branchName;
+            data = jsonObj[branchName];
+        }
+
+        var color = getRandomColor();
+        var highlight = ColorLuminance(color, 0.5);
+        var transparentColor = colorHexToRGBString(color, 0.2);
+        var dataset = new lineDatasetsObj(name, transparentColor, color, highlight, false);
+        
+        //first
+        //handle the data group by date 
+        var DateIndex = 0
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            var currentDate = trendObj.labelsByDate[i];
+            var alreadyFound = false;
+            while (DateIndex < data.length && currentDate == data[DateIndex].date) {
+                if(data[DateIndex].isTargetBranch){
+                    dataset.dataByDate.push(data[DateIndex].count);
+                    alreadyFound = true;
+                }
+                ++DateIndex;
+            }
+                
+            if(!alreadyFound) {
+                dataset.dataByDate.push(0);
+            }
+        }
+//        console.log(dataset.dataByDate);
+//        var total = 0;
+//        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+//            
+//            if(dataset.dataByDate[i] == 0) continue;
+//            
+//            var date = trendObj.labelsByDate[i];
+//            for(var j in data){
+//                if(data[j].date == date)
+//                    total += data[j].count;
+//            }
+//            
+//            dataset.dataByDate[i] = ((dataset.dataByDate[i]/total)/gapDevide-1);
+//            total = 0;
+//        }
+//        console.log(dataset.dataByDate);
+        
+        
+        //second 
+        //group by month
+        var currentM = null;
+        var currentY = null;
+        var sumInThatMonth = 0;
+        var first = true;
+
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            var date = trendObj.labelsByDate[i];
+            var cnt = dataset.dataByDate[i];
+            
+            var d = new Date(date);
+            var year = d.getFullYear();
+            var month = d.getMonth()+1;
+            
+            if(currentM != month || currentY != year){
+                if(first){
+                    first = false;
+                }else{
+                    dataset.dataByMonth.push(sumInThatMonth);
+                    sumInThatMonth = 0;
+                }
+                currentM = month;
+                currentY = year;
+            }
+            
+            sumInThatMonth += cnt;
+        }
+        //last one
+        dataset.dataByMonth.push(sumInThatMonth);
+        
+        
+        //thrid 
+        //group by week
+        var currentW = null;
+        var currentY = null;
+        var sumInThatWeek = 0;
+        var first = true;
+
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            var date = trendObj.labelsByDate[i];
+            var cnt = dataset.dataByDate[i];
+            
+            var d = new Date(date);
+            var year = d.getFullYear();
+            var week = d.getWeek();
+            
+            if(currentW != week || currentY != year){
+                if(first){
+                    first = false;
+                }else{
+                    dataset.dataByWeek.push(sumInThatWeek);
+                    sumInThatWeek = 0;
+                }
+                currentW = week;
+                currentY = year;
+            }
+            
+            sumInThatWeek += cnt;
+        }
+        //last one
+        dataset.dataByWeek.push(sumInThatWeek);
+        
+        
+        //4th step
+        //re-calculate of Gap
+        //by month
+        for (var i = 0; i < trendObj.labelsByMonth.length; ++i) {
+            var date = trendObj.labelsByMonth[i].split('-');
+//            console.log(date);
+            var year = date[0];
+            var month = date[1];
+            
+            var total = 0;
+            for(var j in data){
+                var d = data[j].date.split('-');
+//                console.log(d);
+                if(year == d[0] && month == ''+parseInt(d[1]))
+                    total += data[j].count;
+            }
+//            console.log(trendObj.labelsByMonth[i]+':'+total);
+            dataset.dataByMonth[i] = (dataset.dataByMonth[i] == 0) ? -1 :((dataset.dataByMonth[i]/total)/gapDevide-1);
+        }
+        
+        //by week
+        for (var i = 0; i < trendObj.labelsByWeek.length; ++i) {
+            var date = trendObj.labelsByWeek[i].split('- W');
+//            console.log(date);
+            var year = date[0];
+            var week = date[1];
+            
+            var total = 0;
+            for(var j in data){
+                var d = new Date(data[j].date);
+//                console.log(d);
+                if(year == d.getFullYear() && week == d.getWeek())
+                    total += data[j].count;
+            }
+//            console.log(trendObj.labelsByMonth[i]+':'+total);
+            dataset.dataByWeek[i] = (dataset.dataByWeek[i] == 0) ? -1 :((dataset.dataByWeek[i]/total)/gapDevide-1);
+        }
+        
+        //by date
+        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+            
+            if(dataset.dataByDate[i] == 0) continue;
+            var total = 0;
+            var date = trendObj.labelsByDate[i];
+            for(var j in data){
+                if(data[j].date == date)
+                    total += data[j].count;
+            }
+            
+            dataset.dataByDate[i] = (dataset.dataByDate[i] == 0) ? 0 :((dataset.dataByDate[i]/total)/gapDevide-1);
+            total = 0;
+        }
+        
+        trendObj.datasets.push(dataset);
+//        console.log(dataset);
+    }
+}
+
 function addingTotalLine(totalJson) {
     var totalData = totalJson;
 
@@ -1385,7 +1572,7 @@ function getActiveTrend(trend) {
     return activeTrend;
 }
 
-function createChartElement(){
+function createChartElement(opt){
     var node = document.createElement("canvas");
     node.className = "chart";
     node.id = 'trendChart';
@@ -1431,7 +1618,10 @@ function createChartElement(){
 
     $('#rightPopupContainer').append(container);
     var ctx = node.getContext("2d");
-    linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+    if(opt)
+        linechart = new Chart(ctx).Overlay(trendObj, opt);
+    else
+        linechart = new Chart(ctx).Overlay(trendObj, newOptions);
     
     //show up
     container.animate({
@@ -1494,24 +1684,24 @@ function createBranchChart(json, trendMode, branchName) {
     switch (trendMode) {
 
     case TREND_MODEL:
-        setTrendData(json.groupByModelResults);
+        setTrendData(json.groupByModelResults,json.gapDevide);
 //        addingTotalLine(json.groupByRegionResults);
         break;
 
     case TREND_DEVICE:
-        setTrendData(json.groupByDeviceResults);
+        setTrendData(json.groupByDeviceResults,json.gapDevide);
 //        addingTotalLine(json.groupByRegionResults);
         break;
     
     case TREND_BRANCH:
-        setTrendDataByRegion(json.groupByBranchResults,branchName);
+        setGapTrendData(json.groupByBranchResults,json.gapDevide,branchName);
 //        addingTotalLine(json.groupByRegionResults);
         break;
     }
     
     setActiveTrend(trendMode);
     //create chart element
-    createChartElement();
+    createChartElement(negOptions);
 
     updateColorInfo();
     loadingDismiss();
