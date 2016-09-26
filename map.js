@@ -33,6 +33,7 @@ function MapObject(mapname) {
         if (typeof this.map == "undefined") {
             this.map = L.map(containerID, {
                 layers: L.tileLayer("https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=" + token),
+                minZoom : 2
             });
             this.setInfo();
             this.setHighlightFeature();
@@ -161,7 +162,7 @@ function MapObject(mapname) {
                 if (allBranchObject.length > 0) {
                     if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
                         ctx.globalCompositeOperation = 'source-over';
-                        ctx.strokeStyle = "#FF0000";
+                        ctx.strokeStyle = "#66CC00";
                         ctx.lineWidth = 2;
                     } else {
                         ctx.globalCompositeOperation = 'destination-over';

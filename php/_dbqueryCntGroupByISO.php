@@ -35,16 +35,16 @@
 
 
 
-    $color = $_GET['color'];
-    $cpu = $_GET['cpu'];
-    $rearCamera = $_GET['rearCamera'];
-    $frontCamera = $_GET['frontCamera'];
-    $dataset = $_GET['dataset'];
-    $from = $_GET['from'];
-    $to = $_GET['to'];
-    $data = $_GET['data'];
-    $iso = $_GET['iso'];
-    $distBranch = $_GET['distBranch'];
+    $color = $_POST['color'];
+    $cpu = $_POST['cpu'];
+    $rearCamera = $_POST['rearCamera'];
+    $frontCamera = $_POST['frontCamera'];
+    $dataset = $_POST['dataset'];
+    $from = $_POST['from'];
+    $to = $_POST['to'];
+    $data = $_POST['data'];
+    $iso = $_POST['iso'];
+    $distBranch = $_POST['distBranch'];
 
     $countryArray = array();
 

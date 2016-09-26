@@ -397,7 +397,7 @@ function updateRegionChart(json, displayname, displaynum) {
     filterDisplayer.appendTo(leftPopup);
 
     //chart
-    createsingleRegionChart(json, TREND_REGION, displayname);
+    createsingleRegionChart(json, TREND_MODEL, displayname);
 
 //    bodyHide();
     //title re-position

@@ -57,7 +57,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             to: mapObj.toFormatStr,
             dataset: getDataset(),
         },
-        type: "GET",
+        type: "POST",
         dataType: 'json',
 
         success: function (json) {
@@ -212,7 +212,7 @@ function ajaxGetMarker() {
             to: mapObj.toFormatStr,
             dataset: getDataset(),
         },
-        type: "GET",
+        type: "POST",
         dataType: 'json',
 
         success: function (json) {
@@ -335,7 +335,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
             branch: branchName,
             iso: 'IND',
         },
-        type: "GET",
+        type: "POST",
         dataType: 'json',
 
         success: function (json) {
@@ -374,7 +374,7 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
             iso: iso,
             distBranch: JSON.stringify(observeDistBranch),
         },
-        type: "GET",
+        type: "POST",
         dataType: 'json',
 
         success: function (json) {
@@ -392,7 +392,7 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
 
 function ajaxTrendChart(mapObj) {
     var URLs = "php/_dbqueryGetTrend.php";
-    $.get(URLs, {
+    $.post(URLs, {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -455,7 +455,7 @@ function ajaxFetchTableValue(isComparison) {
             to: mapObj.toFormatStr,
             dataset: getDataset(),
         },
-        type: "GET",
+        type: "POST",
         dataType: 'json',
 
         success: function (json) {

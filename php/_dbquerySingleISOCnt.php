@@ -13,18 +13,18 @@
     $resultsGroupByDist = array();
     $resultsGroupByBranch = array();
 
-    $color = $_GET['color'];
-    $cpu = $_GET['cpu'];
-    $rearCamera = $_GET['rearCamera'];
-    $frontCamera = $_GET['frontCamera'];
-    $dataset = $_GET['dataset'];
-    $countryID = $_GET['countryID'];
-    $from = $_GET['from'];
-    $to = $_GET['to'];
-    $data = $_GET['data'];
-    $isL1 = $_GET['isL1'];
-    $iso = $_GET['iso'];
-    $distBranch = $_GET['distBranch'];
+    $color = $_POST['color'];
+    $cpu = $_POST['cpu'];
+    $rearCamera = $_POST['rearCamera'];
+    $frontCamera = $_POST['frontCamera'];
+    $dataset = $_POST['dataset'];
+    $countryID = $_POST['countryID'];
+    $from = $_POST['from'];
+    $to = $_POST['to'];
+    $data = $_POST['data'];
+    $isL1 = $_POST['isL1'];
+    $iso = $_POST['iso'];
+    $distBranch = $_POST['distBranch'];
 //    
 //    $color = '["all"]';
 //    $cpu = '["all"]';

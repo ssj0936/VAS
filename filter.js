@@ -219,6 +219,10 @@ function checkboxLocationInit() {
     var allUl = jQuery('<ul/>').appendTo($(ul));
 
     for (var terrorityName in allLoc) {
+        //work around
+        if(terrorityName == "CHINA")
+            continue;
+        
         var li = jQuery('<li/>').attr("class", "filter_country").appendTo($(allUl));
         jQuery('<span />', {
             class: "ui-icon ui-icon-circlesmall-plus",

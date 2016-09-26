@@ -27,27 +27,27 @@
         $totalTam += intval($split[1]);
     }
 
-//    $color = $_GET['color'];
-//    $cpu = $_GET['cpu'];
-//    $rearCamera = $_GET['rearCamera'];
-//    $frontCamera = $_GET['frontCamera'];
-//    $dataset = $_GET['dataset'];
-//    $branch = strtoupper($_GET['branch']);
-//    $from = $_GET['from'];
-//    $to = $_GET['to'];
-//    $data = $_GET['data'];
-//    $iso = $_GET['iso'];
+    $color = $_POST['color'];
+    $cpu = $_POST['cpu'];
+    $rearCamera = $_POST['rearCamera'];
+    $frontCamera = $_POST['frontCamera'];
+    $dataset = $_POST['dataset'];
+    $branch = strtoupper($_POST['branch']);
+    $from = $_POST['from'];
+    $to = $_POST['to'];
+    $data = $_POST['data'];
+    $iso = $_POST['iso'];
     
-    $color = '["all"]';
-    $cpu = '["all"]';
-    $rearCamera = '["all"]';
-    $frontCamera = '["all"]';
-    $dataset = 'activation';
-    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-    $from = "2015-8-15";
-    $to = "2016-9-14";    
-    $iso ='IND';
-    $branch = 'DELHI';
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $dataset = 'activation';
+//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
+//    $from = "2015-8-15";
+//    $to = "2016-9-14";    
+//    $iso ='IND';
+//    $branch = 'DELHI';
     
     $dataObj = json_decode($data);
     $colorObj = json_decode($color);
