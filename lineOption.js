@@ -216,7 +216,7 @@ var negOptions = {
 
     showTooltips: true,
     scaleLabel:function(label) { 
-        return '' + (label.value)*100 + ' %';
+        return '' + ((label.value)*100).toFixed(2) + ' %';
     },
 
     tooltipTemplate: function(label) {

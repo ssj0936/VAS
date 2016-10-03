@@ -267,6 +267,8 @@ function updateBranchChart(json,branchName) {
     var filterDisplayer = createFilterDisplayer();
     filterDisplayer.appendTo(leftPopup);
 
+    isNowBranchTrend = true;
+    $('button#btnTotalToggle').button("disable");
     //chart
     createBranchChart(json, TREND_BRANCH, branchName);
 }
@@ -353,7 +355,7 @@ function updateRegionChart(json, displayname, displaynum) {
 
     //option
     var trendList = [TREND_MODEL, TREND_DEVICE, TREND_REGION];
-    if(isDistBranchModeOn){
+    if(isDistBranchSelected){
         trendList.push(TREND_DIST);
         trendList.push(TREND_BRANCH);
     }
@@ -484,7 +486,7 @@ function updateTrendChart(json) {
         .appendTo(title);
 
     var trendList = [TREND_MODEL, TREND_DEVICE, TREND_COUNTRY];
-    if(isDistBranchModeOn){
+    if(isDistBranchSelected){
         trendList.push(TREND_DIST);
         trendList.push(TREND_BRANCH);
     }
@@ -980,6 +982,7 @@ function popupChartShow(needToLockScroll) {
         )
         .appendTo($('#popupChartContainer'))
         .click(function () {
+            if(isLoading()) return;
             popupChartClose(needToLockScroll);
         });
     bodyHide();
@@ -1417,7 +1420,7 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
             var total = 0;
             for(var j in data){
                 var d = new Date(data[j].date);
-                if(year == d.getFullYear() && month == (d.getMonth+1))
+                if(year == d.getFullYear() && month == (d.getMonth()+1))
                     total += data[j].count;
             }
 //            console.log(trendObj.labelsByMonth[i]+':'+total);
@@ -1685,12 +1688,12 @@ function createBranchChart(json, trendMode, branchName) {
     switch (trendMode) {
 
     case TREND_MODEL:
-        setTrendData(json.groupByModelResults,json.gapDevide);
+        setGapTrendData(json.groupByModelResults,json.gapDevide);
 //        addingTotalLine(json.groupByRegionResults);
         break;
 
     case TREND_DEVICE:
-        setTrendData(json.groupByDeviceResults,json.gapDevide);
+        setGapTrendData(json.groupByDeviceResults,json.gapDevide);
 //        addingTotalLine(json.groupByRegionResults);
         break;
     
@@ -1850,7 +1853,8 @@ function createTable() {
 
 function showGapTrend(mapObj,branchName){
     if (observeTarget.length > 0 && !mapObj.isEmpty) {
-//        loading("Creating Chart...");
+//        console.log(branchName);
+        loading("Creating Chart...");
         scrollToTop();
         popupChartShow(true);
         ajaxTrendOfBranchChart(mapObj,branchName);

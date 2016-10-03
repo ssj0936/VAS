@@ -15,18 +15,18 @@
     if($branchName != '[]') {
         $branchName = json_decode($branchName,true);
         $branchString = implode("','",$branchName);
-        $branchString = "'".$branchString."'";
 
         $db->query(
             "SELECT Loc_BranchName,object_id"
             ." FROM $tablename"
-            .(($branchString == 'all') ? "" : " where Loc_BranchName in (".$branchString.")")
+            .(($branchString == 'all') ? "" : " where Loc_BranchName in ('".$branchString."')")
             .";"
         );
         $objectUnion = array();
         while ($row = $db->fetch_array()) {
             $tmp = json_decode($row['object_id'],true);
-            $result[$row['Loc_BranchName']] = $tmp;
+            $branchName = strtoupper($row['Loc_BranchName']);
+            $result[$branchName] = $tmp;
             $objectUnion = array_unique(array_merge($objectUnion,$tmp));
         }
         foreach($objectUnion as $value) {

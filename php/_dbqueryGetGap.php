@@ -16,8 +16,9 @@
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
 //    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-//    $from = "2015-8-15";
-//    $to = "2016-9-14";    
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $from = "2014-8-31";
+//    $to = "2016-9-30";    
 //    $iso ='["IND"]';
 
     $color = $_GET['color'];
@@ -84,7 +85,7 @@
                         ."$deviceTable device_model"
 
                         ." WHERE "
-                        ."date BETWEEN '".$from."' AND '".$to."'"
+                        ." date BETWEEN '".$from."' AND '".$to."'"
                         ." AND A1.model = device_model.device_name"
                         .($isAll?"":" AND model IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
@@ -119,7 +120,6 @@
     foreach($countryArray as $branch => $countryData) {
         arsort($countryData['models']);
         $branchName = strtoupper($branch);
-        $branchName = str_replace('_','',$branchName);
         $results[$branchName] = array(
                 'cnt' => ($countryData['count']),
                 'models' => ($countryData['models'])
@@ -148,18 +148,11 @@
         $split = explode(',', $val);
         
         $branchName = strtoupper($split[0]);
-        $branchName = str_replace('_','',$branchName);
         $tam[$branchName] = intval($split[1]);
         $totalTam += intval($split[1]);
     }
 //    print_r($tam);
-
-
-//    foreach($results as $key => $val){
-//        $objID = $key;
-//        if(!isset($objectBranchMapping[$key]))
-//            echo $key.",";
-//    }
+//    echo $totalTam."<br><br>";
 
     //combine all data
     $result = array();
@@ -174,9 +167,11 @@
 
     //tam cal
     $tamResult = array();
-    foreach($result as $branchName => $modelsCnt){
-        foreach($modelsCnt as $modelname => $modelCnt){
-            $tam_ = ($results['total']['total'] == 0) ? -1 :(($modelCnt/$results['total']['total'])/($tam[$branchName]/$totalTam))-1;
+    foreach($result as $branchName => $modelsArr){
+        foreach($modelsArr as $modelname => $modelCnt){
+            if(!isset($tam[$branchName])) continue;
+            
+            $tam_ = ($results['total'][$modelname] == 0) ? -1 :(($modelCnt/$results['total'][$modelname])/($tam[$branchName]/$totalTam))-1;
             $tamResult[$branchName][$modelname] = round($tam_,4);
         }
     }

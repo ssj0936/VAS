@@ -83,13 +83,13 @@ function buttonInit() {
             }
         }
         
-        if ($(this).attr("id") == "gaptrend") {
-            if (!$(this).hasClass('active')) {
-                isNowBranchTrend = true;
-                showGapTrend(firstMap,'DELHI');
-                return;
-            }
-        }
+//        if ($(this).attr("id") == "gaptrend") {
+//            if (!$(this).hasClass('active')) {
+//                isNowBranchTrend = true;
+//                showGapTrend(firstMap,'DELHI');
+//                return;
+//            }
+//        }
 
         var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
         var isTargetButtonSet = ($(this).attr("id") == 'region' || $(this).attr("id") == 'marker') ? true : false;
@@ -168,6 +168,8 @@ function unactiveModeBtn($this) {
         //console.log("unactiveModeBtn_comparison");
         break;
     case "gap":
+        firstMap.removePolygonMap();
+        cleanBranch();
         setModeOff(MODE_GAP);
         break;
     }
@@ -195,7 +197,7 @@ function activeModeBtn($this) {
         break;
     case "gap":
         setModeOn(MODE_GAP);
-        ajaxGetGapData();
+        submitGap();
         break;
     }
 }
@@ -453,8 +455,6 @@ function submitBtnSetting() {
             console.log(observeTarget);
 
             observeTargetDeviceOnly = observeTargetDeviceOnlyTmp.slice();
-//            console.log("observeTargetDeviceOnly:");
-//            console.log(observeTargetDeviceOnly);
             
             observeLoc = observeLocTmp.slice();
             console.log("observeLoc:");
@@ -473,6 +473,16 @@ function submitBtnSetting() {
             
             saveLog();
             //default mode = region
+            if ($("#mode button#gap").hasClass("active")) {
+                if(!isGapButtonCanShow){
+                    setModeOn(MODE_REGION);
+                    modeBtnPress($("button#region"));
+                    filterRecordClean();
+                    filterRecord();
+                }else{
+                    submitGap();
+                }
+            }
             if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
                 setModeOn(MODE_COMPARISION);
                 if (!$("button#comparison").hasClass("active"))
@@ -544,16 +554,7 @@ function submitBtnSetting() {
             
             
             //decide whether need to show dist/branch filter or not
-            //create dist branch filter
-            var needToShowDistBranch = false;
-            for(var i in observeLoc){
-                if(countryNeedToShowDistBranch.indexOf(observeLoc[i]) != -1){
-                    needToShowDistBranch = true;
-                    break;
-                }
-            }
-
-            if(needToShowDistBranch && observeLoc.length == 1){
+            if(isGapButtonCanShow && !isDistBranchSelected){
                 $('button#gap').show();
             }else{
                 $('button#gap').hide();
@@ -571,6 +572,16 @@ function modeBtnPress($this) {
     $this.addClass("active");
 }
 
+function submitGap(){
+    loading("Data loading...");
+    observeBranchName = ['all'];
+    ajaxGetGapData(function() {
+        ajaxGetBranchObject (function() {
+            ajaxFetchMapValue(false,false);
+        });
+    });
+}
+
 function submitRegion() {
     loading("Data loading...");
     if (observeTarget.length == 0) {
@@ -582,8 +593,8 @@ function submitRegion() {
         //enableResultBtn();
     } else {
         ajaxGetBranchObject(function(){
-            //same world region, no need to re-fetch
-            if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc)) {
+            //same world region, no need to re-fetch/*
+            if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !isMapModified) {
                 console.log("same world region");
                 if (observeTarget.length != 0) {
                     ajaxFetchMapValue(false, false);

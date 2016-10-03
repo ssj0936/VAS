@@ -172,6 +172,9 @@
                         if (isModeActive(MODE_COMPARISION)) {
                             submitComparision();
                         }
+                        if (isModeActive(MODE_GAP)) {
+                            submitGap();
+                        }
 
                         $(this).off();
                         $(this).remove();

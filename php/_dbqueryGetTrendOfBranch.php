@@ -22,7 +22,6 @@
         $split = explode(',', $val);
         
         $branchName = strtoupper($split[0]);
-        $branchName = str_replace('_','',$branchName);
         $tam[$branchName] = intval($split[1]);
         $totalTam += intval($split[1]);
     }

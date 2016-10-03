@@ -616,8 +616,10 @@ function filterRecord(){
         });
     });
 
-    //record whether dist branch mode on
-    isDistBranchModeOn = (observeDistBranch.length > 0) ? true : false;
+    //whether Gap button can show(no branch/dist selected & only one country be select & country in the list)
+    isGapButtonCanShow = (observeDistBranch.length == 0 && observeLoc.length == 1 && $.inArray(observeLoc[0], countryNeedToShowDistBranch) != -1) ? true : false;
+    //whether any branch/dist be selected
+    isDistBranchSelected = (observeDistBranch.length > 0) ? true : false;
 
     //get selected branch
     observeBranchName.length = 0;

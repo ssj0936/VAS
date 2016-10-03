@@ -74,7 +74,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             if (mapObj.countryMapping && mapObj.countryMapping.length != 0)
                 mapObj.countryMapping.length = 0;
             mapObj.countryMapping = json.slice();
-            //console.log(mapObj.countryMapping);
+//            console.log(mapObj.countryMapping);
 
             //piechart
             //updateTrendChart(isComparison);
@@ -339,7 +339,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
         dataType: 'json',
 
         success: function (json) {
-            console.log(json);
+//            console.log(json);
             //empty data set
             updateBranchChart(json,branchName);
         },
@@ -653,6 +653,8 @@ function ajaxGetBranchObject(callback){
                 delete json.union;
                 allHighlighBranch = json;
                 json = null;
+//                console.log(allBranchObject);
+//                console.log(allHighlighBranch);
                 callback();
             },
             error: function(jqXHR, textStatus, errorThrown) {},
@@ -720,6 +722,8 @@ function ajaxSaveLog(){
 }
 
 function ajaxGetGapData(callback){
+    console.log(firstMap.fromFormatStr);
+    console.log(firstMap.toFormatStr);
     $.ajax({
         type:'GET',
         url: 'php/_dbqueryGetGap.php',
@@ -736,12 +740,16 @@ function ajaxGetGapData(callback){
             dataset: getDataset(),
         },
         success: function(json){
-            console.log(json);
-
+//            console.log(json);
+//            setModeOn(MODE_GAP);
+            allBranchGap = json;
             if(callback)
                 callback();
         },
-        error: function(jqXHR, textStatus, errorThrown) {},
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxGetGapData:" + xhr.status);
+            alert(thrownError);
+        }
     });
     
 }

@@ -83,6 +83,16 @@ function MapObject(mapname) {
         for (var i = 0; i < this.jsonData.features.length; ++i) {
             var countryID = this.jsonData.features[i].properties.OBJECTID;
 
+            //delete place not owned by any branch
+            if (isModeActive(MODE_GAP)) {
+                if($.inArray(countryID,allBranchObject) == -1) {
+                    this.jsonData.features.splice(i, 1);
+                    isMapModified = true;
+                    i--;
+                    continue;
+                }
+            }
+
             var find = this.countryMapping.filter(function (obj) {
                 return obj.countryID == countryID
             });
@@ -140,6 +150,8 @@ function MapObject(mapname) {
 
             var ctx = params.canvas.getContext('2d');
             ctx.globalCompositeOperation = 'destination-over';
+            ctx.strokeStyle = 'white';
+            ctx.lineJoin = "round";
 
             var tile = obj.tileIndex.getTile(params.tilePoint.z, params.tilePoint.x, params.tilePoint.y);
             if (!tile) {
@@ -150,7 +162,8 @@ function MapObject(mapname) {
             ctx.clearRect(0, 0, params.canvas.width, params.canvas.height);
 
             var features = tile.features;
-            ctx.strokeStyle = 'white';
+//            console.log(features);
+//            console.log(allHighlighBranch);
 
             for (var i = 0; i < features.length; i++) {
                 var feature = features[i],
@@ -158,8 +171,23 @@ function MapObject(mapname) {
 
                 //style option
                 ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
-                ctx.lineJoin = "round";
-                if (allBranchObject.length > 0) {
+                //if gap mode fill gap color
+                if (isModeActive(MODE_GAP)) {
+                    var fillBranch;
+                    $.each(allHighlighBranch,function (branch,object) {
+                        if($.inArray(feature.tags.OBJECTID,object) != -1) {
+                            fillBranch = branch;
+                            return false;
+                        }
+                    });
+//                    console.log(fillBranch);
+                    if (allBranchGap && fillBranch && allBranchGap[fillBranch]) {
+                        ctx.fillStyle = colorHexToRGBString(obj.getGapColor(allBranchGap[fillBranch].total) , 0.5);
+                    } 
+                }
+
+                if (allBranchObject.length > 0 && !isModeActive(MODE_GAP)) {
+                    // if not in gap mode and some branch has been selected, use another stroke
                     if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
                         ctx.globalCompositeOperation = 'source-over';
                         ctx.strokeStyle = "#66CC00";
@@ -227,17 +255,32 @@ function MapObject(mapname) {
                 labels = [];
 
             // loop through our density intervals and generate a label with a colored square for each interval
-            div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
-            for (var i = 0; i < grades.length - 1; i++) {
-                div.innerHTML +=
-                    '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getColor((grades[i] + 1)) + '"></i> ' +
-                    numToString(grades[i]) + '&ndash;' + numToString(grades[i + 1]) + '</div>';
+            if (!isModeActive(MODE_GAP)) {
+                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
+                for (var i = 0; i < grades.length - 1; i++) {
+                    div.innerHTML +=
+                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getColor((grades[i] + 1)) + '"></i> ' +
+                        numToString(grades[i]) + '&ndash;' + numToString(grades[i + 1]) + '</div>';
+                }
+                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getColor((colorPattern[patternIndex] + 1)) + '"></i> ' + numToString(colorPattern[patternIndex]) + "+" + "</div>";
+                return div;
+            } else {
+                // in gap mode, change legend style
+                grades = [-0.4, -0.2, 0, 0.2];
+                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getGapColor(-99) + '"></i>< -40%</div> ';
+                for (var i = 0; i < grades.length - 1; i++) {
+                    div.innerHTML +=
+                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getGapColor(grades[i]) + '"></i>' +
+                        numToString(grades[i]*100) + '% &ndash; ' + numToString(grades[i + 1]*100) + '%</div>';
+                }
+                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getGapColor(99) + '"></i>>= 20%</div>';
+                return div;
             }
-            div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getColor((colorPattern[patternIndex] + 1)) + '"></i> ' + numToString(colorPattern[patternIndex]) + "+" + "</div>";
-            return div;
         };
         this.legend.addTo(this.map);
-        this.legendColorHoverSetting();
+        //if not in gap mode, can highlight the label on legend
+        if (!isModeActive(MODE_GAP))
+            this.legendColorHoverSetting();
     };
 
     this.setInfo = function () {
@@ -272,31 +315,37 @@ function MapObject(mapname) {
             var btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
             var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
             var totalStr = "<table class = 'model_table'>";
-            if (props) {
-                var displayName = props.NAME_2;
-                if (!isInArray(forcingName2List, props.ISO) && (isL1(mapObj) || isInArray(forcingName1List, props.ISO))) {
-                    displayName = props.NAME_1;
-                }
-                if (!$.isEmptyObject(props.models)) {
-                    var liStr = '';
-                    $.each(props.models, function (k, e) {
-                        liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
-                    });
-                    modelStr += liStr;
-                }
+            if (isModeActive(MODE_GAP)) {
+                // gap info
+                currentPointingBranch = props;
+                this._div.innerHTML = timeStr + this.updateGap(props)/* + ((props)?btnPieChartStr:'')*/;
             } else {
-                if (!$.isEmptyObject(mapObj.modelCnt)) {
-                    var liStr = '';
-                    $.each(mapObj.modelCnt, function (k, e) {
-                        liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
-                    });
-                    modelStr += liStr;
+                if (props) {
+                    var displayName = props.NAME_2;
+                    if (!isInArray(forcingName2List, props.ISO) && (isL1(mapObj) || isInArray(forcingName1List, props.ISO))) {
+                        displayName = props.NAME_1;
+                    }
+                    if (!$.isEmptyObject(props.models)) {
+                        var liStr = '';
+                        $.each(props.models, function (k, e) {
+                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
+                        });
+                        modelStr += liStr;
+                    }
+                } else {
+                    if (!$.isEmptyObject(mapObj.modelCnt)) {
+                        var liStr = '';
+                        $.each(mapObj.modelCnt, function (k, e) {
+                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
+                        });
+                        modelStr += liStr;
+                    }
                 }
+                modelStr += "</table></div>";
+                totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + numToString(parseInt(props.activationCnt)) + "</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(parseInt(mapObj.totalCnt)) + "</td></tr>");
+                totalStr += "</table>";
+                this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnPieChartStr);
             }
-            modelStr += "</table></div>";
-            totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + numToString(parseInt(props.activationCnt)) + "</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(parseInt(mapObj.totalCnt)) + "</td></tr>");
-            totalStr += "</table>";
-            this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnPieChartStr);
 
             if ($(".legend_" + mapObj.mapName).length > 0) {
                 var maxHeight = $("#mapContainer").height() - ($(".legend_" + mapObj.mapName).outerHeight() + 150);
@@ -304,14 +353,58 @@ function MapObject(mapname) {
                 //                console.log('maxHeight change:'+maxHeight);
             }
             //no need to display info all the time
-            if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION))
-                $('#showModelCount' + mapObj.mapName).hide();
+            if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION) && !isModeActive(MODE_GAP))
+                $('#showModelCount_' + mapObj.mapName).hide();
 
             if (observeTarget.length == 0) {
                 //                console.log(observeTarget);
                 $('.infoDiv').hide();
             }
         };
+        this.info.updateGap = function (branch) {
+            var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
+            var totalStr = "<table class = 'model_table'>";
+            var infoContent = '';
+            if (branch) {
+                var displayName = branch;
+                if (!$.isEmptyObject(allBranchGap[branch])) {
+                    var liStr = '';
+                    $.each(allBranchGap[branch], function (k, e) {
+                        if (k != 'total') { 
+                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e*100) + "%</td></tr>";
+                        }
+                    });
+                    modelStr += liStr;
+                }
+            } else {
+                if (!$.isEmptyObject(allBranchGap)) {
+                    var liStr = '';
+                    $.each(allBranchGap, function (k, e) {
+                        liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e.total*100) + "%</td></tr>";
+                    });
+                    modelStr += liStr;
+                }
+            }
+            modelStr += "</table></div>";
+            
+            if(branch){
+                totalStr += "<tr>";
+                totalStr += "<td>" + displayName + " </td>";
+                if(allBranchGap[branch]){
+                    totalStr += "<td class = 'model_table_count'> " + numToString(parseInt(allBranchGap[branch].total*100)) + "%</td>";
+                }
+                totalStr+="</tr>";
+            }
+            totalStr += "</table>";
+            
+            if (branch) {
+                infoContent = ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
+            }
+            else {
+                infoContent = ('<div class="infoDiv">' + modelStr + '</div>');
+            }
+            return infoContent;
+        }
         this.info.addTo(mapObj.map);
     };
 
@@ -387,7 +480,9 @@ function MapObject(mapname) {
                     preLayerJson = -1;
                     simplifyJson = null;
                     //clean info
+
                     mapObj.info.update();
+
                 }
             } else if (layerJson.properties.OBJECTID != preLayerJson) {
                 if (mapObj.highlight) {
@@ -408,6 +503,11 @@ function MapObject(mapname) {
                         simplifyJson.geometry.coordinates.push(simplifyGeometry(layerJson.geometry.coordinates[k], torance));
                     }
                 }
+                if(allHighlighBranch && isModeActive(MODE_GAP)) {
+                    // highlight branch region
+                    var branchLayer = mapObj.getHighlightBranchLayer(layerJson);
+                    simplifyJson = (branchLayer != null)?branchLayer:simplifyJson;
+                }
                 //construct highlight layer
                 mapObj.highlight = new L.geoJson(simplifyJson, {
                         style: {
@@ -421,31 +521,48 @@ function MapObject(mapname) {
                     .on('click', function (e) {
                         //set popup
                         if (!isPointPopup) {
-                            var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
-                            //                        console.log(displayName);
-                            if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                                layerJson.properties.NAME_1;
+                            if(isModeActive(MODE_GAP)){
+                                if(currentPointingBranch == null) return;
+                                
+                                var displayName = currentPointingBranch;
+                                var buttonHTML = "<button class ='showChart' " + "onclick =showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')>Show trend</button>";
+                                var popup = "<div class='pop'>" + displayName + buttonHTML+ "</div>";
+                                mapObj.map.openPopup(popup, e.latlng);
+
+                                //zoom to location
+                                mapObj.zoomToFeature(e);
                             }
+                            else{
+                                var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
+                                //                        console.log(displayName);
+                                if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
+                                    layerJson.properties.NAME_1;
+                                }
 
-                            var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
-                            var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
-                            var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
-                            mapObj.map.openPopup(popup, e.latlng);
+                                console.log(layerJson);
+                                console.log(e);
+                                var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
+                                var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
+                                var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                                mapObj.map.openPopup(popup, e.latlng);
 
-                            //zoom to location
-                            mapObj.zoomToFeature(e);
+                                //zoom to location
+                                mapObj.zoomToFeature(e);
+                            }
                         } else {
                             clickPoint(e);
                         }
                     })
                     .addTo(mapObj.map);
                 //$('.leaflet-overlay-pane svg').css( "pointer-events", "none" );
-
-                simplifyJson = null;
-
                 //update the info
-                mapObj.info.update(layerJson.properties);
+                if (simplifyJson.branch && isModeActive(MODE_GAP)) {
+                    mapObj.info.update(simplifyJson.branch);
+                } else {
+                    mapObj.info.update(layerJson.properties);
+                }
                 preLayerJson = layerJson.properties.OBJECTID;
+                simplifyJson = null;
             }
         });
         this.map.on('zoomstart', function (e) {canvasArray = [];});
@@ -569,6 +686,14 @@ function MapObject(mapname) {
             '#FED976';
     };
 
+    this.getGapColor = function (d) {
+        return d >= 0.2 ? '#FF0000' :
+            d >= 0 ? '#FF8800' :
+            d >= -0.2 ? '#77FF00' :
+            d >= -0.4 ? '#00FFCC' :
+            '#0000FF';
+    }
+
     this.hideLegend = function () {
         if ($(".legend_" + this.mapName).length != 0) {
             //console.log("firstMap hideLegend()");
@@ -608,6 +733,62 @@ function MapObject(mapname) {
                 }
             }
         }
+    };
+
+    this.getHighlightBranchLayer = function (hoverLayer) {
+        var mapObj = this;
+        var highlightGeojson;
+        var branchName;
+        var branchObjectID;
+        var highlightGeojsonArray;
+        $.each(allHighlighBranch,function(branch,array) {
+            if($.inArray(hoverLayer.properties.OBJECTID,array) != -1) {
+                branchObjectID = array;
+                branchName = branch;
+                return false;
+            }
+        });
+
+        if (branchObjectID) {
+            highlightGeojsonArray = mapObj.jsonData.features.filter(function(feature) {
+                return $.inArray(feature.properties.OBJECTID, branchObjectID) != -1;
+            });
+
+            if (highlightGeojsonArray.length > 0) {
+                highlightGeojson = {
+                    "type" : "FeatureCollection",
+                    "features" : []
+                }
+                $.each(highlightGeojsonArray,function(index,feature) {
+                    var torance = 1 / (Math.pow(mapObj.map.getZoom(), 3) + 1);
+                    highlightGeojson.features[index] = {
+                        "type": "Feature",
+                        "properties": {},
+                        "geometry": {
+                            "type": "MultiPolygon",
+                            "coordinates": []
+                        }
+                    };
+                    if (feature.geometry.type == 'MultiPolygon') {
+                        for (var k = 0; k < feature.geometry.coordinates.length; k++) {
+                            highlightGeojson.features[index].geometry.coordinates[k] = [];
+                            for (var i = 0; i < feature.geometry.coordinates[k].length; i++) {
+                                highlightGeojson.features[index].geometry.coordinates[k].push(simplifyGeometry(feature.geometry.coordinates[k][i], torance));
+                            }
+                        }
+                    } else {
+                        highlightGeojson.features[index].geometry.type = 'Polygon';
+                        for (var k = 0; k < feature.geometry.coordinates.length; k++) {
+                            highlightGeojson.features[index].geometry.coordinates.push(simplifyGeometry(feature.geometry.coordinates[k], torance));
+                        }
+                    }
+                });
+            }
+        }
+        if (highlightGeojson) {
+            highlightGeojson['branch'] = branchName;
+        }
+        return highlightGeojson;
     };
 }
 

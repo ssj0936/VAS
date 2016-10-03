@@ -15,10 +15,10 @@ function isHighlightNeeded() {
     if (observeTarget.length == 0)
         return false;
     //only mark mode is active -> disable
-    if (!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER) && !isModeActive(MODE_COMPARISION))
+    if (!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER) && !isModeActive(MODE_COMPARISION) && !isModeActive(MODE_GAP))
         return false;
     //all 3 modes are not active -> disable
-    if (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER) && !isModeActive(MODE_COMPARISION))
+    if (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER) && !isModeActive(MODE_COMPARISION) && !isModeActive(MODE_GAP))
         return false;
     return true;
 }
@@ -86,6 +86,8 @@ function setModeOn(mode) {
         isMarkerOn = true;
     } else if (mode == MODE_COMPARISION) {
         isComparisonOn = true;
+    } else if (mode == MODE_GAP) {
+        isGapOn = true;
     }
 }
 
@@ -96,6 +98,8 @@ function setModeOff(mode) {
         isMarkerOn = false;
     } else if (mode == MODE_COMPARISION) {
         isComparisonOn = false;
+    } else if (mode == MODE_GAP) {
+        isGapOn = false;
     }
 }
 
@@ -106,6 +110,8 @@ function isModeActive(mode) {
         return isMarkerOn;
     } else if (mode == MODE_COMPARISION) {
         return isComparisonOn;
+    } else if (mode == MODE_GAP) {
+        return isGapOn;
     }
 }
 
@@ -431,6 +437,13 @@ function deg2num(lat_deg, lon_deg, zoom) {
 function saveLog(){
     if(account == "Developer") return;
     ajaxSaveLog();
+}
+
+function cleanBranch() {
+    filterRecordClean();
+    allBranchObject.length = 0;
+    allHighlighBranch = null;
+    allBranchGap = null;
 }
 
 //REF: http://www.epochconverter.com/weeknumbers
