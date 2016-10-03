@@ -183,7 +183,9 @@ function MapObject(mapname) {
 //                    console.log(fillBranch);
                     if (allBranchGap && fillBranch && allBranchGap[fillBranch]) {
                         ctx.fillStyle = colorHexToRGBString(obj.getGapColor(allBranchGap[fillBranch].total) , 0.5);
-                    } 
+                    } else if (typeof fillbranch == 'undefined') {
+                        ctx.fillStyle = colorHexToRGBString(obj.getColor(0) , 0.5);
+                    }
                 }
 
                 if (allBranchObject.length > 0 && !isModeActive(MODE_GAP)) {
