@@ -8,7 +8,7 @@
     //$tablename = "[php_login_test].[dbo].[random_device_color]";
     $tablename = "[dudududadada].[dbo].[branch_to_object]";
     $db = new DB();
-    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbname']);
+    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 
     $branchName = $_GET['branchName'];
     $result = array();

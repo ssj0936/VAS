@@ -17,7 +17,7 @@
     $maxDate='';
     
     $db = new DB();
-    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbname']);
+    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     
 //    $data='[{"model":"K01Q","devices":"FE375CL","datatype":"devices"},{"model":"K00Z","devices":"ME175CG","datatype":"devices"}]';
 //    $data='[{"model":"all","devices":"all","datatype":"model"}';
