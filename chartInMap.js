@@ -37,7 +37,10 @@ function createFunctionalBtn(){
         })
         .text('EXPORT')
         .click(function () {
-            return exportFile(getActiveTrend(), true);
+            if(isModeActive(MODE_GAP))
+                return gapReportExportSetting();
+            else
+                return exportFile(getActiveTrend(), true);
         })
         .button()
     )
@@ -1448,7 +1451,10 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
         //by date
         for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
             
-            if(dataset.dataByDate[i] == 0) continue;
+            if(dataset.dataByDate[i] == 0){
+                dataset.dataByDate[i] = -1;
+                continue;
+            }
             var total = 0;
             var date = trendObj.labelsByDate[i];
             for(var j in data){
@@ -1456,8 +1462,7 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
                     total += data[j].count;
             }
             
-            dataset.dataByDate[i] = (dataset.dataByDate[i] == 0) ? 0 :((dataset.dataByDate[i]/total)/gapDevide-1);
-            total = 0;
+            dataset.dataByDate[i] = (dataset.dataByDate[i]/total)/gapDevide-1;
         }
         
         trendObj.datasets.push(dataset);
@@ -1771,7 +1776,7 @@ function createTrendChart(json, trendMode) {
 function updateColorInfo() {
     var infoDiv = $('#trendColorInfo');
     infoDiv.css({
-        'width': '12%',
+        'max-width': '15%',
 //        'overflow-y': 'auto',
         'top': '' + getWindowHeightPercentagePx(0.15) + 'px',
     });
@@ -1859,4 +1864,38 @@ function showGapTrend(mapObj,branchName){
         popupChartShow(true);
         ajaxTrendOfBranchChart(mapObj,branchName);
     }
+}
+
+function gapExportToExcel(text){
+    var blob = new Blob([text], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+    });
+    var strFile = '[' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + ']' + "_GapReport.xls";
+    saveAs(blob, strFile);
+    loadingDismiss();
+}
+
+function gapReportExportSetting(){
+
+    var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ? 
+        (jQuery('<div/>',{id:'exportTypeDialogDiv'}).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
+        ($('#exportTypeDialogDiv'));
+    exportTypeDialogDiv.dialog({
+        modal: true,
+        resizable: false,
+        width: 500,
+        show: {
+            effect: "blind",
+            duration: 100
+        },
+        buttons: {
+            'Group By Model': function () {
+                ajaxGetGapExport('model');
+            },
+            'Group By Branch': function () {
+                ajaxGetGapExport('branch');
+            },
+        }
+    });
+    exportTypeDialogDiv.dialog('open');
 }

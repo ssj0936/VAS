@@ -46,7 +46,7 @@
 //    $from = "2015-8-15";
 //    $to = "2016-9-14";    
 //    $iso ='IND';
-//    $branch = 'DELHI';
+//    $branch = 'PUNJAB';
     
     $dataObj = json_decode($data);
     $colorObj = json_decode($color);
@@ -115,10 +115,11 @@
         
 //        if($row['branch'] != $branch) continue;
         
+        $isTargetBranch = false;
        $resultsGroupByBranch[$branch][] = array(
           'date' => ($row['date']),
           'count' => ($row['count']),
-          'isTargetBranch' => ($row['branch'] == $branch) ? true : false,
+          'isTargetBranch' => (isSame($row['branch'] ,$branch)) ? true : false,
        );
         
         if($first){
@@ -168,7 +169,7 @@
             //'model' => ($row['model_name']),
             'count' => ($row['count']),
             'date' => ($row['date']),
-          'isTargetBranch' => ($row['branch'] == $branch) ? true : false,
+            'isTargetBranch' => (isSame($row['branch'] ,$branch)) ? true : false,
         );
     }
 
@@ -214,7 +215,7 @@
             //'model' => ($row['model_name']),
             'count' => ($row['count']),
             'date' => ($row['date']),
-          'isTargetBranch' => ($row['branch'] == $branch) ? true : false,
+            'isTargetBranch' => (isSame($row['branch'] ,$branch)) ? true : false,
         );
     }
 
@@ -238,4 +239,16 @@
 	// function sqlsrvfyTableName($tablename){
 		// return '['.$GLOBALS['_DB']['dbname'].'].[dbo].['.$tablename.']';
 	// }
+
+    function isSame($a,$b){
+        $_a = $a;
+        $_a = strtolower($_a);
+        $_a = str_replace(array("'",'"','-',','," ","(",")"),"",$_a);
+        
+        $_b = $b;
+        $_b = strtolower($_b);
+        $_b = str_replace(array("'",'"','-',','," ","(",")"),"",$_b);
+        
+        return ($_a == $_b);
+    }
 ?>

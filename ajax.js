@@ -722,8 +722,8 @@ function ajaxSaveLog(){
 }
 
 function ajaxGetGapData(callback){
-    console.log(firstMap.fromFormatStr);
-    console.log(firstMap.toFormatStr);
+//    console.log(firstMap.fromFormatStr);
+//    console.log(firstMap.toFormatStr);
     $.ajax({
         type:'GET',
         url: 'php/_dbqueryGetGap.php',
@@ -752,4 +752,30 @@ function ajaxGetGapData(callback){
         }
     });
     
+}
+
+function ajaxGetGapExport(groupBy){
+    loading('File creating...');
+//    console.log(currentPointingBranch);
+    $.post(
+        "php/_dbqueryGetGapExport.php",
+        {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            iso: JSON.stringify(observeLoc),
+            data: JSON.stringify(observeTarget),
+            from: firstMap.fromFormatStr,
+            to: firstMap.toFormatStr,
+            dataset: getDataset(),
+            distBranch: JSON.stringify(observeDistBranch),
+            groupBy:groupBy,
+        },
+        function (text) {
+//            console.log(text);
+            gapExportToExcel(text);
+        },
+        'text'
+    );
 }
