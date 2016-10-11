@@ -596,7 +596,93 @@ function createDistBranchCheckBox(){
             }).appendTo(li);
         }
     }
+
+    //online -> dist
+    var container = $('#onlineDist');
     
+    var ul = jQuery('<ul/>').appendTo(container);
+    var li = jQuery('<li/>').attr("id", "filter_onlineDist_li").appendTo(ul);
+    jQuery('<input/>', {
+        id: 'filter_onlineDist_' + "all",
+        type: 'checkbox',
+        value: 'all',
+        'data-online':'all',
+        'data-dist':'all',
+        'data-isDeepestLevel':false,
+        name: "onlineDist",
+    }).appendTo($(li));
+    jQuery('<label/>', {
+        text: "All",
+        for: 'filter_onlineDist_' + "all",
+    }).appendTo(li);
+
+    var onlineUl = jQuery('<ul/>').appendTo(ul);
+    
+    
+    for(var i in onlineDist){
+        var online = onlineDist[i].online_dist;
+        var distList = onlineDist[i].dist;
+        
+        var li = jQuery('<li/>').appendTo(onlineUl);
+        //all product
+        //collapse icon
+        jQuery('<span />', {
+                class: "ui-icon ui-icon-circlesmall-plus",
+            })
+            .css({
+                'display': 'inline-block',
+                'font-size': '18px',
+                'height': '12px',
+                'width': '12px',
+                'margin-right': '3px',
+            })
+            .click(function () {
+                if ($(this).hasClass('ui-icon-circlesmall-plus')) {
+                    $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
+                } else {
+                    $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+                }
+                $(this).parent().next('ul').slideToggle();
+            })
+            .appendTo(li)
+
+        jQuery('<input/>', {
+            id: 'filter_onlineDist_' + online,
+            type: 'checkbox',
+            value: online,
+            'data-online':online,
+            'data-dist':online,
+            'data-isDeepestLevel':false,
+            name: "onlineDist",
+        }).css('display', 'inline-block').appendTo($(li));
+
+        jQuery('<label/>', {
+            text: online,
+            for: 'filter_onlineDist_' + online,
+        }).appendTo(li);
+
+        var distUl = jQuery('<ul/>').appendTo(onlineUl).hide();
+
+        for(var index in distList){
+            var distName = distList[index]
+            var li = jQuery('<li/>').appendTo(distUl);
+            jQuery('<input/>', {
+                id: 'filter_onlineDist_' + online + '_' + distName,
+                type: 'checkbox',
+                value: distName,
+                'data-online':online,
+                'data-dist':distName,
+                'data-isDeepestLevel':true,
+                name: "onlineDist",
+            }).css('display', 'inline-block').appendTo($(li));
+
+            jQuery('<label/>', {
+                text: distName,
+                for: 'filter_onlineDist_' + online + '_' + distName,
+            }).appendTo(li);
+        }
+    }
+
     $("#branchDistFilter input").each(function () {
         $(this).on("click", function () {
             checkChild(this, ($(this).prop("checked") ? true : false));
@@ -609,15 +695,20 @@ function createDistBranchCheckBox(){
 function filterRecord(){
     //dist branch
     observeDistBranch.length = 0;
+    var isOnlineDist = false;
     $('input:checked[data-isdeepestlevel=true]').each(function(){
-        observeDistBranch.push({
-            dist : $(this).attr('data-dist'),
-            branch: $(this).attr('data-branch'),
-        });
+        if ($(this)[0].hasAttribute('data-branch')) {
+            observeDistBranch.push({
+                dist : $(this).attr('data-dist'),
+                branch: $(this).attr('data-branch'),
+            });
+        } else if ($(this)[0].hasAttribute('data-online')) {
+            isOnlineDist = true;
+        }
     });
 
     //whether Gap button can show(no branch/dist selected & only one country be select & country in the list)
-    isGapButtonCanShow = (observeDistBranch.length == 0 && observeLoc.length == 1 && $.inArray(observeLoc[0], countryNeedToShowDistBranch) != -1) ? true : false;
+    isGapButtonCanShow = (observeDistBranch.length == 0 && !isOnlineDist && observeLoc.length == 1 && $.inArray(observeLoc[0], countryNeedToShowDistBranch) != -1) ? true : false;
     //whether any branch/dist be selected
     isDistBranchSelected = (observeDistBranch.length > 0) ? true : false;
 
@@ -632,12 +723,18 @@ function filterRecord(){
             return self.indexOf(value) === index;
         }
     );
+
+    observeDistName.length = 0;
+    $('input:checked[name="onlineDist"]').each(function(){
+        observeDistName.push($(this).attr('data-dist'));
+    });
 }
 
 function filterRecordClean(){
     //dist branch
     observeDistBranch.length = 0;
     observeBranchName.length = 0;
+    observeDistName.length = 0;
 }
 
 function destroyDistBranchCheckBox(){
@@ -647,8 +744,11 @@ function destroyDistBranchCheckBox(){
     $('#distToBranch').hide();
     $('#branchToDist').empty();
     $('#branchToDist').hide();
+    $('#onlineDist').empty();
+    $('#onlineDist').hide();
     distBranch.length = 0;
     branchDist.length = 0;
+    onlineDist.length = 0;
     
     
     $('#locset button').removeClass('active');
@@ -749,4 +849,5 @@ function cleanLocFilter() {
 function cleanDistBranchFilter() {
     $("input[name='distBranch']").prop('checked', false);
     $("input[name='branchDist']").prop('checked', false);
+    $("input[name='onlineDist']").prop('checked', false);
 }

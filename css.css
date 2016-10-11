@@ -782,6 +782,10 @@
         margin: 0px auto;
     }
 
+    #locset .locset{
+        height: 40px;
+    }
+
     #section_branch_dist{
         display: none;
     }

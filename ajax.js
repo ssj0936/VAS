@@ -52,6 +52,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
             distBranch: JSON.stringify(observeDistBranch),
+            onlineDist: JSON.stringify(observeDistName),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
@@ -207,6 +208,7 @@ function ajaxGetMarker() {
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
             distBranch: JSON.stringify(observeDistBranch),
+            onlineDist: JSON.stringify(observeDistName),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
@@ -373,6 +375,7 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
             isL1: isL1(firstMap),
             iso: iso,
             distBranch: JSON.stringify(observeDistBranch),
+            onlineDist: JSON.stringify(observeDistName)
         },
         type: "POST",
         dataType: 'json',
@@ -399,6 +402,7 @@ function ajaxTrendChart(mapObj) {
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
             distBranch: JSON.stringify(observeDistBranch),
+            onlineDist: JSON.stringify(observeDistName),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
@@ -450,6 +454,7 @@ function ajaxFetchTableValue(isComparison) {
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
             distBranch: JSON.stringify(observeDistBranch),
+            onlineDist: JSON.stringify(observeDistName),
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
@@ -581,9 +586,9 @@ function ajaxLoadBranchDist(){
             var currentDist = null;
             var branchList = [];
             var first = true;
-            for(var i in json){
-                var dist = json[i].dist;
-                var branch = json[i].branch;
+            for(var i in json.channel){
+                var dist = json.channel[i].dist;
+                var branch = json.channel[i].branch;
                 
                 if(dist != currentDist){
                     if(!first){
@@ -603,15 +608,15 @@ function ajaxLoadBranchDist(){
 //            console.log(distBranch);
             
             //sort order by branch
-            json.sort(function(a,b) {
+            json.channel.sort(function(a,b) {
                 return (a.branch > b.branch) ? 1 : ((b.branch > a.branch) ? -1 : 
                        (a.dist > b.dist) ? 1 : ((b.dist > a.dist) ? -1 : 0));} ); 
             var currentBranch = null;
             var DistList = [];
             var first = true;
-            for(var i in json){
-                var dist = json[i].dist;
-                var branch = json[i].branch;
+            for(var i in json.channel){
+                var dist = json.channel[i].dist;
+                var branch = json.channel[i].branch;
                 
                 if(branch != currentBranch){
                     if(!first){
@@ -628,7 +633,34 @@ function ajaxLoadBranchDist(){
             }
             //last one
             branchDist.push({branch:currentBranch, dist:DistList.slice()});
-//            console.log(branchDist);
+
+            //order by online dist
+            onlineDist.length = 0;
+            var currentOnline = null;
+            var distList = [];
+            var first = true;
+            for(var i in json.online){
+                var online = json.online[i].online_dist;
+                var dist = json.online[i].dist;
+                
+                if(online != currentOnline){
+                    if(!first){
+                        onlineDist.push({online_dist:currentOnline, dist:distList.slice()});
+                        distList.length = 0;
+                        currentOnline = online;
+                    }else{
+                        first = false;
+                        currentOnline = online;
+                    }
+                }
+                
+                distList.push(dist);
+            }
+            //last one
+            onlineDist.push({online_dist:currentOnline, dist:distList.slice()});
+
+
+
             createDistBranchCheckBox();
         },
     })

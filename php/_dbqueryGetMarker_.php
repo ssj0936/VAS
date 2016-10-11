@@ -30,6 +30,7 @@
     $data = $_POST['data'];
     $iso = $_POST['iso'];
     $distBranch = $_POST['distBranch'];
+    $onlineDist = $_POST['onlineDist'];
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
@@ -44,9 +45,12 @@
         $rearCameraObj = json_decode($rearCamera);
         $frontCameraObj = json_decode($frontCamera);
         $distBranchObj = json_decode($distBranch);
+        $onlineDistObj = json_decode($onlineDist);
         
         $isDistBranch = (count($distBranchObj)!=0);
+        $isOnlineDist = (count($onlineDistObj)!=0);
         $distBranchStr = getSQLDistBranchStr($distBranchObj,true);
+        $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,true);
         
         $isAll = isAll($dataObj);
         
@@ -95,7 +99,8 @@
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                        .($isDistBranch ? " AND $distBranchStr " : "");
+                        .($isDistBranch ? " AND $distBranchStr " : "")
+                        .($isOnlineDist ? " AND $onlineDistStr " : "");
 
             if($i != count($isoObj)-1){
                 $queryStr .= " UNION ALL ";

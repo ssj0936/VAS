@@ -45,11 +45,18 @@ function buttonInit() {
                     switch($this.attr('id')){
                         case 'branch':
                             $('#distToBranch').stop(true,true).fadeOut('medium');
+                            $('#onlineDist').stop(true,true).fadeOut('medium');
                             $('#branchToDist').stop(true,true).fadeIn('medium');
                             break;
                         case 'dist':
                             $('#branchToDist').stop(true,true).fadeOut('medium');
+                            $('#onlineDist').stop(true,true).fadeOut('medium');
                             $('#distToBranch').stop(true,true).fadeIn('medium');
+                            break;
+                        case 'online':
+                            $('#branchToDist').stop(true,true).fadeOut('medium');
+                            $('#distToBranch').stop(true,true).fadeOut('medium');
+                            $('#onlineDist').stop(true,true).fadeIn('medium');
                             break;
                     }
                 }

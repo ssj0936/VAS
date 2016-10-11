@@ -103,6 +103,27 @@ function getSQLDistBranchStr($distBranchObj,$ismarker){
     return $distBranch;
 }
 
+function getSQLOnlineDistStr($onlineDistObj,$ismarker){
+    $onlineDist = '';
+    if(count($onlineDistObj) > 0){
+        $onlineDist .= '(';
+
+        for($i=0 ; $i<count($onlineDistObj) ; ++$i){
+            $dist = $onlineDistObj[$i];
+
+            if($ismarker)
+                $onlineDist .= "(disti = '$dist') ";
+            else
+                $onlineDist .= "(distri = '$dist') ";
+            if($i != count($onlineDistObj)-1)
+                $onlineDist .= "OR ";
+        }
+
+        $onlineDist .= ')';
+    }
+    return $onlineDist;
+}
+
 function getDistColumnName($ismarker){
     if($ismarker)
         return 'disti';

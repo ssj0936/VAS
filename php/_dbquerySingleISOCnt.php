@@ -25,6 +25,7 @@
     $isL1 = $_POST['isL1'];
     $iso = $_POST['iso'];
     $distBranch = $_POST['distBranch'];
+    $onlineDist = $_POST['onlineDist'];
 //    
 //    $color = '["all"]';
 //    $cpu = '["all"]';
@@ -44,9 +45,12 @@
     $rearCameraObj = json_decode($rearCamera);
     $frontCameraObj = json_decode($frontCamera);
     $distBranchObj = json_decode($distBranch);
+    $onlineDistObj = json_decode($onlineDist);
         
     $isDistBranch = (count($distBranchObj)!=0);
+    $isOnlineDist = (count($onlineDistObj)!=0);
     $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
+    $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
     
     $isAll = isAll($dataObj);
 
@@ -102,6 +106,7 @@
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
             .($isDistBranch ? " AND $distBranchStr " : "")
+            .($isOnlineDist ? " AND $onlineDistStr " : "")
             ." GROUP BY date ORDER BY date";
 
 //	echo "1:".$queryStr."<br>";
@@ -143,6 +148,7 @@
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
             .($isDistBranch ? " AND $distBranchStr " : "")
+            .($isOnlineDist ? " AND $onlineDistStr " : "")
             ." GROUP BY date, model_name ORDER BY date,model_name";
 //    echo "2:".$queryStr."<br>";
     $db->query($queryStr);
@@ -175,6 +181,7 @@
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
             .($isDistBranch ? " AND $distBranchStr " : "")
+            .($isOnlineDist ? " AND $onlineDistStr " : "")
             ." GROUP BY date, model ORDER BY date,model";
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);
@@ -206,6 +213,7 @@
                 .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
                 .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                 .($isDistBranch ? " AND $distBranchStr " : "")
+                .($isOnlineDist ? " AND $onlineDistStr " : "")
                 ." GROUP BY date,".getDistColumnName(false)." ORDER BY date,".getDistColumnName(false).";";
 
         $db->query($queryStr);
@@ -235,6 +243,7 @@
                 .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
                 .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                 .($isDistBranch ? " AND $distBranchStr " : "")
+                .($isOnlineDist ? " AND $onlineDistStr " : "")
                 ." GROUP BY date,branch ORDER BY date,branch;";
 
         $db->query($queryStr);
