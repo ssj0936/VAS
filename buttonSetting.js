@@ -78,7 +78,10 @@ function buttonInit() {
 
         if ($(this).attr("id") == "table") {
             if (!$(this).hasClass('active')) {
-                showTable();
+                if(isModeActive(MODE_GAP))
+                    gapReportExportDialogShow();
+                else
+                    showTable();
                 return;
             }
         }
@@ -168,6 +171,9 @@ function unactiveModeBtn($this) {
         //console.log("unactiveModeBtn_comparison");
         break;
     case "gap":
+        //change table button text
+        $('#table').button('option','label','Table');
+    
         firstMap.removePolygonMap();
         cleanBranch();
         setModeOff(MODE_GAP);
@@ -196,6 +202,9 @@ function activeModeBtn($this) {
         }
         break;
     case "gap":
+        //change table button text
+        $('#table').button('option','label','Export');
+
         setModeOn(MODE_GAP);
         submitGap();
         break;

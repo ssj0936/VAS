@@ -38,7 +38,7 @@ function createFunctionalBtn(){
         .text('EXPORT')
         .click(function () {
             if(isModeActive(MODE_GAP))
-                return gapReportExportSetting();
+                return gapReportExportDialogShow();
             else
                 return exportFile(getActiveTrend(), true);
         })
@@ -1875,7 +1875,7 @@ function gapExportToExcel(text){
     loadingDismiss();
 }
 
-function gapReportExportSetting(){
+function gapReportExportDialogShow(){
 
     var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ? 
         (jQuery('<div/>',{id:'exportTypeDialogDiv'}).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
@@ -1891,9 +1891,11 @@ function gapReportExportSetting(){
         buttons: {
             'Group By Model': function () {
                 ajaxGetGapExport('model');
+                $(this).dialog('close');
             },
             'Group By Branch': function () {
                 ajaxGetGapExport('branch');
+                $(this).dialog('close');
             },
         }
     });

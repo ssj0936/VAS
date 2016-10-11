@@ -771,6 +771,7 @@ function ajaxGetGapExport(groupBy){
             dataset: getDataset(),
             distBranch: JSON.stringify(observeDistBranch),
             groupBy:groupBy,
+            branch: (isNowBranchTrend ? currentPointingBranch : null),
         },
         function (text) {
 //            console.log(text);

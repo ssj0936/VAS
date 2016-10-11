@@ -32,6 +32,9 @@
     $iso = $_POST['iso'];
     $distBranch = $_POST['distBranch'];
     $groupBy = $_POST['groupBy'];
+    $branch = $_POST['branch'];
+
+//    if($branch != null)
 
     if($data!="[]"){
         $isoObj = json_decode($iso);
@@ -98,7 +101,8 @@
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                        .($isDistBranch ? " AND $distBranchStr " : "");
+                        .($isDistBranch ? " AND $distBranchStr " : "")
+                        .($branch != null ? " AND branch = '$branch' ": '');
 			if($i != count($isoObj)-1)
 				$fromTableStr.=" UNION ALL ";
 		}
