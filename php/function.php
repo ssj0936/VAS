@@ -130,4 +130,11 @@ function getDistColumnName($ismarker){
     else
         return 'distri';
 }
+
+function getModel($inStr){
+    $query = 'SELECT distinct model_name'
+        ." FROM ".$GLOBALS['deviceTable']
+        ." WHERE device_name in ($inStr)";
+    return $query;
+}
 ?>

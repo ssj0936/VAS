@@ -7,19 +7,25 @@
     $result = array();
     $db = new DB();
 
-    $tableColumnList = array('branchName','tamShareByBranch','tamOfBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','tamOfTerritory','activationSumTerritory','districtName','tamOfDistrict','activationOfDistrict');
+//    $tableColumnList = array('branchName','tamShareByBranch','tamOfBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','tamOfTerritory','activationSumTerritory','districtName','tamOfDistrict','activationOfDistrict');
+    $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','activationSumTerritory','districtName','activationOfDistrict');
+
+    $tableColumnNameListModel = 
+        array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>
+by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","ASUS Territory","Activation q'ty<br>by Territory","District","Activation q'ty<br>by District");
     $tableStyle = 'border:1px solid black';
 //    $color = '["all"]';
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $from = "2015-7-9";
-//    $to = "2016-8-3";    
+//    $from = "2015-9-11";
+//    $to = "2016-10-11";    
 //    $iso ='["IND"]';
 //    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
-//    $distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
-//    $groupBy = 'model';
+//    $distBranch = '[]';
+//    $groupBy = 'branch';
+//    $branch = null;
 
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
@@ -33,8 +39,6 @@
     $distBranch = $_POST['distBranch'];
     $groupBy = $_POST['groupBy'];
     $branch = $_POST['branch'];
-
-//    if($branch != null)
 
     if($data!="[]"){
         $isoObj = json_decode($iso);
@@ -82,6 +86,8 @@
         $str_in = substr($str_in,0,-1);
 		//echo $str_in;	
         //group by model_name
+        
+        //1.get all data first
 		//--------------------------------------------------------------------------------
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
@@ -101,8 +107,7 @@
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                        .($isDistBranch ? " AND $distBranchStr " : "")
-                        .($branch != null ? " AND branch = '$branch' ": '');
+                        .($isDistBranch ? " AND $distBranchStr " : "");
 			if($i != count($isoObj)-1)
 				$fromTableStr.=" UNION ALL ";
 		}
@@ -111,26 +116,32 @@
 		
         $queryStr = '';
         if($groupBy == 'model'){
+            //2.get model name And sum group by model_name, branch, country_id
             $queryStr = "SELECT sum(count)count,branch,model_name,country_id"
                 ." FROM ".$fromTableStrGroupByModel
                 ." WHERE data.model = mapping.device_name"
                 ." GROUP BY model_name, branch, country_id";
 
-            $queryStr = "SELECT count,branch,model_name,country_id,name2,tam"
+            //3.get district name/branchName of 
+            $queryStr = "SELECT count,branch branchSell,model_name,country_id,name2,branchName branchActivate"
                 ." FROM ($queryStr)tmp,$regionTam regionTam"
                 ." WHERE tmp.country_id = regionTam.mapid"
-                ." ORDER BY model_name, branch, country_id";
+                ." AND branch = branchName"
+                ." ORDER BY model_name, branchSell, country_id";
         }
         else if($groupBy == 'branch'){
+            //2.get model name And sum group by model_name, branch, country_id
             $queryStr = "SELECT sum(count)count,branch,country_id"
                 ." FROM ".$fromTableStrGroupByModel
                 ." WHERE data.model = mapping.device_name"
                 ." GROUP BY branch, country_id";
 
-            $queryStr = "SELECT count,branch,country_id,name2,tam"
+            //3.get district name/branchName of 
+            $queryStr = "SELECT count,branch branchSell,country_id,name2,branchName branchActivate"
                 ." FROM ($queryStr)tmp,$regionTam regionTam"
                 ." WHERE tmp.country_id = regionTam.mapid"
-                ." ORDER BY branch, country_id";
+                ." AND branch = branchName"
+                ." ORDER BY branchSell, country_id";
         }
 //		echo $queryStr."<br><br><br>";
 		
@@ -140,7 +151,7 @@
         $end_date = null;
 		while($row = $db->fetch_array())
 		{
-			$result[($groupBy=='model')? $row['model_name'] : 'all'][$row['branch']][$row['name2']] = $row['count'];
+			$result[($groupBy=='model')? $row['model_name'] : 'all'][$row['branchSell']][$row['name2']] = $row['count'];
 		}
 //        print_r($result);
         //create table
@@ -155,13 +166,14 @@
             $index = count($data);
             $data[$index]['branchName'] = trim($split[0]);
             $data[$index]['tamShareByBranch'] = trim($split[1]);
-            $data[$index]['tamOfBranch'] = trim($split[2]);
+//            $data[$index]['tamOfBranch'] = trim($split[2]);
             $data[$index]['territoryName'] = trim($split[3]);
-            $data[$index]['tamOfTerritory'] = trim($split[4]);
+//            $data[$index]['tamOfTerritory'] = trim($split[4]);
             $data[$index]['districtName'] = trim($split[5]);
-            $data[$index]['tamOfDistrict'] = trim($split[6]);
+//            $data[$index]['tamOfDistrict'] = trim($split[6]);
         }
 
+        $totalRows = 0;
         $finalData = array();
         foreach($result as $model => $datas){
             //create data column first
@@ -169,11 +181,11 @@
             foreach($data as $index =>$array){
                 $finalData[$model][$index]['branchName'] = $data[$index]['branchName'];
                 $finalData[$model][$index]['tamShareByBranch'] = $data[$index]['tamShareByBranch'];
-                $finalData[$model][$index]['tamOfBranch'] = $data[$index]['tamOfBranch'];
+//                $finalData[$model][$index]['tamOfBranch'] = $data[$index]['tamOfBranch'];
                 $finalData[$model][$index]['territoryName'] = $data[$index]['territoryName'];
-                $finalData[$model][$index]['tamOfTerritory'] = $data[$index]['tamOfTerritory'];
+//                $finalData[$model][$index]['tamOfTerritory'] = $data[$index]['tamOfTerritory'];
                 $finalData[$model][$index]['districtName'] = $data[$index]['districtName'];
-                $finalData[$model][$index]['tamOfDistrict'] = $data[$index]['tamOfDistrict'];
+//                $finalData[$model][$index]['tamOfDistrict'] = $data[$index]['tamOfDistrict'];
 //                $finalData[$model][$index]['activationOfDistrict'] = rand();
                 $finalData[$model][$index]['activationOfDistrict'] = 0;
             }
@@ -207,6 +219,7 @@
             $currentTerritorySum = 0;
             $activationAll = 0;
             for($i=0;$i<count($finalData[$model]);++$i){
+                $totalRows++;
                 $branch = $finalData[$model][$i]['branchName'];
                 $territory = $finalData[$model][$i]['territoryName'];
                 $activation = $finalData[$model][$i]['activationOfDistrict'];
@@ -282,30 +295,44 @@
                 }
             }
         }
-//        print_r($dataObj);
-        $allModelStr='';
-        foreach($dataObj as $obj){
-            $allModelStr .= '['.$obj->model.']';
-        }
-//        echo $allModelStr;
         
+        //group by branch:
+        //need to get selected Model
+        $allModelStr = '';
+        if($groupBy!='model'){
+            $query = getModel($str_in);
+            $db->query($query);
+            while($row = $db->fetch_array()){
+               $allModelStr .= $row['model_name'].", ";
+            }
+            $allModelStr = substr($allModelStr,0,-2);
+        }
+
+        //creating table
         $tableStr = '';
         $tableStr .= "<table>";
         //title column
         $tableStr .= "<tr>";
         
-        $tableStr .= "<th style ='$tableStyle'>model</th>";
-        foreach($tableColumnList as $indexName){
+        foreach($tableColumnNameListModel as $indexName){
             $tableStr .= "<th style ='$tableStyle'>".$indexName."</th>";
         }
         $tableStr .= "</tr>";
 
+        $first = true;
         foreach($finalData as $model => $d){
             for($i=0;$i<count($finalData[$model]);++$i){
                 $tableStr .= "<tr>";
+                if($first){
+                    $tableStr .="<td rowspan='$totalRows' style ='$tableStyle'>".$from.' ~ '.$to."</td>";
+                    $first = false;
+                }
                 
                 if($i==0){
+                    //model display
                     $tableStr .= "<td rowspan='".count($finalData[$model])."' style ='$tableStyle'>".(($groupBy=='model')? $model : $allModelStr)."</td>";
+                    //country display
+                    $tableStr .= "<td rowspan='".count($finalData[$model])."' style ='$tableStyle'>".$isoObj[0]."</td>";
                 }
                 foreach($tableColumnList as $indexName){
                     $tableStr .= $finalData[$model][$i][$indexName];

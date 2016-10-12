@@ -15,11 +15,10 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $from = "2014-8-31";
-//    $to = "2016-9-30";    
+//    $from = "2015-9-11";
+//    $to = "2016-10-11";    
 //    $iso ='["IND"]';
+//    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
 
     $color = $_GET['color'];
     $cpu = $_GET['cpu'];
@@ -75,7 +74,7 @@
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT branch,count,device_model.model_name model_name"
+            $fromTableStr.="SELECT branch,count,device_model.model_name model_name,country_id"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -99,7 +98,12 @@
 		$fromTableStr ="(".$fromTableStr.")foo";
 		//echo $fromTableStr."<br>";
 		
-		$queryStr = "SELECT branch,SUM(count) AS count,model_name FROM ".$fromTableStr." GROUP BY branch,model_name ORDER BY count DESC;";
+		$queryStr = "SELECT branch,SUM(count) AS count,model_name"
+            ." FROM $fromTableStr,$regionTam regionTam"
+            ." WHERE branch = branchName"
+            ." and foo.country_id = regionTam.mapid"
+            ." GROUP BY branch,model_name"
+            ." ORDER BY count DESC;";
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
