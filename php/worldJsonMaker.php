@@ -59,7 +59,7 @@ for($j=0;$j<count($allLoc);++$j){
             fwrite($handle,$jsonStr."\n");
         }
     }
-    echo $allLoc[$j]."is".(($isFound)?" Found<br>":"NOT FOUND<br>");
+    echo $allLoc[$j]."is".(($isFound)?" Found\r\n":"NOT FOUND\r\n");
 }
 
 fwrite($handle,"]\n};\n");
