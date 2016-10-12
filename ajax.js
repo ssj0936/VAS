@@ -472,6 +472,7 @@ function ajaxFetchTableValue(isComparison) {
             var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
             $("#popupChartContainer").append(tableContenr);
 
+            var finalTableArray = [];
             for (var i = 0; i < json.length; ++i) {
                 var countryID = json[i].countryID;
                 json[i]['displayName'] = '';
@@ -489,10 +490,18 @@ function ajaxFetchTableValue(isComparison) {
                 }
                 //post process
                 json[i]['cnt'] = numToString(json[i]['cnt']);
+                
+                if(json[i].displayName != ''){
+                    finalTableArray.push({
+                        displayName:json[i].displayName,
+                        iso:json[i].iso,
+                        cnt:json[i].cnt,
+                    });
+                }
             }
             console.log(json);
             var table = $('table#table').DataTable({
-                data: json,
+                data: finalTableArray,
                 columns: [
                     {
                         data: 'iso'
