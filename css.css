@@ -783,7 +783,11 @@
     }
 
     #locset .locset{
-        height: 40px;
+        height: 37px;
+    }
+
+    .locset .ui-button-text{  
+        padding: .3em; 
     }
 
     #section_branch_dist{

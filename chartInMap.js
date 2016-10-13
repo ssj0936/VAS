@@ -17,7 +17,7 @@ var TREND_COUNTRY = 'Country';
 var TREND_DEVICE = 'Device';
 var TREND_TABLE = 'Table';
 var TREND_REGION = 'Region';
-var TREND_DIST = 'Dist';
+var TREND_DIST = 'Disti';
 var TREND_BRANCH = 'Branch';
 
 var rightPopupContainerWidthP = 0.84;
