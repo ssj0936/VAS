@@ -37,6 +37,7 @@
 //    $iso ='["IND"]';
 //    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
 //    $distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
+//    $onlineDist = '[]';
 
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
@@ -103,7 +104,7 @@
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT model,count,date"
+            $fromTableStr.="SELECT device,count,date"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -113,7 +114,7 @@
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
-                        .($isAll?"":" AND model IN(".$str_in.")")
+                        .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -124,9 +125,9 @@
 				$fromTableStr.=" UNION ALL ";
 		}
 		$fromTableStrGroupByModel ="(".$fromTableStr.")data,$deviceTable mapping";
-		//echo $fromTableStr."<br>";
+//		echo $fromTableStr."<br>";
 		
-		$queryStr = "SELECT sum(count)count,date,model_name FROM ".$fromTableStrGroupByModel." WHERE data.model = mapping.device_name GROUP BY date, model_name ORDER BY date,model_name;";
+		$queryStr = "SELECT sum(count)count,date,model_name FROM ".$fromTableStrGroupByModel." WHERE data.device = mapping.device_name GROUP BY date, model_name ORDER BY date,model_name;";
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
@@ -149,11 +150,11 @@
         //group by devices
         //--------------------------------------------------------------------------------
         $fromTableStrGroupByDevice ="(".$fromTableStr.")data";
-        $queryStr = "SELECT sum(count)count,date,model FROM ".$fromTableStrGroupByDevice." GROUP BY date, model ORDER BY date,model;";
+        $queryStr = "SELECT sum(count)count,date,device FROM ".$fromTableStrGroupByDevice." GROUP BY date, device ORDER BY date,device;";
         $db->query($queryStr);
         while($row = $db->fetch_array())
         {
-            $resultsGroupByDevice[$row['model']][] = array(
+            $resultsGroupByDevice[$row['device']][] = array(
                 'count' => ($row['count']),
                 'date' => ($row['date'])
             );
@@ -184,7 +185,7 @@
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
-                        .($isAll?"":" AND model IN(".$str_in.")")
+                        .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -209,7 +210,7 @@
             $fromTableStr='';
             for($i=0;$i<count($isoObj);++$i){
 
-                $fromTableStr.="SELECT model,count,date, ".getDistColumnName(false)
+                $fromTableStr.="SELECT device,count,date, disti"
                             ." FROM "
                             .($isColorAll ? "" : "$colorMappingTable A2,")
                             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -219,7 +220,7 @@
 
                             ." WHERE "
                             ."date BETWEEN '".$from."' AND '".$to."'"
-                            .($isAll?"":" AND model IN(".$str_in.")")
+                            .($isAll?"":" AND device IN(".$str_in.")")
                             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -232,13 +233,13 @@
             $fromTableStrGroupByDist ="(".$fromTableStr.")data,$deviceTable mapping";
             //echo $fromTableStr."<br>";
 
-            $queryStr = "SELECT sum(count)count,date,".getDistColumnName(false)." FROM ".$fromTableStrGroupByDist." WHERE data.model = mapping.device_name GROUP BY date, ".getDistColumnName(false)." ORDER BY date,".getDistColumnName(false).";";
-    //		echo $queryStr."<br><br><br>";
+            $queryStr = "SELECT sum(count)count,date,disti FROM ".$fromTableStrGroupByDist." WHERE data.device = mapping.device_name GROUP BY date, disti ORDER BY date,disti;";
+//    		echo $queryStr."<br><br><br>";
 
             $db->query($queryStr);
             while($row = $db->fetch_array())
             {
-                $resultsGroupByDist[$row[getDistColumnName(false)]][] = array(
+                $resultsGroupByDist[$row['disti']][] = array(
                     'count' => ($row['count']),
                     'date' => ($row['date'])
                 );
@@ -249,7 +250,7 @@
             $fromTableStr='';
             for($i=0;$i<count($isoObj);++$i){
 
-                $fromTableStr.="SELECT model,count,date,branch"
+                $fromTableStr.="SELECT device,count,date,branch"
                             ." FROM "
                             .($isColorAll ? "" : "$colorMappingTable A2,")
                             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -259,7 +260,7 @@
 
                             ." WHERE "
                             ."date BETWEEN '".$from."' AND '".$to."'"
-                            .($isAll?"":" AND model IN(".$str_in.")")
+                            .($isAll?"":" AND device IN(".$str_in.")")
                             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -272,7 +273,7 @@
             $fromTableStrGroupByBranch ="(".$fromTableStr.")data,$deviceTable mapping";
             //echo $fromTableStr."<br>";
 
-            $queryStr = "SELECT sum(count)count,date,branch FROM ".$fromTableStrGroupByBranch." WHERE data.model = mapping.device_name GROUP BY date, branch ORDER BY date,branch;";
+            $queryStr = "SELECT sum(count)count,date,branch FROM ".$fromTableStrGroupByBranch." WHERE data.device = mapping.device_name GROUP BY date, branch ORDER BY date,branch;";
     //		echo $queryStr."<br><br><br>";
 
             $db->query($queryStr);
@@ -299,9 +300,5 @@
 
 //     $now = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //     echo "<br>-----------<br>".$now->format('Y-m-d H:i:s')."<br>-----------<br>";
-	
-	// function sqlsrvfyTableName($tablename){
-		// return '['.$GLOBALS['_DB']['dbname'].'].[dbo].['.$tablename.']';
-	// }
 
 ?>

@@ -89,11 +89,7 @@ function getSQLDistBranchStr($distBranchObj,$ismarker){
         for($i=0 ; $i<count($distBranchObj) ; ++$i){
             $dist = $distBranchObj[$i]->dist;
             $branch = $distBranchObj[$i]->branch;
-
-            if($ismarker)
-                $distBranch .= "(disti = '$dist' AND branch = '$branch') ";
-            else
-                $distBranch .= "(distri = '$dist' AND branch = '$branch') ";
+            $distBranch .= "(disti = '$dist' AND branch = '$branch') ";
             if($i != count($distBranchObj)-1)
                 $distBranch .= "OR ";
         }
@@ -110,25 +106,14 @@ function getSQLOnlineDistStr($onlineDistObj,$ismarker){
 
         for($i=0 ; $i<count($onlineDistObj) ; ++$i){
             $dist = $onlineDistObj[$i];
-
-            if($ismarker)
-                $onlineDist .= "(disti = '$dist') ";
-            else
-                $onlineDist .= "(distri = '$dist') ";
+            $onlineDist .= "(disti = '$dist') ";
+            
             if($i != count($onlineDistObj)-1)
                 $onlineDist .= "OR ";
         }
-
         $onlineDist .= ')';
     }
     return $onlineDist;
-}
-
-function getDistColumnName($ismarker){
-    if($ismarker)
-        return 'disti';
-    else
-        return 'distri';
 }
 
 function getModel($inStr){

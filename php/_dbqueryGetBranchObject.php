@@ -5,8 +5,7 @@
     require_once("DBconfig.php");
     require_once("DBclass.php");
 
-    //$tablename = "[php_login_test].[dbo].[random_device_color]";
-    $tablename = "[dudududadada].[dbo].[branch_to_object]";
+    $tablename = $branchObjectIDMapping;
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 

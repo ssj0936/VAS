@@ -7,7 +7,7 @@ require_once("DBclass.php");
 
 $db = new DB();
 $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbnameService']);
-$tablenameLoc = "[asus_visual_overlay].[dbo].[geojson]";
+$tablenameLoc = $countryDataOnMap;
 
 $allLoc=array();
 $db->query("SELECT DISTINCT * FROM ".$tablenameLoc." ORDER BY NAME_0;");

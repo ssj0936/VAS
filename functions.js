@@ -436,6 +436,7 @@ function deg2num(lat_deg, lon_deg, zoom) {
 
 function saveLog(){
     if(account == "Developer") return;
+    if(window.location.href.indexOf('dev') >= 0) return;
     ajaxSaveLog();
 }
 

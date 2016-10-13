@@ -94,7 +94,7 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT model,branch,country_id,count"
+            $fromTableStr.="SELECT device,branch,map_id,count"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -104,7 +104,7 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
-                        .($isAll?"":" AND model IN(".$str_in.")")
+                        .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -119,32 +119,32 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 		
         $queryStr = '';
         if($groupBy == 'model'){
-            //2.get model name And sum group by model_name, branch, country_id
-            $queryStr = "SELECT sum(count)count,branch,model_name,country_id"
+            //2.get model name And sum group by model_name, branch, map_id
+            $queryStr = "SELECT sum(count)count,branch,model_name,map_id"
                 ." FROM ".$fromTableStrGroupByModel
-                ." WHERE data.model = mapping.device_name"
-                ." GROUP BY model_name, branch, country_id";
+                ." WHERE data.device = mapping.device_name"
+                ." GROUP BY model_name, branch, map_id";
 
             //3.get district name/branchName of 
-            $queryStr = "SELECT count,branch branchSell,model_name,country_id,name2,branchName branchActivate"
+            $queryStr = "SELECT count,branch branchSell,model_name,map_id,name2,branchName branchActivate"
                 ." FROM ($queryStr)tmp,$regionTam regionTam"
-                ." WHERE tmp.country_id = regionTam.mapid"
+                ." WHERE tmp.map_id = regionTam.mapid"
                 ." AND branch = branchName"
-                ." ORDER BY model_name, branchSell, country_id";
+                ." ORDER BY model_name, branchSell, map_id";
         }
         else if($groupBy == 'branch'){
-            //2.get model name And sum group by model_name, branch, country_id
-            $queryStr = "SELECT sum(count)count,branch,country_id"
+            //2.get model name And sum group by model_name, branch, map_id
+            $queryStr = "SELECT sum(count)count,branch,map_id"
                 ." FROM ".$fromTableStrGroupByModel
-                ." WHERE data.model = mapping.device_name"
-                ." GROUP BY branch, country_id";
+                ." WHERE data.device = mapping.device_name"
+                ." GROUP BY branch, map_id";
 
             //3.get district name/branchName of 
-            $queryStr = "SELECT count,branch branchSell,country_id,name2,branchName branchActivate"
+            $queryStr = "SELECT count,branch branchSell,map_id,name2,branchName branchActivate"
                 ." FROM ($queryStr)tmp,$regionTam regionTam"
-                ." WHERE tmp.country_id = regionTam.mapid"
+                ." WHERE tmp.map_id = regionTam.mapid"
                 ." AND branch = branchName"
-                ." ORDER BY branchSell, country_id";
+                ." ORDER BY branchSell, map_id";
         }
 //		echo $queryStr."<br><br><br>";
 		

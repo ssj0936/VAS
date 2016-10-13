@@ -24,13 +24,6 @@
 //    $dataset = 'activation';
     $data = $_GET['data'];
     $dataset = $_GET['dataset'];
-    //$db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL1']);
-    
-    $tablearray=array();
-    $db->query("SELECT TABLE_NAME FROM ".$_DB[$dataset]['dbnameRegionL1'].".INFORMATION_SCHEMA.TABLES");
-    while($row = $db->fetch_array()){
-        $tablearray[]=$row['TABLE_NAME'];
-    }
 
     $str_in='';
     $dataObj = json_decode($data);
@@ -51,17 +44,6 @@
         }
     }
     $str_in = substr($str_in,0,-1);
-    /*
-    $fromTableStr='(';
-    for($i=0;$i<count($tablearray);++$i){
-        $fromTableStr.="SELECT MAX(date)as max , MIN(date)as min FROM ".sqlsrvfyTableName($tablearray[$i])." WHERE model IN(".$str_in.")";
-        
-        if($i != count($tablearray)-1)
-            $fromTableStr .= " UNION ALL ";
-    }
-    $fromTableStr .=')foo';
-    $query ="SELECT MAX(max)as all_max , MIN(min)as all_min FROM ".$fromTableStr.";";
-    */
     $query ="SELECT MAX(end_date)as all_max , MIN(start_date)as all_min FROM ".$_DB[$dataset]['deviceTable']." WHERE device_name IN(".$str_in.");";
     //echo $query;
     $db->query($query);

@@ -9,12 +9,9 @@
 
 //     $start = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //     echo "<br>-----------<br>".$start->format('Y-m-d H:i:s')."<br>-----------<br>";
-//    $color = '["all"]';
-//    $color = '["black"]';
 //    $from = "2013-7-9";
 //    $to = "2016-8-1";
 //    $iso ='["IND"]';
-//    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
 //    $dataset = 'activation';
 //    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZENFONE-D","devices":"ZENFONE-D","product":"ZENFONE-D","datatype":"product"}]';
 //    $color = '["all"]';
@@ -23,6 +20,7 @@
 //    $frontCamera = '["all"]';
 //    $distBranch = '[{"dist":"KARNATAKA","branch":"FLIPKART"}]';
 //    $distBranch = '[{"dist":"GUJARAT","branch":"COMP1"},{"dist":"GUJARAT","branch":"RASHIIN"},{"dist":"GUJARAT","branch":"CAREOFF1"},{"dist":"GUJARAT","branch":"REDTN"},{"dist":"GUJARAT","branch":"COMPUAGE"}]';
+//    $onlineDist = '[]';
 
     $dataset = $_POST['dataset'];
     $from = $_POST['from'];
@@ -94,7 +92,7 @@
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
-                        .($isAll?"":" AND model IN(".$str_in.")")
+                        .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")

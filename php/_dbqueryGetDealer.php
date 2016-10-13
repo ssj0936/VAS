@@ -5,7 +5,7 @@
     require_once("DBconfig.php");
     require_once("DBclass.php");
 
-    $tablename = "[asus_visual_overlay].[dbo].[asus_product_dealer]";
+    $tablename = $productDealer;
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 

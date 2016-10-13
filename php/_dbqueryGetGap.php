@@ -75,7 +75,7 @@
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT branch,count,device_model.model_name model_name,country_id"
+            $fromTableStr.="SELECT branch,count,device_model.model_name model_name,map_id"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -86,8 +86,8 @@
 
                         ." WHERE "
                         ." date BETWEEN '".$from."' AND '".$to."'"
-                        ." AND A1.model = device_model.device_name"
-                        .($isAll?"":" AND model IN(".$str_in.")")
+                        ." AND A1.device = device_model.device_name"
+                        .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -102,7 +102,7 @@
 		$queryStr = "SELECT branch,SUM(count) AS count,model_name"
             ." FROM $fromTableStr,$regionTam regionTam"
             ." WHERE branch = branchName"
-            ." and foo.country_id = regionTam.mapid"
+            ." and foo.map_id = regionTam.mapid"
             ." GROUP BY branch,model_name"
             ." ORDER BY count DESC;";
 //		echo $queryStr."<br><br><br>";
@@ -198,9 +198,4 @@
 
 //     $now = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //     echo "<br>-----------<br>".$now->format('Y-m-d H:i:s')."<br>-----------<br>";
-	
-	// function sqlsrvfyTableName($tablename){
-		// return '['.$GLOBALS['_DB']['dbname'].'].[dbo].['.$tablename.']';
-	// }
-
 ?>

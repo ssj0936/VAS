@@ -35,9 +35,11 @@
 //    $from = "2016-6-11";
 //    $to = "2016-7-11";    
 //    $countryID = 222175;
-//    $data = '[{"model":"all","devices":"all","datatype":"model"}]';
+//    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
 //    $isL1 = 'false';
 //    $iso = 'TWN';
+//    $distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
+//    $onlineDist = '[]';
     
     $dataObj = json_decode($data);
     $colorObj = json_decode($color);
@@ -99,8 +101,8 @@
 
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND model IN($str_in)")
-            ." AND country_id='$countryID'"
+            .($isAll?"":" AND device IN($str_in)")
+            ." AND map_id='$countryID'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -140,9 +142,9 @@
 
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND model IN($str_in)")
-            ." AND country_id='$countryID'"
-            ." AND A1.model = mapping.device_name "
+            .($isAll?"":" AND device IN($str_in)")
+            ." AND map_id='$countryID'"
+            ." AND A1.device = mapping.device_name "
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -162,7 +164,7 @@
     }
 
     //Group by Device
-    $queryStr="SELECT model,date,SUM(count) AS count"
+    $queryStr="SELECT device,date,SUM(count) AS count"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -173,8 +175,8 @@
 
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND model IN($str_in)")
-            ." AND country_id='$countryID'"
+            .($isAll?"":" AND device IN($str_in)")
+            ." AND map_id='$countryID'"
             //." AND A1.model = mapping.device_name "
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
@@ -182,12 +184,12 @@
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
             .($isDistBranch ? " AND $distBranchStr " : "")
             .($isOnlineDist ? " AND $onlineDistStr " : "")
-            ." GROUP BY date, model ORDER BY date,model";
+            ." GROUP BY date, device ORDER BY date,device";
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);
     while($row = $db->fetch_array())
     {
-        $resultsGroupByDevice[$row['model']][] = array(
+        $resultsGroupByDevice[$row['device']][] = array(
             //'model' => ($row['model_name']),
             'count' => ($row['count']),
             'date' => ($row['date'])
@@ -196,7 +198,7 @@
 
     if($isDistBranch){
         //Group by Dist
-        $queryStr="SELECT date,SUM(count) AS count,".getDistColumnName(false)
+        $queryStr="SELECT date,SUM(count) AS count,disti"
                 ." FROM "
                 .($isColorAll ? "" : "$colorMappingTable A2,")
                 .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -206,20 +208,20 @@
 
                 ." WHERE"
                 ." date BETWEEN '$from' AND '$to'"
-                .($isAll?"":" AND model IN($str_in)")
-                ." AND country_id='$countryID'"
+                .($isAll?"":" AND device IN($str_in)")
+                ." AND map_id='$countryID'"
                 .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                 .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                 .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
                 .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                 .($isDistBranch ? " AND $distBranchStr " : "")
                 .($isOnlineDist ? " AND $onlineDistStr " : "")
-                ." GROUP BY date,".getDistColumnName(false)." ORDER BY date,".getDistColumnName(false).";";
+                ." GROUP BY date,disti ORDER BY date,disti;";
 
         $db->query($queryStr);
         while($row = $db->fetch_array())
         {
-           $resultsGroupByDist[$row[getDistColumnName(false)]][] = array(
+           $resultsGroupByDist[$row['disti']][] = array(
               'date' => ($row['date']),
               'count' => ($row['count']),
            );
@@ -236,8 +238,8 @@
 
                 ." WHERE"
                 ." date BETWEEN '$from' AND '$to'"
-                .($isAll?"":" AND model IN($str_in)")
-                ." AND country_id='$countryID'"
+                .($isAll?"":" AND device IN($str_in)")
+                ." AND map_id='$countryID'"
                 .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                 .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                 .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -265,8 +267,4 @@
     $json = json_encode($results);
     echo $json;
     //echo $cnt;
-	
-	// function sqlsrvfyTableName($tablename){
-		// return '['.$GLOBALS['_DB']['dbname'].'].[dbo].['.$tablename.']';
-	// }
 ?>

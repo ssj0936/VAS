@@ -100,7 +100,7 @@
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT country_id,count,device_model.model_name model_name"
+            $fromTableStr.="SELECT map_id,count,device_model.model_name model_name"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -111,8 +111,8 @@
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
-                        ." AND A1.model = device_model.device_name"
-                        .($isAll?"":" AND model IN(".$str_in.")")
+                        ." AND A1.device = device_model.device_name"
+                        .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -126,24 +126,24 @@
 		$fromTableStr ="(".$fromTableStr.")foo";
 		//echo $fromTableStr."<br>";
 		
-		$queryStr = "SELECT country_id,SUM(count) AS count,model_name FROM ".$fromTableStr." GROUP BY country_id,model_name ORDER BY count DESC;";
+		$queryStr = "SELECT map_id,SUM(count) AS count,model_name FROM ".$fromTableStr." GROUP BY map_id,model_name ORDER BY count DESC;";
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
 		while($row = $db->fetch_array())
 		{
-            $countryArray[$row['country_id']]['models'][$row['model_name']] = $row['count'];
-            if (empty($countryArray[$row['country_id']]['count'])) {
-                $countryArray[$row['country_id']]['count'] = $row['count'];
+            $countryArray[$row['map_id']]['models'][$row['model_name']] = $row['count'];
+            if (empty($countryArray[$row['map_id']]['count'])) {
+                $countryArray[$row['map_id']]['count'] = $row['count'];
             } else {
-                $countryArray[$row['country_id']]['count'] += $row['count'];
+                $countryArray[$row['map_id']]['count'] += $row['count'];
             }
 		}
     }
-    foreach($countryArray as $country_id => $countryData) {
+    foreach($countryArray as $map_id => $countryData) {
         arsort($countryData['models']);
         $results[] = array(
-                'countryID' => ($country_id),
+                'countryID' => ($map_id),
                 'cnt' => ($countryData['count']),
                 'models' => ($countryData['models'])
             );
@@ -153,9 +153,5 @@
 
 //     $now = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //     echo "<br>-----------<br>".$now->format('Y-m-d H:i:s')."<br>-----------<br>";
-	
-	// function sqlsrvfyTableName($tablename){
-		// return '['.$GLOBALS['_DB']['dbname'].'].[dbo].['.$tablename.']';
-	// }
 
 ?>

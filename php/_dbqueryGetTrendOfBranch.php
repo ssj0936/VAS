@@ -95,7 +95,7 @@
 
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND model IN($str_in)")
+            .($isAll?"":" AND device IN($str_in)")
 //            ." AND branch='$branch'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
@@ -146,9 +146,9 @@
 
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND model IN($str_in)")
+            .($isAll?"":" AND device IN($str_in)")
 //            ." AND branch='$branch'"
-            ." AND A1.model = mapping.device_name "
+            ." AND A1.device = mapping.device_name "
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -181,7 +181,7 @@
 //    }
 
     //Group by Device
-    $queryStr="SELECT model,date,SUM(count) AS count,branch"
+    $queryStr="SELECT device,date,SUM(count) AS count,branch"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -192,27 +192,27 @@
 
             ." WHERE"
             ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND model IN($str_in)")
+            .($isAll?"":" AND device IN($str_in)")
 //            ." AND branch='$branch'"
             //." AND A1.model = mapping.device_name "
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
             .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date, model, branch ORDER BY date,model";
+            ." GROUP BY date, device, branch ORDER BY date,device";
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);
     $totalDevice = array();
     while($row = $db->fetch_array())
     {
-        if(!isset($totalDevice[$row['model']]))
-            $totalDevice[$row['model']] = 0;
-        $totalDevice[$row['model']] += $row['count'];
+        if(!isset($totalDevice[$row['device']]))
+            $totalDevice[$row['device']] = 0;
+        $totalDevice[$row['device']] += $row['count'];
         
 //        if($row['branch'] != $branch) continue;
         
-        $resultsGroupByDevice[$row['model']][] = array(
-            //'model' => ($row['model_name']),
+        $resultsGroupByDevice[$row['device']][] = array(
+            //'model' => ($row['device_name']),
             'count' => ($row['count']),
             'date' => ($row['date']),
             'isTargetBranch' => (isSame($row['branch'] ,$branch)) ? true : false,
@@ -235,10 +235,6 @@
     $json = json_encode($results);
     echo $json;
     //echo $cnt;
-	
-	// function sqlsrvfyTableName($tablename){
-		// return '['.$GLOBALS['_DB']['dbname'].'].[dbo].['.$tablename.']';
-	// }
 
     function isSame($a,$b){
         $_a = $a;

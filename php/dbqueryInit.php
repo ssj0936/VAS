@@ -8,8 +8,7 @@
     require_once("DBconfig.php");
     require_once("DBclass.php");
 
-    //$tablename = "[asus_visual_overlay].[dbo].[activation_device]";
-    $tablenameLoc = "[asus_visual_overlay].[dbo].[geojson]";
+    $tablenameLoc = $countryDataOnMap;
     $tablenameProduct="product_list";
 	$tablenameDealerCountry="dealer_country";
     $db = new DB();

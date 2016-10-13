@@ -22,7 +22,7 @@
     }
 
     $sql = "SELECT distinct [Online_Dist_name],[distributor_id]
-        FROM [dudududadada].[dbo].[channel_disti_branch_mappping]
+        FROM $channelDistrictBranchMapping
         where Channel_or_Online = 'Online Disti' 
         ORDER BY Online_Dist_name";
     $db->query($sql);

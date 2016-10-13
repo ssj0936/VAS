@@ -5,7 +5,6 @@
     require_once("DBconfig.php");
     require_once("DBclass.php");
 
-    //$tablename = "[php_login_test].[dbo].[random_device_color]";
     $tablename = array(
             "cpu",
             "front_camera",
