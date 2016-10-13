@@ -23,9 +23,11 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 //    $to = "2016-10-11";    
 //    $iso ='["IND"]';
 //    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $distBranch = '[]';
-//    $groupBy = 'branch';
-//    $branch = null;
+//    $groupBy = 'model';
+//    $singleBranch = 'Nagpur_Raipur';
+//    $singleBranch = null;
 
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
@@ -38,7 +40,7 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
     $iso = $_POST['iso'];
     $distBranch = $_POST['distBranch'];
     $groupBy = $_POST['groupBy'];
-    $branch = $_POST['branch'];
+    $singleBranch = $_POST['branch'];
 
     if($data!="[]"){
         $isoObj = json_decode($iso);
@@ -108,6 +110,7 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
                         .($isDistBranch ? " AND $distBranchStr " : "");
+//                        .($branch != null ? " AND branch = '$branch' ": '');
 			if($i != count($isoObj)-1)
 				$fromTableStr.=" UNION ALL ";
 		}
@@ -265,7 +268,21 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
                 $finalData[$model][$i]['activationShareBranch'] = percentage($activationSum[$finalData[$model][$i]['branchName']]['cnt'],$activationAll);
                 $finalData[$model][$i]['gapBranch'] = percentage(($finalData[$model][$i]['activationShareBranch'] / $finalData[$model][$i]['tamShareByBranch'])-1,1);
             }
-            
+
+            //for region Gap export
+            if($singleBranch != null){
+                $needToDelete = array();
+                for($i=0;$i<count($finalData[$model]);++$i){
+                    if(!isSame($finalData[$model][$i]['branchName'],$singleBranch)){
+                        $needToDelete[] = $i;
+                        $totalRows -- ;
+                    }
+                }
+                //delete other branch data except the chosen one
+                $finalData[$model] = array_diff_key($finalData[$model], array_flip($needToDelete));
+                //re arrange array key
+                $finalData[$model] = array_values($finalData[$model]);
+            }
             
             //init
             $rowSpan = array();
@@ -345,6 +362,16 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
     echo $tableStr;
     
     function percentage($numerator , $denominator){
-        return "".round(($numerator / $denominator) * 100)."%";
+        return "".round(($numerator / $denominator) * 100,3)."%";
+    }
+
+    function isSame($a,$b){
+        $a_ = strtolower($a);
+        $a_ = str_replace(array("'",'"','-',','," ","(",")","\r","\n"),"",$a_);
+        
+        $b_ = strtolower($b);
+        $b_ = str_replace(array("'",'"','-',','," ","(",")","\r","\n"),"",$b_);
+        
+        return $a_ == $b_;
     }
 ?>

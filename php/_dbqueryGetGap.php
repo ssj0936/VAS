@@ -19,6 +19,7 @@
 //    $to = "2016-10-11";    
 //    $iso ='["IND"]';
 //    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 
     $color = $_GET['color'];
     $cpu = $_GET['cpu'];
@@ -173,10 +174,13 @@
     $tamResult = array();
     foreach($result as $branchName => $modelsArr){
         foreach($modelsArr as $modelname => $modelCnt){
+//            echo "$branchName / $modelname:";
             if(!isset($tam[$branchName])) continue;
             
             $tam_ = ($results['total'][$modelname] == 0) ? -1 :(($modelCnt/$results['total'][$modelname])/($tam[$branchName]/$totalTam))-1;
             $tamResult[$branchName][$modelname] = round($tam_,4);
+            
+//            echo "($modelCnt / ".$results['total'][$modelname].")/(".$tam[$branchName]."/$totalTam))-1.<br>";
         }
     }
     ksort($tamResult);
