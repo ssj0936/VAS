@@ -85,7 +85,7 @@
     $str_in = substr($str_in,0,-1);
     
     //Group by branch
-    $queryStr="SELECT date,SUM(count) AS count,branch"
+    $queryStr="SELECT date,count,branch,map_id"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -100,10 +100,16 @@
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date,branch ORDER BY date";
-
-//	echo "1:".$queryStr."<br>";
+            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)");
+    
+    $queryStr = "SELECT sum(count) as count,branch,date"
+                ." from($queryStr)foo,$regionTam regionTam"
+                ." WHERE branch = branchName"
+                ." and foo.map_id = regionTam.mapid"
+                ." GROUP BY date,branch"
+                ." ORDER BY date";
+	
+//    echo "1:".$queryStr."<br>";
     $first = true;
     $start_date = null;
     $end_date = null;
