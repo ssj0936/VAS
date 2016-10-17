@@ -174,10 +174,9 @@ function bookmarkSubmit(index) {
     //--------filter----------------------------------------
 
     cleanFilterCheck();
-
     //device filter target check
     for (var i = 0; i < observeTarget.length; i++) {
-        var $this = $("input[value='" + observeTarget[i].model + "'][datatype='" + observeTarget[i].datatype + "'][devices='" + observeTarget[i].devices + "']");
+        var $this = $("input[data-productname='" + observeTarget[i].product + "'][data-modelname='" + observeTarget[i].model + "'][data-devicesname='" + observeTarget[i].devices + "'][datatype='" + observeTarget[i].datatype + "']");
         $this.prop('checked', true);
         checkChild($this, ($this.prop("checked") ? true : false));
         checkParent($this);
@@ -187,7 +186,10 @@ function bookmarkSubmit(index) {
     observeLocFullName.length = 0;
     for (var i = 0; i < observeLoc.length; i++) {
         $("input[iso='" + observeLoc[i] + "']").each(function () {
-            $(this).prop('checked', true);
+            var $this = $(this);
+            $this.prop('checked', true);
+            checkChild($this, ($this.prop("checked") ? true : false));
+            checkParent($this);
             observeLocFullNameTmp.push($(this).val());
             observeLocFullName.push($(this).val());
         });
