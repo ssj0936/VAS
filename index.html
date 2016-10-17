@@ -235,37 +235,39 @@
                   <option value="activation" selected="selected">Activation</option>
                   <option value="lifezone">LifeZone</option>
                 </select>
+
 <!--
-                   <div id="dataset">     
-                    <button class="dataset" id="activation">Activation</button>
-                    <button class="dataset" id="lifezone">LifeZone</button>
+                <div id="lifezoneControlPanel">
+                    <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 40px;">  
+                       <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
+                       <div id="lifezoneWeekDaySlider" class = "sliderDiv"></div>
+                    </div>
+
+                    <div id="lifezonePartOfDay" style="margin-top: 10px;margin-bottom: 40px;">  
+                       <label class="buttonSetLable" for="lifezonePartOfDaySlider">PartOfDay</label>
+                       <div id="lifezonePartOfDaySlider" class = "sliderDiv"></div>
+                    </div>
                 </div>
 -->
                 
-                
-                <div id="mode" style="margin-top: 3px;">
-                    <label class="buttonSetLable" for="mode">Mode</label>
-                    <button class="mode" id="region">Region</button>
-                    <button class="mode" id="marker">Marker</button>
-                    <!--<button class="mode" id="marker_lifecircle">Marker(LifeCircle)</button>-->
-                    <button class="mode" id="comparison">Comparison</button>
-                    <button class="mode" id="table">Table</button>
-                    <button class="mode" id="gap">Gap</button>
-<!--                    <button class="mode" id="gaptrend">gaptrend</button>-->
+                <div id="activationControlPanel">
+                    <div id="mode" style="margin-top: 3px;">
+                        <label class="buttonSetLable" for="mode">Mode</label>
+                        <button class="mode" id="region">Region</button>
+                        <button class="mode" id="marker">Marker</button>
+                        <button class="mode" id="comparison">Comparison</button>
+                        <button class="mode" id="table">Table</button>
+                        <button class="mode" id="gap">Gap</button>
+                    </div>
+
+
+                    <div id="overlay" style="margin-top: 3px;">
+                        <label class="buttonSetLable" for="overlay">Overlay</label>
+                        <button class="overlay" id="dealer">Dealer</button>
+                        <button class="overlay" id="service">Service</button>
+                    </div>
                 </div>
-                
-<!--
-                <div id="serviceDropdown" class="selector"></div>
-                
-                <div id="dealerDropdown" class="selector"></div>
-                
--->
-                <div id="overlay" style="margin-top: 3px;">
-                    <label class="buttonSetLable" for="overlay">Overlay</label>
-                    <button class="overlay" id="dealer">Dealer</button>
-                    <button class="overlay" id="service">Service</button>
-                </div>
-                
+
                 <div id="filterResult" style="margin-top: 10px;" >
                     <label class="buttonSetLable" for="filterresult">Filters</label>
                     <span id="filterBarResults"></span>

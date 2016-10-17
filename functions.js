@@ -447,6 +447,27 @@ function cleanBranch() {
     allBranchGap = null;
 }
 
+function weekdayConvert(num){
+    var weekday = (num == 1) ? "Mon" :
+            (num == 2) ? "Tue" :
+            (num == 3) ? "Wed" :
+            (num == 4) ? "Tus" :
+            (num == 5) ? "Fri" :
+            (num == 6) ? "Sat" : 
+            (num == 7) ? "Sun" : null;
+
+    return weekday;
+}
+
+function partOfDayConvert(num){
+    var partOfDay = (num == 1) ? "10:00" :
+                (num == 2) ? "14:00" :
+                (num == 3) ? "18:00" : 
+                (num == 4) ? "22:00" : null;
+
+    return partOfDay;
+}
+
 //REF: http://www.epochconverter.com/weeknumbers
 Date.prototype.getWeek = function () {
     var target  = new Date(this.valueOf());

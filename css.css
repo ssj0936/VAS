@@ -797,3 +797,17 @@
     button#gap{
         display: none;
     }
+
+    .sliderDiv{
+        width: 30%;
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .sliderDiv label {
+        position: absolute;
+        width: 20px;
+        margin-left: -10px;
+        text-align: center;
+        margin-top: 20px;
+    }

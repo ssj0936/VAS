@@ -12,20 +12,35 @@ function buttonInit() {
             var dataSet = data.item.value;
 
             //not allow to switch if invalid country is been checked
-            var checkAttr = (dataSet == "activation") ? "inActivation" : "inLifezone";
-            //var isInvalid = checkInvalidCountryAlert(checkAttr);
-
+            var checkAttr;
+            var updatetime;
+            
+            switch(dataSet){
+                    case "activation":
+                        checkAttr = "inActivation";
+                        updatetime = updateTime.activation;
+                        $('#activationControlPanel').show("medium");
+                        $('#lifezoneControlPanel').hide();
+                        break;
+                    case "lifezone":
+                        checkAttr = "inLifezone";
+                        updatetime = updateTime.lifezone;
+                        $('#lifezoneControlPanel').show("medium");
+                        $('#activationControlPanel').hide();
+                        break;
+            }
+            
             if (checkInvalidCountryAlert(checkAttr)){
                 $(this).val('activation');
                 $(this).selectmenu("refresh");
                 return;
             }
-            setDataset(dataSet);
-
+            
             if (mapHasShowsUp()) {
                 $(".submit").trigger("click");
             }
-            var updatetime = (getDataset() == DATA_ACTIVATION) ? updateTime.activation : updateTime.lifezone;
+            
+            setDataset(dataSet);
             setUpdateTime(updatetime);
         }
      });

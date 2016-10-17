@@ -2,6 +2,8 @@
 
         function init_() {
             loading("initializing...")
+            
+            //datePicker
             $("#from").datepicker().on("change", function (e) {
                 $("#to").datepicker("option", "minDate", $(this).val());
                 datePickerOnChange();
@@ -18,6 +20,50 @@
             $("#to_compare").datepicker();
             $("#to_compare").datepicker('setDate', new Date());
 
+            //Lifezone slider - weekday
+            $('#lifezoneWeekDaySlider').slider({
+                min:1,
+                max:7,
+                slide: function( event, ui ) {
+                    var dayTime = weekdayConvert(ui.value);
+                    
+                    console.log(dayTime);
+                } 
+            }).each(function() {
+                var opt = $(this).data().uiSlider.options;
+                var vals = opt.max - opt.min;
+                for (var i = opt.min; i <= opt.max; i++) {
+                    var weekday = weekdayConvert(i);
+                    
+                    var el = $('<label>'+weekday+'</label>').css('left',((i-1)/vals*100)+'%');
+                    $( "#lifezoneWeekDaySlider" ).append(el);
+                }
+            });
+            
+            //Lifezone slider - dayofPart
+            $('#lifezonePartOfDaySlider').slider({
+                range: true,
+                min: 1,
+                max: 4,
+                values: [1,4],
+                slide: function( event, ui ) {
+                    var startTime = partOfDayConvert(ui.values[ 0 ]);
+                    
+                    var endTime = partOfDayConvert(ui.values[ 1 ]);
+                    console.log(startTime+'-'+endTime);
+                  }
+            }).each(function() {
+                var opt = $(this).data().uiSlider.options;
+                var vals = opt.max - opt.min;
+                for (var i = opt.min; i <= opt.max; i++) {
+                    var partOfDay = partOfDayConvert(i);
+                    
+                    var el = $('<label>'+partOfDay+'</label>').css('left',((i-1)/vals*100)+'%');
+                    $( "#lifezonePartOfDaySlider" ).append(el);
+                }
+            });
+            
+            //map_container
             $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 20) + 'px');
             //selector option init
             var URLs = "php/dbqueryInit.php";
