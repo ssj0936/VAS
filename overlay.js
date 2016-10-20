@@ -127,60 +127,6 @@ function scLayer() {
     isServiceLayerShowing = true;
 }
 
-//function dealerMenuInit(){
-//    var ul = jQuery('<ul/>').css({
-//        "padding-left": "12px",
-//    }).appendTo($("#dealerDropdown"));
-//
-//    var li  = jQuery('<li/>').attr("id","check_dealer_li").appendTo($(ul));
-//    jQuery('<input/>', {
-//        id: 'filter_dealer_'+"all",
-//        type: 'checkbox',
-//        value: "all",
-//        name:"dealer",
-//        class:"checkboxDealer",
-//    }).appendTo($(li));
-//    jQuery('<label/>',{
-//        text: "all",
-//        for:'filter_dealer_'+"all",
-//    }).appendTo(li);
-//
-//    var allUl = jQuery('<ul/>').css({
-//        "padding-left": "12px",
-//        "-moz-column-count": "3",
-//        "-webkit-column-count": "3",
-//        "column-count": "3",
-//    }).appendTo($(ul));
-//
-//    for(var i=0;i<allDealerCountry.length;++i) {
-//        var li  = jQuery('<li/>').appendTo($(allUl));
-//
-//        //continents
-//        jQuery('<input/>', {
-//            id: 'filter_dealer_'+allDealerCountry[i],
-//            type: 'checkbox',
-//            value: allDealerCountry[i],
-//            name:"dealer",
-//            class:"checkboxDealer",
-//        })
-//        .css('display', 'inline-block')
-//        .appendTo($(li));
-//        
-//        jQuery('<label/>',{
-//            text: allDealerCountry[i],
-//            for: 'filter_dealer_'+allDealerCountry[i],
-//        }).appendTo(li);
-//    }
-//    
-//        //listener setting
-//    $("#dealerDropdown input").each(function(index) {
-//        $(this).on("click", function(){
-//            checkChild(this, ($(this).prop("checked") ? true : false));
-//            checkParent(this);
-//        });
-//    });
-//}
-
 function dealerSubmit() {
     if (!$("button#dealer").hasClass("active")) {
         openDealer();

@@ -823,9 +823,11 @@ function ajaxGetGapExport(groupBy){
 }
 
 function ajaxGetHeatMap(){
-    $.get(
-        "php/_dbqueryGetLifezoneData.php",
-        {
+    loading("Data loading...");
+    $.ajax({
+        url: "php/_dbqueryGetLifezoneData.php",
+        type: "POST",
+        data: {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -835,9 +837,15 @@ function ajaxGetHeatMap(){
             onlineDist: JSON.stringify(observeDistName),
             data: JSON.stringify(observeTarget)
         },
-        function(json){
+        dataType: 'json',
+
+        success: function (json) {
             console.log(json);
+            loadingDismiss();
         },
-        'json'
-    );
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxGetHeatMap:" + xhr.status);
+            alert(thrownError);
+        }
+    });
 }

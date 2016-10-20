@@ -112,13 +112,13 @@ while($row = $db->fetch_array())
     $time = $row['time'];
     $volume = $row['count'];
     $currentIndex = (isset($results[$week][$time])) ? count($results[$week][$time]) : 0;
-    $results[$week][$time][$currentIndex]['lng'] = lowerprecise($row['lng']);
-    $results[$week][$time][$currentIndex]['lat'] = lowerprecise($row['lat']);
+    $results[$week][$time][$currentIndex]['lng'] = $row['lng'];
+    $results[$week][$time][$currentIndex]['lat'] = $row['lat'];
     $results[$week][$time][$currentIndex]['count'] = $volume;
 }
 //print_r($results);
 $json = json_encode($results);
-//echo $json;
+echo $json;
 //
 //$end = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //echo "<br>-----------<br>".$end->format('Y-m-d H:i:s')."<br>-----------<br>";

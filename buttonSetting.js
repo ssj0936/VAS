@@ -10,15 +10,10 @@ function buttonInit() {
             //not allow switching while loading
             if (isLoading()) return;
             var dataSet = data.item.value;
-
-            //not allow to switch if invalid country is been checked
-//            var checkAttr;
-            var updatetime;
-            
+            activeDatasetTmp = dataSet;
+            var updatetime = updateTime.dataSet;
             switch(dataSet){
                     case "activation":
-//                        checkAttr = "inActivation";
-                        updatetime = updateTime.activation;
                         //hide date button
                         $('#databtn').show('medium');
                         //control panel switch
@@ -26,14 +21,6 @@ function buttonInit() {
                         $('#lifezoneControlPanel').hide();
                         break;
                     case "lifezone":
-                        $("#mode button.active").each(function(){
-                            console.log($(this).attr('id'));
-                            unactiveModeBtn($(this));
-                            $(this).removeClass('active');
-                        });
-                        
-                        updatetime = updateTime.lifezone;
-                        
                         //hide date button
                         $('#databtn').hide();
                         //control panel switch
@@ -41,19 +28,8 @@ function buttonInit() {
                         $('#activationControlPanel').hide();
                         break;
             }
-            
-//            if (checkInvalidCountryAlert(checkAttr)){
-//                $(this).val('activation');
-//                $(this).selectmenu("refresh");
-//                return;
-//            }
-            
-//            if (mapHasShowsUp()) {
-//                $(".submit").trigger("click");
-//            }
-            
-            setDataset(dataSet);
-            setUpdateTime(updatetime);
+            //setDataset(dataSet);
+            //setUpdateTime(updatetime);
         }
      });
     
@@ -362,22 +338,6 @@ function dealerBtnSetting() {
             if (isLoading()) return;
             dealerSubmit();
         }
-        /*
-            $(document.body).click(function(e){
-                //click target is not dropdown menu
-                if((!$("#dealerDropdown").is(e.target) && $("#dealerDropdown").has(e.target).length===0)){
-                    //click target is not date button & datepicker is not showing
-                    if((!$("button#dealer").is(e.target) && $("button#dealer").has(e.target).length===0)
-                        &&($("#ui-datepicker-div").is(':hidden'))){
-                        //if menu is showing, hide it
-                        //and apply
-                        if(!$('#dealerDropdown').is(':hidden')){
-                            $('#dealerDropdown').fadeOut(300);
-                            dealerSubmit();
-                        }
-                    }
-                }
-            });*/
 }
 
 function serviceBtnSetting() {
@@ -483,14 +443,28 @@ function submitBtnSetting() {
             }
             enableControlPanel();
 
-            //filter data collection
-            var from = $("#from").datepicker("getDate");
-            var to = $("#to").datepicker("getDate");
-            //console.log(from);
-
-            firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
-            firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
-
+            //need to clean old setting
+            if(getDataset()!=null && activeDatasetTmp != null && getDataset() != activeDatasetTmp){
+                console.log(activeDatasetTmp);
+                switch(getDataset()){
+                    case DATA_ACTIVATION:
+                        //un-pressed every mode btn
+                        $("#mode button.active").each(function(){
+                            console.log($(this).attr('id'));
+                            unactiveModeBtn($(this));
+                            $(this).removeClass('active');
+                        });
+                        //close overlay
+                        closeDealer();
+                        closeService();
+                        break;
+                    case DATA_LIFEZONE:
+                        break;
+                }
+                setDataset(activeDatasetTmp);
+                console.log('diff');
+            }
+            
             //clone decided filter from tmpFilter
             //then clear tmp filter
             observeTarget = observeTargetTmp.slice();
@@ -498,7 +472,7 @@ function submitBtnSetting() {
             console.log(observeTarget);
 
             observeTargetDeviceOnly = observeTargetDeviceOnlyTmp.slice();
-            
+
             observeLoc = observeLocTmp.slice();
             console.log("observeLoc:");
             console.log(observeLoc);
@@ -513,98 +487,108 @@ function submitBtnSetting() {
 
             filterRecordClean();
             filterRecord();
-            
+
             saveLog();
-            if(getDataset() == DATA_ACTIVATION){
-                //default mode = region
-                if ($("#mode button#gap").hasClass("active")) {
-                    if(!isGapButtonCanShow){
-                        setModeOn(MODE_REGION);
-                        modeBtnPress($("button#region"));
-                        filterRecordClean();
-                        filterRecord();
-                    }else{
-                        submitGap();
+            
+            switch(getDataset()){
+                case DATA_ACTIVATION:
+                    //filter data collection
+                    var from = $("#from").datepicker("getDate");
+                    var to = $("#to").datepicker("getDate");
+                    //console.log(from);
+
+                    firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                    firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
+
+                    //default mode = region
+                    if ($("#mode button#gap").hasClass("active")) {
+                        if(!isGapButtonCanShow){
+                            setModeOn(MODE_REGION);
+                            modeBtnPress($("button#region"));
+                            filterRecordClean();
+                            filterRecord();
+                        }else{
+                            submitGap();
+                        }
                     }
-                }
-                if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
-                    if (!$("button#comparison").hasClass("active"))
-                        modeBtnPress($("button#comparison"));
-                    //$("button#comparison").toggleClass("active");
+                    if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
+                        if (!$("button#comparison").hasClass("active"))
+                            modeBtnPress($("button#comparison"));
+                        //$("button#comparison").toggleClass("active");
 
-                    needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
-                    console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
 
-                    var from = $("#from_compare").datepicker("getDate");
-                    var to = $("#to_compare").datepicker("getDate");
-                    comparisonMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
-                    comparisonMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
+                        var from = $("#from_compare").datepicker("getDate");
+                        var to = $("#to_compare").datepicker("getDate");
+                        comparisonMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                        comparisonMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
 
-                    submitComparision();
-                    //map zoom in
-                    firstMap.zoomToSelectedLocation();
-                    comparisonMap.zoomToSelectedLocation();
+                        submitComparision();
+                        //map zoom in
+                        firstMap.zoomToSelectedLocation();
+                        comparisonMap.zoomToSelectedLocation();
 
-                    //console.log("compareFromFormatStr:"+compareFromFormatStr+"/"+"compareToFormatStr:"+compareToFormatStr);
-                }
-                if ($("#mode button.active").length == 0 || $("button#region").hasClass("active")) {
-                    setModeOn(MODE_REGION);
-                    if (!$("button#region").hasClass("active"))
-                        modeBtnPress($("button#region"));
-                    //$("button#region").toggleClass("active");
+                        //console.log("compareFromFormatStr:"+compareFromFormatStr+"/"+"compareToFormatStr:"+compareToFormatStr);
+                    }
+                    if ($("#mode button.active").length == 0 || $("button#region").hasClass("active")) {
+                        setModeOn(MODE_REGION);
+                        if (!$("button#region").hasClass("active"))
+                            modeBtnPress($("button#region"));
+                        //$("button#region").toggleClass("active");
 
-                    needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
-                    console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
 
-                    comparisonMap.fromFormatStr = undefined;
-                    comparisonMap.toFormatStr = undefined;
+                        comparisonMap.fromFormatStr = undefined;
+                        comparisonMap.toFormatStr = undefined;
 
-                    firstMap.zoomToSelectedLocation();
-                    submitRegion();
-                }
-                if ($("button#marker").hasClass("active")) {
-                    if (!$("button#marker").hasClass("active"))
-                        modeBtnPress($("button#marker"));
-                    //$("button#marker").toggleClass("active");
+                        firstMap.zoomToSelectedLocation();
+                        submitRegion();
+                    }
+                    if ($("button#marker").hasClass("active")) {
+                        if (!$("button#marker").hasClass("active"))
+                            modeBtnPress($("button#marker"));
+                        //$("button#marker").toggleClass("active");
 
-                    needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
-                    console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
 
-                    comparisonMap.fromFormatStr = undefined;
-                    comparisonMap.toFormatStr = undefined;
+                        comparisonMap.fromFormatStr = undefined;
+                        comparisonMap.toFormatStr = undefined;
 
-                    firstMap.zoomToSelectedLocation();
-                    submitMarker();
-                }
+                        firstMap.zoomToSelectedLocation();
+                        submitMarker();
+                    }
+                    //button class reset
+
+                    if (isServiceLayerShowing) {
+                        openService();
+                    }
+
+                    if (isDealerLayerShowing) {
+                        openDealer();
+                    }
+                    
+                    //reset time section button
+                    $("#timeSection button").each(function () {
+                        $(this).removeClass("btn_pressed").addClass("btn_unpressed");
+                    });
+                    
+                    //decide whether need to show dist/branch filter or not
+                    if(isGapButtonCanShow && !isDistBranchSelected){
+                        $('button#gap').show();
+                    }else{
+                        $('button#gap').hide();
+                    }
+                    break;
+                case DATA_LIFEZONE:
+                    submitHeatMap();
+                    break;
             }
-            else if(getDataset() == DATA_LIFEZONE){
-                submitHeatMap();
-            }
-            //button class reset
-
-            if (isServiceLayerShowing) {
-                openService();
-            }
-
-            if (isDealerLayerShowing) {
-                openDealer();
-            }
-
-            $("#timeSection button").each(function () {
-                $(this).removeClass("btn_pressed").addClass("btn_unpressed");
-            });
-
+            
             clearFilterResult();
             showFilterResult();
-            //observeLocLast = observeLoc.slice();
-            
-            
-            //decide whether need to show dist/branch filter or not
-            if(isGapButtonCanShow && !isDistBranchSelected){
-                $('button#gap').show();
-            }else{
-                $('button#gap').hide();
-            }
         }
     });
 }
@@ -712,7 +696,6 @@ function submitComparision() {
 }
 
 function submitHeatMap(){
-    loading("Data loading...");
     ajaxGetHeatMap();
 }
 
