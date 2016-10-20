@@ -821,3 +821,23 @@ function ajaxGetGapExport(groupBy){
         'text'
     );
 }
+
+function ajaxGetHeatMap(){
+    $.get(
+        "php/_dbqueryGetLifezoneData.php",
+        {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            iso: JSON.stringify(observeLoc),
+            distBranch: JSON.stringify(observeDistBranch),
+            onlineDist: JSON.stringify(observeDistName),
+            data: JSON.stringify(observeTarget)
+        },
+        function(json){
+            console.log(json);
+        },
+        'json'
+    );
+}

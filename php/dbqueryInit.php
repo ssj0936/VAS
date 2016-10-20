@@ -36,50 +36,19 @@
         }
         $allDevices[$currentProduct][$currentSeries][] = $row['device_name'];
     }
-    
-//    foreach($allDevices as $pro => $val){
-//        echo $pro.":<br>";
-//        foreach($val as $model => $val_2){
-//            echo ">>".$model.":<br>";
-//            foreach($val_2 as $device){
-//                echo ">>>>".$device.":<br>";
-//            }
-//        }
-//    }
 
-    //---------------------------
     $allLoc=array();
     $db->query("SELECT DISTINCT * FROM ".$tablenameLoc." ORDER BY Terrority,NAME_0;");
     while($row = $db->fetch_array()){
         $countryName = $row['NAME_0'];
         $terrority = $row['Terrority'];
         $allLoc[$terrority][$countryName][] = $row['iso'];
-        $allLoc[$terrority][$countryName][] = $row['inActivation'];
-        $allLoc[$terrority][$countryName][] = $row['inLifezone'];
     }
-//    //---------------------------
-//	
-//    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbnameService']);
-//    $allProduct=array();
-//    $db->query("SELECT DISTINCT productName FROM ".$tablenameProduct.";");
-//    while($row = $db->fetch_array()){
-//        $allProduct[] = $row['productName'];
-//    }
-//	//---------------------------
-//
-//    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbnameService']);
-//    $allDealerCountry=array();
-//    $db->query("SELECT DISTINCT country FROM ".$tablenameDealerCountry." ORDER BY country;");
-//    while($row = $db->fetch_array()){
-//        $allDealerCountry[] = $row['country'];
-//    }
     
     
     
     $result['allDevices']=$allDevices;
     $result['allLoc']=$allLoc;
-//    $result['allProduct']=$allProduct;
-//	$result['allDealerCountry']=$allDealerCountry;
     $result['activationUpdateTime']=$_DB['activation']['updatetime'];
     $result['lifezoneUpdateTime']=$_DB['lifezone']['updatetime'];
 

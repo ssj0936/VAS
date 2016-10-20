@@ -273,8 +273,8 @@ function checkboxLocationInit() {
                     datatype: "country",
                     iso: allLoc[terrorityName][countryName][0],
                     name: "loc",
-                    inActivation: allLoc[terrorityName][countryName][1],
-                    inLifezone: allLoc[terrorityName][countryName][2],
+//                    inActivation: allLoc[terrorityName][countryName][1],
+//                    inLifezone: allLoc[terrorityName][countryName][2],
                 })
                 .css('display', 'inline-block')
                 .appendTo($(li));

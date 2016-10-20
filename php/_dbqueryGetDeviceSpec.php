@@ -14,7 +14,7 @@
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 
-    $deviceName = $_GET['device_name'];
+    $deviceName =$_GET['device_name'];
     if($deviceName != '[]') {
         $deviceName = json_decode($deviceName,true);
         $deviceString = implode("','",$deviceName);
@@ -23,7 +23,7 @@
         for ($i = 0; $i < count($tablename); $i++) {
             $db->query(
                 "SELECT SPEC_DESC"
-                ." FROM [asus_spec_mapping].[dbo].[device_".$tablename[$i]."_mapping_".getCurrentDb('Activation')."]"
+                ." FROM [asus_spec_mapping].[dbo].[device_".$tablename[$i]."_mapping_".getCurrentDb('activation')."]"
                 ." where device_name in ('".$deviceString."')"
                 ."ORDER BY SPEC_DESC ;"
             );

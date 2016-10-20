@@ -122,4 +122,8 @@ function getModel($inStr){
         ." WHERE device_name in ($inStr)";
     return $query;
 }
+
+function lowerprecise($number){
+    return (float)number_format((float) $number, 3, '.', '');
+}
 ?>

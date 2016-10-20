@@ -24,10 +24,8 @@
             $('#lifezoneWeekDaySlider').slider({
                 min:1,
                 max:7,
-                slide: function( event, ui ) {
+                change: function( event, ui ) {
                     var dayTime = weekdayConvert(ui.value);
-                    
-                    console.log(dayTime);
                 } 
             }).each(function() {
                 var opt = $(this).data().uiSlider.options;
@@ -41,17 +39,35 @@
             });
             
             //Lifezone slider - dayofPart
-            $('#lifezonePartOfDaySlider').slider({
+            var slider = $('#lifezonePartOfDaySlider').slider({
                 range: true,
                 min: 1,
                 max: 4,
-                values: [1,4],
+                values: [1,2],
+                create:function(event, ui){
+                    //hide handler
+                    $(this).children("span.ui-slider-handle").hide();
+                },
                 slide: function( event, ui ) {
+                    //set bound
+                    if(ui.values[ 0 ] > 3 || ui.values[ 1 ] < 2){
+                        return false;
+                    }
+
+                    //move another handler
                     var startTime = partOfDayConvert(ui.values[ 0 ]);
-                    
                     var endTime = partOfDayConvert(ui.values[ 1 ]);
-                    console.log(startTime+'-'+endTime);
-                  }
+                    if(slider.children(".ui-slider-handle").first().hasClass('ui-state-active')){
+                        slider.slider('values', 1, ui.values[0]+1, true );
+                    }
+                    if(slider.children(".ui-slider-handle").last().hasClass('ui-state-active')){
+                        slider.slider('values', 0, ui.values[1]-1, true );
+                    }
+                },
+                stop:function( event, ui ){
+                    //get value
+                    console.log(ui.values[ 0 ]+'-'+ui.values[ 1 ]);
+                }
             }).each(function() {
                 var opt = $(this).data().uiSlider.options;
                 var vals = opt.max - opt.min;

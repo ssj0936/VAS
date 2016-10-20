@@ -23,33 +23,33 @@ function isHighlightNeeded() {
     return true;
 }
 
-function checkInvalidCountryAlert(checkAttr) {
-    var inValidLoc = [];
-    var dataset = (checkAttr == 'inActivation') ? 'Activation' : 'Lifezone';
-    $(".filter_country input[type='checkbox']:checked").each(function () {
-        if ($(this).attr(checkAttr) == 0)
-            inValidLoc.push($(this).val());
-    });
-    if (inValidLoc.length != 0) {
-        var str = '';
-        for (var i = 0; i < inValidLoc.length; ++i) {
-            str += '<li class="needToUncheck">';
-            str += '<input type="checkbox" value = "' + inValidLoc[i] + '" checked="true" onClick="remoteCheckFilter(this)">';
-            str += '<label>' + inValidLoc[i] + '</label>';
-            str += '</li>';
-        }
-        showAlert("These countries are not in the dataset[ " + dataset + " ]:<br><b>" + str + "</b><br><br>Please uncheck these options then submit again");
-        return true;
-    }
-    return false;
-}
+//function checkInvalidCountryAlert(checkAttr) {
+//    var inValidLoc = [];
+//    var dataset = (checkAttr == 'inActivation') ? 'Activation' : 'Lifezone';
+//    $(".filter_country input[type='checkbox']:checked").each(function () {
+//        if ($(this).attr(checkAttr) == 0)
+//            inValidLoc.push($(this).val());
+//    });
+//    if (inValidLoc.length != 0) {
+//        var str = '';
+//        for (var i = 0; i < inValidLoc.length; ++i) {
+//            str += '<li class="needToUncheck">';
+//            str += '<input type="checkbox" value = "' + inValidLoc[i] + '" checked="true" onClick="remoteCheckFilter(this)">';
+//            str += '<label>' + inValidLoc[i] + '</label>';
+//            str += '</li>';
+//        }
+//        showAlert("These countries are not in the dataset[ " + dataset + " ]:<br><b>" + str + "</b><br><br>Please uncheck these options then submit again");
+//        return true;
+//    }
+//    return false;
+//}
 
 function isInArray(array, el) {
     return (array.indexOf(el) == -1) ? false : true;
 }
 
 function setUpdateTime(time) {
-    $("#updatetime").html("<b>Last update</b>: " + time.trim());
+    $("#updatetime").html("<b>Last update</b>: " + time);
 }
 
 function mapHasShowsUp() {

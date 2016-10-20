@@ -195,8 +195,9 @@
             <!--right side function button-->
             <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>
             <div class="control_panel_btn_area_right" style="float:right;">
-                Date Range
-                <button class="date">Date</button>
+                <div id='databtn' style="display: inline-block;">
+                    <label>Date Range</label>
+                    <button class="date">Date</button>
                     <div id="dateDropdown" class="selector"> 
                         <div id="timeSection">
                             <button class="btn_unpressed" id="btnToday">Today</button>
@@ -223,6 +224,7 @@
                             <button class="submit">Apply</button><button class="submit">Cancel</button>
                         </div>
                     </div>
+                </div>
                 <button class="featureBtn" id="bookmark"/>
                 <button class="featureBtn" id="savebookmark" />
                 <!--<button class="featureBtn" id="snapshot" />-->
@@ -236,8 +238,7 @@
                   <option value="lifezone">LifeZone</option>
                 </select>
 
-<!--
-                <div id="lifezoneControlPanel">
+                <div id="lifezoneControlPanel" class = "needTohideAtFirst">
                     <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 40px;">  
                        <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
                        <div id="lifezoneWeekDaySlider" class = "sliderDiv"></div>
@@ -248,7 +249,6 @@
                        <div id="lifezonePartOfDaySlider" class = "sliderDiv"></div>
                     </div>
                 </div>
--->
                 
                 <div id="activationControlPanel">
                     <div id="mode" style="margin-top: 3px;">

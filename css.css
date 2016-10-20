@@ -811,3 +811,7 @@
         text-align: center;
         margin-top: 20px;
     }
+
+    .needTohideAtFirst{
+        display: none;
+    }
