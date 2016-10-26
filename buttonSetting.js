@@ -1,7 +1,7 @@
 "use strict";
 
 function buttonInit() {
-    $(".control_panel_btn_area_right button,#mode button,#overlay button,#filterResult button,button.date").button();
+    $("button.date,#mode button,#overlay button,#filterResult button,button.date").button();
     //$('#dataset').buttonset();
     
     $( "#dataset" ).selectmenu({
@@ -398,7 +398,7 @@ function mapBtnSetting() {
     document.getElementById("map").onclick = function () {
         $("#workset").show();
         $("#homepage").hide();
-
+        $("#homepage").empty();
         if (document.getElementById("mapid").childNodes.length == 0) {
             mapInit();
         }
@@ -437,6 +437,7 @@ function submitBtnSetting() {
             if (document.getElementById('workset').style.display == "none") {
                 $("#workset").show();
                 $("#homepage").hide();
+                $("#homepage").empty();
                 if (document.getElementById("mapid").childNodes.length == 0) {
                     mapInit();
                 }
@@ -718,6 +719,8 @@ function collapseBtnInit() {
             selector.hide("slide", {
                 direction: "left"
             }, 300, function () {
+                $('#selector').hide();
+                
                 //togglebtn pos update
                 toggleBtn.css({
                     "left": '0px',
@@ -726,7 +729,7 @@ function collapseBtnInit() {
 
                 //layout update
                 rightSideArea.animate({
-                    width: "100%"
+                    width: "99%"
                 }, 200, "linear", function () {
                     comparisionMapResize();
                 });
@@ -734,6 +737,7 @@ function collapseBtnInit() {
         }
         //show up
         else {
+            $('#selector').show();
             rightSideArea.css("width", "80%");
             toggleBtnIcon.removeClass("ui-icon-carat-1-e").addClass("ui-icon-carat-1-w");
             selector.show("slide", {
@@ -767,7 +771,6 @@ function showTable() {
 function closeTable() {
     $("#workset").show();
     $("#homepage").hide();
-
     $("#homepage").empty();
 }
 

@@ -66,6 +66,9 @@
     #dateDropdown input[type="button"],
     #dateDropdown input[type="text"],
     #dateDropdown select,
+    #overviewDateDropdown input[type="button"],
+    #overviewDateDropdown input[type="text"],
+    #overviewDateDropdown select,
     button#submit {
         padding-left: 5px;
         /*font-size: 12px;*/
@@ -81,7 +84,10 @@
     
     #dateDropdown input[type="button"],
     #dateDropdown input[type="text"],
-    #dateDropdown select {
+    #dateDropdown select,
+    #overviewDateDropdown input[type="button"],
+    #overviewDateDropdown input[type="text"],
+    #overviewDateDropdown select {
         background: white;
         margin: 5px;
         width: 40%;
@@ -278,7 +284,9 @@
         margin-bottom: 3px;
     }
     
-    .control_panel_btn_area select + .ui-selectmenu-button {
+    .control_panel_btn_area select + .ui-selectmenu-button ,
+    .centerCenterTitle select + .ui-selectmenu-button,
+    .centerRightTitle select + .ui-selectmenu-button{
         vertical-align: middle;
     }
     
@@ -370,7 +378,7 @@
         padding-left: 16px;
     }
     
-    #dateDropdown {
+    #dateDropdown,#overviewDateDropdown {
         display: none;
         position: absolute;
         background-color: #eeeeee;
@@ -392,12 +400,14 @@
         list-style-type: none;
     }
     
-    #timeSection {
+    #timeSection,
+    #overviewTimeSection {
         margin: -5px;
         padding: 5px 0px 5px 0px;
     }
     
-    #timeSection button {
+    #timeSection button,
+    #overviewTimeSection button {
         display: block;
         width: 100%;
         border: 0px;
@@ -413,12 +423,16 @@
         resize: none;
     }
     
-    #dateDropdown button.submit {
+    #dateDropdown button.submit,
+    #overviewDateDropdown button.submit,
+    #dateDropdown button.cancel,
+    #overviewDateDropdown button.cancel{
         display: inline-block;
         margin: 5% 0% 3% 2%;
     }
     
-    #serviceDropdown button.submit {
+    #serviceDropdown button.submit,
+    #serviceDropdown button.cancel{
         display: inline-block;
         margin: 5% 0% 3% 2%;
     }
@@ -433,6 +447,7 @@
         width: 32px;
         margin-left: 5px;
         background: url('./img/snapshot.png') center no-repeat;
+        border: 0px;
     }
     
     #savebookmark {
@@ -440,6 +455,15 @@
         width: 32px;
         margin-left: 5px;
         background: url('./img/savebookmark.png') center no-repeat;
+        border: 0px;
+    }
+
+    #info {
+        height: 32px;
+        width: 32px;
+        margin-left: 5px;
+        background: url('./img/info.png') center no-repeat;
+        border: 0px;
     }
     
     #bookmark {
@@ -447,6 +471,7 @@
         width: 32px;
         margin-left: 5px;
         background: url('./img/bookmark.png') center no-repeat;
+        border: 0px;
     }
     
     #toggle {
@@ -814,4 +839,92 @@
 
     .needTohideAtFirst{
         display: none;
+    }
+    .overviewCenter{
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    #overviewCenterLeft,#overviewCenterCenter{
+        margin: 10px 10px 0px 10px;
+        height: 100%;
+    }
+    #overviewCenterLeft{
+        position: relative;
+        width:20%;
+    }
+    #overviewCenterCenter{
+        width:20%;
+        height: 105%;
+    }
+
+    #overviewCenterRight{
+        margin: 10px 10px 0px 10px;
+        height: 105%;
+        width:50%;
+    }
+    
+    #overviewTop{
+        margin: 0px 5% 0px 5%;
+        position: relative;
+        height: 5%;
+        padding: 0 8px 5px 8px;
+    }
+
+    #overviewCenter{
+        height: 85%;
+        margin: 0 5% 0 5%;
+    }
+
+    #todayLogin{
+        height: 50%;
+/*        margin-bottom: 16px;*/
+    }
+
+    #topTenLogin{
+        height: 50%;
+    }
+
+/*
+    #overviewTop:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        bottom: 0;
+        height: 1px;
+        width: 90%;   or 100px 
+        border-bottom:2px solid #ddd;
+    }
+*/
+
+/*
+    #overviewCenterLeft:before{
+        content: "";
+        position: absolute;
+        left: 100%;
+        height: 90%;
+        border-right: 2px solid #ddd;
+    }
+*/
+
+    #homepage{
+        margin-left:10px;
+        height: 100%;
+    }
+
+    .overviewTitle{
+        font-weight: bold;
+    }
+
+    .centerCenterContent{
+        
+        max-height: 90%;
+    }
+
+    #divider{
+        height:5%;
+    }
+
+    .card-padding{
+        padding:8px;
     }

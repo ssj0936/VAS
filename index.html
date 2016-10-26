@@ -75,6 +75,7 @@
 
         <!--FUNCTION-->
         <script src="workset.js"></script>
+        <script src="overview.js"></script>
         
         <script src="ajax.js"></script>
         <script src="chartInMap.js"></script>
@@ -195,7 +196,7 @@
             <!--right side function button-->
             <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>
             <div class="control_panel_btn_area_right" style="float:right;">
-                <div id='databtn' style="display: inline-block;">
+                <div id='databtn' style="display: inline-block;vertical-align: top;">
                     <label>Date Range</label>
                     <button class="date">Date</button>
                     <div id="dateDropdown" class="selector"> 
@@ -221,12 +222,13 @@
                                 <input value="To Time" type="text" id="to_compare" name="to">
                         </div>
                         <div style="display: block;">
-                            <button class="submit">Apply</button><button class="submit">Cancel</button>
+                            <button class="submit">Apply</button>
                         </div>
                     </div>
                 </div>
                 <button class="featureBtn" id="bookmark"/>
                 <button class="featureBtn" id="savebookmark" />
+                <button class="featureBtn" id="info"/>
                 <!--<button class="featureBtn" id="snapshot" />-->
             </div>
         
@@ -282,9 +284,8 @@
                 <div id="mapidComparison" style="display: none"></div>
                 <div id="updatetime"></div>
             </div>
-            <div id="homepage" style="overflow: overlay;text-align: left;padding-top: 20px;margin-left:30px;">
-                <h2>Welcome</h2>
-                <div id="notice"></div>
+            <div id="homepage">
+                
             </div>
         </div>
         

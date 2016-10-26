@@ -465,7 +465,7 @@ function ajaxFetchTableValue(isComparison) {
 
         success: function (json) {
             console.log("ajaxFetchTableValue start");
-            $("#homepage").empty();
+            $("#popupChartContainer").empty();
 
             popupChartShow(false);
 

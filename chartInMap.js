@@ -961,7 +961,7 @@ function popupChartShow(needToLockScroll) {
     $('.ui-widget').css('z-index', -1);
 
     $('#popupChartContainer').css({
-        "min-height": screen.height,
+        //"min-height": screen.height,
         "opacity": 0.99,
         'z-index': 1,
         //set height to full document size to cover workset
@@ -989,8 +989,12 @@ function popupChartShow(needToLockScroll) {
             popupChartClose(needToLockScroll);
         });
     bodyHide();
-//    if (needToLockScroll)
+//    if (needToLockScroll){
 //        disableScroll();
+//        $('#popupChartContainer').css({
+//            "height": screen.height,
+//        })
+//    }
 
 }
 

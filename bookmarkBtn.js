@@ -107,6 +107,7 @@ function bookmarkSubmit(index) {
     if (document.getElementById('workset').style.display = "none") {
         $("#workset").show();
         $("#homepage").hide();
+        $("#homepage").empty();
         if (document.getElementById("mapid").childNodes.length == 0) {
             mapInit();
         }

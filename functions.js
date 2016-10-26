@@ -147,8 +147,9 @@ function parseDateToStr(date) {
 }
 
 function pressToggle(target) {
-    //console.log("target:"+$(target).attr("id"));
-    $("#timeSection").children("button").each(function () {
+//    console.log("target:"+$(target).attr("id"));
+    var parent = $(target).parent();
+    parent.children("button").each(function () {
         //console.log("$(this):"+$(this).attr("id"));
         if ($(target).attr("id") == $(this).attr("id")) {
             $(this).removeClass("btn_unpressed").addClass("btn_pressed");
@@ -387,13 +388,18 @@ function checkSSOCookie() {
 }
 
 function updateReleaseNote() {
+    $('#homepage').empty();
+    jQuery('<h2/>').text('Welcome').appendTo('#homepage');
+    var notice = jQuery('<div/>',{id:'notice'}).appendTo('#homepage');
+    
+    
     jQuery.get('releasenote.txt', function (data) {
         data = "<p>" + data;
         data = replaceAll(data, '\r\n', '　</p><p>');
         data = replaceAll(data, '\t', '    ');
         data += "</p>";
         //$('#release').text(data);
-        $('#notice').html(data);
+        notice.html(data);
         //console.log(data);
     });
 }
