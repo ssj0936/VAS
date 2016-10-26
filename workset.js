@@ -111,7 +111,7 @@ function init_() {
             if(account == "Developer" || jQuery.inArray(account,administrator) != -1){
                 overviewInit(json);
             }else{
-                $('button#info').hide();
+                $('button#info').remove();
             }
             
             loadingDismiss();
