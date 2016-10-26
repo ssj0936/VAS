@@ -1,7 +1,7 @@
 "use strict";
 
 function buttonInit() {
-    $("button.date,#mode button,#overlay button,#filterResult button,button.date").button();
+    $("#databtn button,#mode button,#overlay button,#filterResult button,button.date").button();
     //$('#dataset').buttonset();
     
     $( "#dataset" ).selectmenu({
@@ -223,6 +223,7 @@ function activeModeBtn($this) {
 
 function timePeriodBtnSetting() {
     document.getElementById("btnToday").onclick = function () {
+        onDatepickerMaxMinReset();
         var today = new Date();
 
         $("#from").datepicker("setDate", today);
@@ -235,6 +236,7 @@ function timePeriodBtnSetting() {
     }
 
     document.getElementById("btnYesterday").onclick = function () {
+        onDatepickerMaxMinReset();
         var day = new Date();
         day.setDate(day.getDate() - 1);
 
@@ -245,6 +247,7 @@ function timePeriodBtnSetting() {
     }
 
     document.getElementById("btnLastSeven").onclick = function () {
+        onDatepickerMaxMinReset();
         var day = new Date();
         day.setDate(day.getDate() - 7);
         $("#from").datepicker("setDate", day);
@@ -254,6 +257,7 @@ function timePeriodBtnSetting() {
     }
 
     document.getElementById("btnLastThirty").onclick = function () {
+        onDatepickerMaxMinReset();
         var day = new Date();
         day.setDate(day.getDate() - 30);
         $("#from").datepicker("setDate", day);
@@ -263,6 +267,7 @@ function timePeriodBtnSetting() {
     }
 
     document.getElementById("btnThisMonth").onclick = function () {
+        onDatepickerMaxMinReset();
         var day = new Date();
 
         var mm = day.getMonth() + 1;
@@ -284,6 +289,7 @@ function timePeriodBtnSetting() {
     }
 
     document.getElementById("btnLastMonth").onclick = function () {
+        onDatepickerMaxMinReset();
         var day = new Date();
 
         var mm = day.getMonth() + 1;

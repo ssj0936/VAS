@@ -202,6 +202,11 @@ function onChangeTrigger() {
     $('#to').trigger("change");
 }
 
+function onDatepickerMaxMinReset() {
+    $( "#from" ).datepicker( "option", "maxDate", null);
+    $( "#to" ).datepicker( "option", "minDate", null);
+}
+
 function getRandomColor() {
     var letters = '0123456789ABCDEF'.split('');
     var color = '';

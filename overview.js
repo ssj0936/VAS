@@ -487,7 +487,7 @@ function overviewInitCenterRight(json){
     
     //jqueryUI selector setting
     selector.selectmenu({
-        width: '80px',
+        width: '100px',
         change: function( event, data ) {
                 //not allow switching while loading
                 overviewGroupBy = data.item.value;
