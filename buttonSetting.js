@@ -96,13 +96,13 @@ function buttonInit() {
             }
         }
         
-//        if ($(this).attr("id") == "gaptrend") {
-//            if (!$(this).hasClass('active')) {
-//                isNowBranchTrend = true;
-//                showGapTrend(firstMap,'DELHI');
-//                return;
-//            }
-//        }
+        if ($(this).attr("id") == "printTest") {
+            console.log('printTest');
+            var bound = getBoundingBox(firstMap.jsonData);
+            console.log(bound);
+            draw(800, 800, bound, firstMap.jsonData);
+            
+        }
 
         var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
         var isTargetButtonSet = ($(this).attr("id") == 'region' || $(this).attr("id") == 'marker') ? true : false;

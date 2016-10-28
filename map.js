@@ -162,7 +162,6 @@ function MapObject(mapname) {
             ctx.clearRect(0, 0, params.canvas.width, params.canvas.height);
 
             var features = tile.features;
-//            console.log(features);
 //            console.log(allHighlighBranch);
 
             for (var i = 0; i < features.length; i++) {
