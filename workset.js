@@ -26,6 +26,10 @@ function init_() {
         max:7,
         change: function( event, ui ) {
             var dayTime = weekdayConvert(ui.value);
+            lifeZoneTime.week = ui.value;
+            if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
+                ajaxGetHeatMap();
+            }
         } 
     }).each(function() {
         var opt = $(this).data().uiSlider.options;
@@ -66,7 +70,11 @@ function init_() {
         },
         stop:function( event, ui ){
             //get value
-            console.log(ui.values[ 0 ]+'-'+ui.values[ 1 ]);
+//            console.log(ui.values[ 0 ]+'-'+ui.values[ 1 ]);
+            lifeZoneTime.time = ui.values[ 0 ];
+            if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
+                ajaxGetHeatMap();
+            }
         }
     }).each(function() {
         var opt = $(this).data().uiSlider.options;
@@ -244,6 +252,9 @@ function showFilterResult() {
                 }
                 if (isModeActive(MODE_GAP)) {
                     submitGap();
+                }
+                if (isModeActive(MODE_LIFEZONE)) {
+                    submitHeatMap();
                 }
 
                 $(this).off();

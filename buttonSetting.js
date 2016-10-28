@@ -454,6 +454,7 @@ function submitBtnSetting() {
             if(getDataset()!=null && activeDatasetTmp != null && getDataset() != activeDatasetTmp){
                 console.log(activeDatasetTmp);
                 switch(getDataset()){
+                    //switch from activation
                     case DATA_ACTIVATION:
                         //un-pressed every mode btn
                         $("#mode button.active").each(function(){
@@ -465,7 +466,13 @@ function submitBtnSetting() {
                         closeDealer();
                         closeService();
                         break;
+                    //switch from lifezone
                     case DATA_LIFEZONE:
+                        if(isModeActive(MODE_LIFEZONE)){
+                            removeHeatMap();
+                            setModeOff(MODE_LIFEZONE);
+                            console.log('lifezone off');
+                        }
                         break;
                 }
                 setDataset(activeDatasetTmp);
@@ -590,6 +597,7 @@ function submitBtnSetting() {
                     }
                     break;
                 case DATA_LIFEZONE:
+                    firstMap.zoomToSelectedLocation();
                     submitHeatMap();
                     break;
             }
@@ -703,6 +711,7 @@ function submitComparision() {
 }
 
 function submitHeatMap(){
+    setModeOn(MODE_LIFEZONE);
     ajaxGetHeatMap();
 }
 

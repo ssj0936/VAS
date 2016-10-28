@@ -928,3 +928,15 @@
     .card-padding{
         padding:8px;
     }
+
+    .heatTip{
+        position:absolute;
+        left:0;
+        top:0;
+        background:rgba(0,0,0,.8);
+        color:#fff;
+        font-size:14px;
+        padding:5px;
+        line-height:18px;
+        z-index: 20;
+    }

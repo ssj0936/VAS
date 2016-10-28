@@ -88,6 +88,8 @@ function setModeOn(mode) {
         isComparisonOn = true;
     } else if (mode == MODE_GAP) {
         isGapOn = true;
+    } else if (mode == MODE_LIFEZONE) {
+        isLifeZoneOn = true;
     }
 }
 
@@ -100,6 +102,8 @@ function setModeOff(mode) {
         isComparisonOn = false;
     } else if (mode == MODE_GAP) {
         isGapOn = false;
+    } else if (mode == MODE_LIFEZONE) {
+        isLifeZoneOn = false;
     }
 }
 
@@ -112,6 +116,8 @@ function isModeActive(mode) {
         return isComparisonOn;
     } else if (mode == MODE_GAP) {
         return isGapOn;
+    } else if (mode == MODE_LIFEZONE) {
+        return isLifeZoneOn;
     }
 }
 

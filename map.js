@@ -285,6 +285,13 @@ function MapObject(mapname) {
             this.legendColorHoverSetting();
     };
 
+    this.removeInfo = function () {
+        if ($(".info_" + this.mapName).length != 0) {
+            this.map.removeControl(this.info);
+            this.info = null;
+        }
+    }
+
     this.setInfo = function () {
         var mapObj = this;
         this.info = L.control();

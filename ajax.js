@@ -86,6 +86,9 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             mapObj.mapDataLoad();
             //updateMapPoly(isComparison);
             mapObj.updateLegend();
+            if (mapObj.info == null) {
+                mapObj.setInfo();
+            }
             mapObj.info.update();
 
             //free
@@ -835,12 +838,18 @@ function ajaxGetHeatMap(){
             iso: JSON.stringify(observeLoc),
             distBranch: JSON.stringify(observeDistBranch),
             onlineDist: JSON.stringify(observeDistName),
+            time: JSON.stringify(lifeZoneTime),
             data: JSON.stringify(observeTarget)
         },
         dataType: 'json',
 
         success: function (json) {
-            console.log(json);
+//            console.log(json);
+            if($.isEmptyObject(heatmapLayer)) {
+                addHeatMap(json);
+            } else {
+                changeHeatData(json);
+            }
             loadingDismiss();
         },
         error: function (xhr, ajaxOptions, thrownError) {

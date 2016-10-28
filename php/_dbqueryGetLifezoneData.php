@@ -20,7 +20,7 @@ $db = new DB();
 //$onlineDist = '[]';
 //$week = '1';
 //$time = '1';
-
+//
 $color = $_POST['color'];
 $cpu = $_POST['cpu'];
 $rearCamera = $_POST['rearCamera'];
@@ -29,92 +29,101 @@ $data = $_POST['data'];
 $iso = $_POST['iso'];
 $distBranch = $_POST['distBranch'];
 $onlineDist = $_POST['onlineDist'];
+$lifeZoneTime = $_POST['time'];
 
-$isoObj = json_decode($iso);
+$lifeZoneTimeObj = json_decode($lifeZoneTime,true);
 $dataObj = json_decode($data);
-$colorObj = json_decode($color);
-$cpuObj = json_decode($cpu);
-$rearCameraObj = json_decode($rearCamera);
-$frontCameraObj = json_decode($frontCamera);
-$distBranchObj = json_decode($distBranch);
-$onlineDistObj = json_decode($onlineDist);
 
-$isDistBranch = (count($distBranchObj)!=0);
-$isOnlineDist = (count($onlineDistObj)!=0);
-$distBranchStr = getSQLDistBranchStr($distBranchObj,false);
-$onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
+if(count($dataObj) != 0){
+    $isoObj = json_decode($iso);
+    $colorObj = json_decode($color);
+    $cpuObj = json_decode($cpu);
+    $rearCameraObj = json_decode($rearCamera);
+    $frontCameraObj = json_decode($frontCamera);
+    $distBranchObj = json_decode($distBranch);
+    $onlineDistObj = json_decode($onlineDist);
 
-$isAll = isAll($dataObj);
 
-//color
-$isColorAll=isAll($colorObj);
-$color_in=getSQLInStr($colorObj);
+    $isDistBranch = (count($distBranchObj)!=0);
+    $isOnlineDist = (count($onlineDistObj)!=0);
+    $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
+    $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
 
-//CPU
-$isCpuAll=isAll($cpuObj);
-$cpu_in=getSQLInStr($cpuObj);
+    $isAll = isAll($dataObj);
 
-//FrontCamera
-$isFrontCameraAll=isAll($frontCameraObj);
-$frontCamera_in=getSQLInStr($frontCameraObj);
+    //color
+    $isColorAll=isAll($colorObj);
+    $color_in=getSQLInStr($colorObj);
 
-//RearCamera
-$isRearCameraAll=isAll($rearCameraObj);
-$rearCamera_in=getSQLInStr($rearCameraObj);
+    //CPU
+    $isCpuAll=isAll($cpuObj);
+    $cpu_in=getSQLInStr($cpuObj);
 
-$db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['lifezone']['dbnameMarker_']);
-$str_in='';
+    //FrontCamera
+    $isFrontCameraAll=isAll($frontCameraObj);
+    $frontCamera_in=getSQLInStr($frontCameraObj);
 
-$sqlDeviceIn = getAllTargetDeviceSql($dataObj);
-//echo $sqlDeviceIn."<br>";
-$db->query($sqlDeviceIn);
-while($row = $db->fetch_array()){
-    $str_in.="'".$row['device_name']."',";
+    //RearCamera
+    $isRearCameraAll=isAll($rearCameraObj);
+    $rearCamera_in=getSQLInStr($rearCameraObj);
+
+    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], 'asus_lifezone_raw_data_a');
+    $str_in='';
+
+    $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
+    //echo $sqlDeviceIn."<br>";
+    $db->query($sqlDeviceIn);
+    while($row = $db->fetch_array()){
+        $str_in.="'".$row['device_name']."',";
+    }
+    $str_in = substr($str_in,0,-1);
+
+    $queryStr='';
+    for($i=0;$i<count($isoObj);++$i){
+
+        $queryStr.="SELECT volume as count,lng,lat,week,time"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[$i] A1,"
+                    ."$deviceTable device_model"
+
+                    ." WHERE "
+                    ." A1.device_name = device_model.device_name"
+                    ." AND week = '".$lifeZoneTimeObj['week']."'"
+                    ." AND time = '".$lifeZoneTimeObj['time']."'"
+                    .($isAll?"":" AND A1.device_name IN(".$str_in.")")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                    .($isDistBranch ? " AND $distBranchStr " : "")
+                    .($isOnlineDist ? " AND $onlineDistStr " : "");
+
+        if($i != count($isoObj)-1)
+            $queryStr.=" UNION ALL ";
+    }
+    //echo $queryStr."<br>";
+
+    //$queryStr = 'SELECT SUM(volume)as count,lng,lat,week,time FROM('.$queryStr.')foo GROUP BY lng,lat,week,time';
+
+    $db->query($queryStr);
+    $results[$lifeZoneTimeObj['week']][$lifeZoneTimeObj['time']] = array();
+    while($row = $db->fetch_array())
+    {
+        $week = $row['week'];
+        $time = $row['time'];
+        $volume = $row['count'];
+        $currentIndex = (isset($results[$week][$time])) ? count($results[$week][$time]) : 0;
+        $results[$week][$time][$currentIndex]['lng'] = $row['lng'];
+        $results[$week][$time][$currentIndex]['lat'] = $row['lat'];
+        $results[$week][$time][$currentIndex]['count'] = $volume;
+    }
 }
-$str_in = substr($str_in,0,-1);
-
-$queryStr='';
-for($i=0;$i<count($isoObj);++$i){
-
-    $queryStr.="SELECT volume as count,lng,lat,week,time"
-                ." FROM "
-                .($isColorAll ? "" : "$colorMappingTable A2,")
-                .($isCpuAll ? "" : "$cpuMappingTable A3,")
-                .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-                .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                ."$isoObj[$i] A1,"
-                ."$deviceTable device_model"
-
-                ." WHERE "
-                ." A1.device = device_model.device_name"
-//                ." AND week = '$week'"
-                //." AND time = '$time'"
-                .($isAll?"":" AND device IN(".$str_in.")")
-                .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
-                .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
-                .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                .($isDistBranch ? " AND $distBranchStr " : "")
-                .($isOnlineDist ? " AND $onlineDistStr " : "");
-
-    if($i != count($isoObj)-1)
-        $queryStr.=" UNION ALL ";
-}
-//echo $queryStr."<br>";
-
-//$queryStr = 'SELECT SUM(volume)as count,lng,lat,week,time FROM('.$queryStr.')foo GROUP BY lng,lat,week,time';
-
-$db->query($queryStr);
-
-while($row = $db->fetch_array())
-{
-    $week = $row['week'];
-    $time = $row['time'];
-    $volume = $row['count'];
-    $currentIndex = (isset($results[$week][$time])) ? count($results[$week][$time]) : 0;
-    $results[$week][$time][$currentIndex]['lng'] = $row['lng'];
-    $results[$week][$time][$currentIndex]['lat'] = $row['lat'];
-    $results[$week][$time][$currentIndex]['count'] = $volume;
+else{
+    $results[$lifeZoneTimeObj['week']][$lifeZoneTimeObj['time']] = array();
 }
 //print_r($results);
 $json = json_encode($results);
