@@ -51,10 +51,21 @@
                 var width = ((Math.abs(boundMax.x - boundMin.x)) * scale) + 200;
                 var height = (Math.abs(boundMax.y - boundMin.y)) * scale;
                 
-                if(width > 32767 || height > 32767 || (width * height)>268435456)
-                    return;
-                
                 $('#drawMap').remove();
+                
+                if(width > 32767 || height > 32767 || (width * height)>268435456){
+                    for(var i=20;i>-5;--i){
+                        var s = defaultM + (i * 0.00015);
+                        var w = ((Math.abs(boundMax.x - boundMin.x)) * s) + 200;
+                        var h = (Math.abs(boundMax.y - boundMin.y)) * s;
+                        if(w <= 32767 && h <= 32767 && (w * h)<=268435456){
+                            draw(bound, mapObj, s,needLegend);
+                            break;
+                        }
+                    }
+                    return;
+                }
+                
                 draw(bound, mapObj, defaultM + (currentValue * 0.00015),needLegend);
                 
                 
