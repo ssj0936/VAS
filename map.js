@@ -23,7 +23,8 @@ function MapObject(mapname) {
     this.tileLayer = undefined;
     this.highlightLayer = undefined;
     this.isEmpty = false;
-
+    
+    this.snapshotBtn;
     //marker
     this.pruneCluster = new PruneClusterForLeaflet();
 
@@ -47,6 +48,18 @@ function MapObject(mapname) {
                 provider: new L.GeoSearch.Provider.Google(),
                 showMarker: false,
             }).addTo(this.map, true);
+            
+            var mapobj = this;
+            this.snapshotBtn = L.easyButton('<img src="img/snapshot.png" style="width: 20px;">', function(btn, map){
+//                $('#drawMap').remove();
+                sessionStorage.patternIndex = firstMap.getColorPattern();
+                sessionStorage.colorPattern = JSON.stringify(colorPattern);
+                sessionStorage.zoom = mapobj.map.getZoom();
+                window.open('popup.html');
+//                console.log(firstMap.map.getZoom());
+                //alert("QQ");
+                //helloPopup.setLatLng(map.getCenter()).openOn(map);
+            }).addTo( this.map ); // probably just `map`
         }
     };
 

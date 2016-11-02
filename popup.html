@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MapCanvas</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="functions.js"></script>
+    <script src="printMap.js"></script>
+    <link rel="stylesheet" href="css.css" />
+   
+</head>
+
+<body>
+   <div id="topControlPanel" style="margin-bottom:10px">
+        <div style = "margin-top: 10px;margin-bottom: 40px;">
+            <label class="buttonSetLable" for="slider">Zoom</label>
+            <div id="slider" class='sliderDiv'></div>
+            <label class="buttonSetLable" for="slider" style='padding-left: 20px;'>Legend ?</label>
+            <input id="legend" type="checkbox" checked = "checked">
+        </div>
+        
+        </div>
+    </div>
+    <div id="mapCanvas"></div>
+    <script>
+        var needLegend = true;
+        var multiple = 0;
+        var defaultM = 0.001;
+        var currentValue = 0;
+        var mapObj = window.opener.firstMap.jsonData;
+        var colorPattern = JSON.parse(sessionStorage.colorPattern);
+        var patternIndex = sessionStorage.patternIndex;
+        var zoom = sessionStorage.zoom;
+        var bound = getBoundingBox(mapObj);
+        draw(bound, mapObj, defaultM, needLegend);
+
+        //slider setting
+        $("#slider").slider({
+            min: -5,
+            max: 20,
+            value:0,
+            slide: function (event, ui) {
+                currentValue = ui.value;
+                $('#drawMap').remove();
+                draw(bound, mapObj, defaultM + (currentValue * 0.00015),needLegend);
+            }
+        })
+        .each(function() {
+            var opt = $(this).data().uiSlider.options;
+            var vals = opt.max - opt.min;
+            var index = 1;
+            for (var i = opt.min; i <= opt.max; i++) {
+                var el = $('<label>'+i+'</label>').css('left',((index-1)/vals*100)+'%');
+                $( "#slider" ).append(el);
+                ++index;
+            }
+        })
+        .css({
+            'width':'50%',
+            'margin':'10px'
+        });
+        
+        //checkbox setting
+        $('input#legend:checkbox').change(
+        function(){
+            $('#drawMap').remove();
+            needLegend = $(this).is(':checked');
+            draw(bound, mapObj, defaultM + (currentValue * 0.00015),needLegend);
+        });
+    </script>
+</body>
+
+</html>

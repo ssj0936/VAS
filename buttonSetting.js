@@ -97,11 +97,10 @@ function buttonInit() {
         }
         
         if ($(this).attr("id") == "printTest") {
-            console.log('printTest');
-            var bound = getBoundingBox(firstMap.jsonData);
-            console.log(bound);
-            draw(800, 800, bound, firstMap.jsonData);
-            
+            $('#drawMap').remove();
+            sessionStorage.patternIndex = firstMap.getColorPattern();
+            sessionStorage.colorPattern = JSON.stringify(colorPattern);
+            window.open('popup.html');
         }
 
         var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
@@ -162,6 +161,7 @@ function unactiveModeBtn($this) {
         firstMap.removePolygonMap();
         setModeOff(MODE_REGION);
         firstMap.info.update();
+        firstMap.map.removeControl(firstMap.snapshotBtn);
         if (isModeActive(MODE_MARKER)) {
             firstMap.hideLegend();
         }
@@ -194,6 +194,7 @@ function unactiveModeBtn($this) {
 function activeModeBtn($this) {
     switch ($this.attr("id")) {
     case "region":
+        firstMap.snapshotBtn.addTo(firstMap.map);
         setModeOn(MODE_REGION);
         submitRegion();
         break;
