@@ -44,8 +44,20 @@
             value:0,
             slide: function (event, ui) {
                 currentValue = ui.value;
+                var scale = defaultM + (currentValue * 0.00015);
+                var boundMax = Conv.ll2m(bound.xMax, bound.yMax);
+                var boundMin = Conv.ll2m(bound.xMin, bound.yMin);
+
+                var width = ((Math.abs(boundMax.x - boundMin.x)) * scale) + 200;
+                var height = (Math.abs(boundMax.y - boundMin.y)) * scale;
+                
+                if(width > 32767 || height > 32767 || (width * height)>268435456)
+                    return;
+                
                 $('#drawMap').remove();
                 draw(bound, mapObj, defaultM + (currentValue * 0.00015),needLegend);
+                
+                
             }
         })
         .each(function() {
