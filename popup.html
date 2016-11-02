@@ -27,6 +27,8 @@
     <div id="mapCanvas"></div>
     <script>
         var needLegend = true;
+        var sliderMin = -5,
+            sliderMax = 20;
         var multiple = 0;
         var defaultM = 0.001;
         var currentValue = 0;
@@ -39,9 +41,9 @@
 
         //slider setting
         $("#slider").slider({
-            min: -5,
-            max: 20,
-            value:0,
+            min: sliderMin,
+            max: sliderMax,
+            value:currentValue,
             slide: function (event, ui) {
                 currentValue = ui.value;
                 var scale = defaultM + (currentValue * 0.00015);
@@ -53,12 +55,12 @@
                 
                 $('#drawMap').remove();
                 
-                if(width > 32767 || height > 32767 || (width * height)>268435456){
+                if(isCanvasOversize(width,height)){
                     for(var i=20;i>-5;--i){
                         var s = defaultM + (i * 0.00015);
                         var w = ((Math.abs(boundMax.x - boundMin.x)) * s) + 200;
                         var h = (Math.abs(boundMax.y - boundMin.y)) * s;
-                        if(w <= 32767 && h <= 32767 && (w * h)<=268435456){
+                        if(!isCanvasOversize(w,h)){
                             draw(bound, mapObj, s,needLegend);
                             break;
                         }

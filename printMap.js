@@ -147,6 +147,10 @@ function getColor(d) {
         legendColor[5];
 };
 
+function isCanvasOversize(width,height){
+    return (width > 32767 || height > 32767 || (width * height)>268435456);
+}
+
 var Conv = ({
     r_major: 6378137.0, //Equatorial Radius, WGS84
     r_minor: 6356752.314245179, //defined as constant
