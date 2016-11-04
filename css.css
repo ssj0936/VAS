@@ -480,12 +480,12 @@
         z-index: 10;
         position: absolute;
         margin-left: 2px;
-        background: #C4C4C4;
+        background: #e7e7e7;
         width: 20px;
         border-top-right-radius: 1em;
         border-bottom-right-radius: 1em;
         border: 2px solid;
-        border-color: #C4C4C4;
+        border-color: #e7e7e7;
         cursor: pointer;
     }
     
@@ -495,17 +495,17 @@
     
     .panel-heading {
         padding: 3px;
-        background-color: #C4C4C4;
+        background-color: #e7e7e7;
         text-align: center;
     }
     
     .panel-body {
         padding: 5px;
-        border: solid #C4C4C4 2pt;
+        border: solid #e7e7e7 2pt;
     }
     
     .collapsible {
-        border-top: solid black 1pt;
+        border-top: solid #c4c4c4 1pt;
     }
     
     .collapse-open span {
