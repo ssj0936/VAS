@@ -14,7 +14,7 @@ $db = new DB();
 //$cpu = '["all"]';
 //$rearCamera = '["all"]';
 //$frontCamera = '["all"]';
-//$iso ='["IND","TWN"]';
+//$iso ='["TWN"]';
 //$data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //$distBranch = '[]';
 //$onlineDist = '[]';
@@ -67,7 +67,7 @@ if(count($dataObj) != 0){
     $isRearCameraAll=isAll($rearCameraObj);
     $rearCamera_in=getSQLInStr($rearCameraObj);
 
-    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], 'asus_lifezone_raw_data_a');
+    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['lifezone']['dbnameMarker_']);
     $str_in='';
 
     $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
@@ -91,10 +91,10 @@ if(count($dataObj) != 0){
                     ."$deviceTable device_model"
 
                     ." WHERE "
-                    ." A1.device_name = device_model.device_name"
+                    ." A1.device = device_model.device_name"
                     ." AND week = '".$lifeZoneTimeObj['week']."'"
                     ." AND time = '".$lifeZoneTimeObj['time']."'"
-                    .($isAll?"":" AND A1.device_name IN(".$str_in.")")
+                    .($isAll?"":" AND A1.device IN(".$str_in.")")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -105,7 +105,7 @@ if(count($dataObj) != 0){
         if($i != count($isoObj)-1)
             $queryStr.=" UNION ALL ";
     }
-    //echo $queryStr."<br>";
+//    echo $queryStr."<br>";
 
     //$queryStr = 'SELECT SUM(volume)as count,lng,lat,week,time FROM('.$queryStr.')foo GROUP BY lng,lat,week,time';
 
