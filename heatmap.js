@@ -4,9 +4,10 @@ function removeHeatMap() {
         //heatmapLayer.onRemove();
     }
     unsetTooltip();
-    firstMap.map.off("moveend");
+    //firstMap.map.off("moveend");
     heatmapLayer = null;
     heatData = {max: '',data: []};
+    $('div.heatTip').remove();
     setModeOff(MODE_LIFEZONE);
 }
 

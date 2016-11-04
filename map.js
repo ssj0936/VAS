@@ -25,6 +25,7 @@ function MapObject(mapname) {
     this.isEmpty = false;
     
     this.snapshotBtn;
+    this.hasSnapshotBtn = true;
     //marker
     this.pruneCluster = new PruneClusterForLeaflet();
 
@@ -811,6 +812,16 @@ function MapObject(mapname) {
         }
         return highlightGeojson;
     };
+    
+    this.removeSnapshot = function(){
+        this.map.removeControl(this.snapshotBtn);
+        this.hasSnapshotBtn = false;
+    }
+    
+    this.addSnapshot = function(){
+        firstMap.snapshotBtn.addTo(firstMap.map);
+        firstMap.hasSnapshotBtn = true;
+    }
 }
 
 function mapInit() {

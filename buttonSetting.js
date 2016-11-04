@@ -161,7 +161,9 @@ function unactiveModeBtn($this) {
         firstMap.removePolygonMap();
         setModeOff(MODE_REGION);
         firstMap.info.update();
-        firstMap.map.removeControl(firstMap.snapshotBtn);
+        if(firstMap.hasSnapshotBtn){
+            firstMap.removeSnapshot();
+        }
         if (isModeActive(MODE_MARKER)) {
             firstMap.hideLegend();
         }
@@ -194,7 +196,9 @@ function unactiveModeBtn($this) {
 function activeModeBtn($this) {
     switch ($this.attr("id")) {
     case "region":
-        firstMap.snapshotBtn.addTo(firstMap.map);
+        if(!firstMap.hasSnapshotBtn){
+            firstMap.addSnapshot();
+        }
         setModeOn(MODE_REGION);
         submitRegion();
         break;
@@ -441,6 +445,7 @@ function submitBtnSetting() {
             resetIsClickFromFilterResult();
             //UI display change
             dateMenuHide();
+            //init
             if (document.getElementById('workset').style.display == "none") {
                 $("#workset").show();
                 $("#homepage").hide();
@@ -448,9 +453,9 @@ function submitBtnSetting() {
                 if (document.getElementById("mapid").childNodes.length == 0) {
                     mapInit();
                 }
+                enableControlPanel();
             }
-            enableControlPanel();
-
+            
             //need to clean old setting
             if(getDataset()!=null && activeDatasetTmp != null && getDataset() != activeDatasetTmp){
                 console.log(activeDatasetTmp);
@@ -463,6 +468,7 @@ function submitBtnSetting() {
                             unactiveModeBtn($(this));
                             $(this).removeClass('active');
                         });
+                        disableModeAndOverlay();
                         //close overlay
                         closeDealer();
                         closeService();
@@ -472,6 +478,10 @@ function submitBtnSetting() {
                         if(isModeActive(MODE_LIFEZONE)){
                             removeHeatMap();
                             setModeOff(MODE_LIFEZONE);
+                            enableModeAndOverlay();
+                            
+                            firstMap.addSnapshot();
+                            
                             console.log('lifezone off');
                         }
                         break;
@@ -796,4 +806,14 @@ function closeTable() {
 
 function enableControlPanel() {
     $("#control_Panel button").removeAttr("disabled");
+}
+
+function disableModeAndOverlay() {
+    $("#mode button").attr("disabled",true);
+    $("#overlay button").attr("disabled",true);
+}
+
+function enableModeAndOverlay() {
+    $("#mode button").removeAttr("disabled");
+    $("#overlay button").removeAttr("disabled");
 }
