@@ -386,11 +386,11 @@ function dateBtnSetting() {
 function dateMenuShow() {
     var dateBtn = $("button.date");
     var dropdown = $("#dateDropdown");
-    var pos = dateBtn.offset();
+    var pos = dateBtn.position();
 
     dropdown.css({
         "left": '' + pos.left + 'px',
-        "top": '' + (pos.top + dateBtn.height() + 2) + 'px',
+//        "top": '' + (pos.top + dateBtn.height() + 2) + 'px',
         "width": '' + dateBtn.width() - 8 + 'px',
         "z-index": 9999,
     });
@@ -722,9 +722,11 @@ function collapseBtnInit() {
     var toggleBtnIcon = $("#toggle #toggleIcon");
     var rightSideArea = $("#rightSideArea");
     var pos = selector.offset();
-    var toggleBtnPos = pos.left + selector.width() + 5;
+    var toggleBtnLeft = pos.left + selector.width() + 5;
+    var toggleBtnTop = pos.top;
     toggleBtn.css({
-        "left": '' + toggleBtnPos + 'px',
+        "left": '' + toggleBtnLeft + 'px',
+        "top": ''+toggleBtnTop + 'px',
     });
 
     toggleBtn.click(function () {
@@ -740,6 +742,7 @@ function collapseBtnInit() {
                 //togglebtn pos update
                 toggleBtn.css({
                     "left": '0px',
+                    "top": ''+toggleBtnTop + 'px',
                 });
                 toggleBtn.fadeIn();
 
@@ -761,7 +764,8 @@ function collapseBtnInit() {
             }, 300, function () {
                 //togglebtn pos update
                 toggleBtn.css({
-                    "left": '' + toggleBtnPos + 'px',
+                    "left": '' + toggleBtnLeft + 'px',
+                    "top": ''+toggleBtnTop + 'px',
                 });
                 toggleBtn.fadeIn();
 

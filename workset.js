@@ -87,8 +87,7 @@ function init_() {
         }
     });
 
-    //map_container
-    $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 30) + 'px');
+
     //selector option init
     var URLs = "php/dbqueryInit.php";
     $.ajax({
@@ -119,7 +118,7 @@ function init_() {
             if(account == "Developer" || jQuery.inArray(account,administrator) != -1){
                 overviewInit(json);
             }else{
-                $('button#info').remove();
+                $('li#info').remove();
             }
             
             loadingDismiss();
@@ -147,6 +146,8 @@ function init_() {
     defaultDateSetting();
     updateReleaseNote();
     
+    //map_container
+    $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 30) + 'px');
     //checkLocationInit();
 }
 
@@ -164,11 +165,11 @@ function resizeInit() {
         //date dropdown re-position
         if ($("#dateDropdown").css("display") != "none") {
             var dateBtn = $("button.date");
-            var pos = dateBtn.offset();
+            var pos = dateBtn.position();
 
             $("#dateDropdown").css({
                 "left": '' + pos.left + 'px',
-                "top": '' + ((pos.top + dateBtn.height() + 2) + 'px'),
+//                "top": '' + ((pos.top + dateBtn.height() + 2) + 'px'),
                 "width": '' + dateBtn.width() - 8 + 'px',
                 "z-index": '9px',
             });
@@ -182,6 +183,7 @@ function resizeInit() {
         if (selector.is(":visible")) {
             toggleBtn.css({
                 "left": '' + (pos.left + selector.width() + 5) + 'px',
+                "top": '' + pos.top + 'px',
             });
         }
 

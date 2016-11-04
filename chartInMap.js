@@ -160,7 +160,18 @@ function resetGroupByDelectMenu(){
 
 function updateBranchChart(json,branchName) {
     if (json.groupByBranchResults.length == 0) return;
-
+    var container = jQuery('<div/>', {
+            class: 'container',
+        }).css({
+            'height': '100%',
+            'width': '100%',
+        }).appendTo($('#popupChartContainer'));
+    
+    var row = jQuery('<div/>', {
+            class: 'row',
+        }).css({
+            'height': '100%',
+        }).appendTo(container);
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
         }).css({
@@ -169,7 +180,7 @@ function updateBranchChart(json,branchName) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
-        }).appendTo($('#popupChartContainer'));
+        }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
@@ -179,7 +190,7 @@ function updateBranchChart(json,branchName) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
-        }).appendTo($('#popupChartContainer'));
+        }).appendTo(row);
     
     //title container
     var title = jQuery('<div/>', {
@@ -280,6 +291,18 @@ function updateRegionChart(json, displayname, displaynum) {
     if (json.groupByRegionResults.length == 0) return;
 
     var defaultTrendMode = TREND_MODEL;
+    var container = jQuery('<div/>', {
+            class: 'container',
+        }).css({
+            'height': '100%',
+            'width': '100%',
+        }).appendTo($('#popupChartContainer'));
+    
+    var row = jQuery('<div/>', {
+            class: 'row',
+        }).css({
+            'height': '100%',
+        }).appendTo(container);
     
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
@@ -289,7 +312,7 @@ function updateRegionChart(json, displayname, displaynum) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
-        }).appendTo($('#popupChartContainer'));
+        }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
@@ -299,7 +322,7 @@ function updateRegionChart(json, displayname, displaynum) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
-        }).appendTo($('#popupChartContainer'));
+        }).appendTo(row);
     
     //title container
     var title = jQuery('<div/>', {
@@ -423,25 +446,40 @@ function updateTrendChart(json) {
     //chart
     var defaultTrendMode = TREND_MODEL;
     
+    var container = jQuery('<div/>', {
+            class: 'container',
+        }).css({
+            'height': '100%',
+            'width': '100%',
+        }).appendTo($('#popupChartContainer'));
+    
+    var row = jQuery('<div/>', {
+            class: 'row',
+        }).css({
+            'height': '100%',
+        }).appendTo(container);
+    
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
+            class:'col-sm-2',
         }).css({
             'display':'inline-block',
-            'width': '15%',
+//            'width': '15%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
-        }).appendTo($('#popupChartContainer'));
+        }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
+            class:'col-sm-10',
         }).css({
             'display':'inline-block',
-            'width': '' + rightPopupContainerWidthP*100 + '%',
+//            'width': '' + rightPopupContainerWidthP*100 + '%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
-        }).appendTo($('#popupChartContainer'));
+        }).appendTo(row);
     
     createTrendChart(json, defaultTrendMode);
     

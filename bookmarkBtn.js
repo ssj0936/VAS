@@ -1,7 +1,7 @@
 "use strict";
 
 function saveBookmarkBtnSetting() {
-    document.getElementById("savebookmark").onclick = function () {
+    $('li#navAddBookmark').click(function () {
         if (isLoading()) return;
         if (account == undefined) {
             showToast('This feature is not available for guest.');
@@ -64,7 +64,7 @@ function saveBookmarkBtnSetting() {
         } else {
             showToast("Empty Observation");
         }
-    }
+    });
 }
 
 function addBookmark() {
@@ -93,14 +93,14 @@ function addBookmark() {
 }
 
 function loadBookmarkBtnSetting() {
-    document.getElementById("bookmark").onclick = function () {
+    $('li#navBookmark').click(function () {
         if (isLoading()) return;
         if (account == undefined) {
             showToast('This feature is not available for guest.');
             return;
         }
         createBookmarkPopup();
-    }
+    })
 }
 
 function bookmarkSubmit(index) {
@@ -331,7 +331,7 @@ function createBookmarkPopup() {
         position: {
             my: "left top",
             at: "left bottom",
-            of: $('#bookmark')
+            of: $('li#navBookmark')
         },
         width: 300,
         show: {
@@ -356,7 +356,7 @@ function createBookmarkPopup() {
     }).bind('clickoutside', function (event) {
         //console.log("outside");
         //close the list if click outside
-        if (!$(event.target).closest('.ui-dialog').length && !$(event.target).closest('#bookmark').length) {
+        if (!$(event.target).closest('.ui-dialog').length && !$(event.target).closest('li#navBookmark').length) {
             closeBookmarkList();
         }
     });
