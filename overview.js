@@ -9,7 +9,7 @@ var overviewContainerWidthR = $(window).width() * 0.80 * 0.45 - 20;
 var dauDateRangeMax, dauDateRangeMin;
 var overviewDatebtn, au, overviewGroupBy;
 
-function overviewInit(json) {
+function overviewInit() {
     $('li#info').click(function () {
         popupChartShow(true);
         overviewElementCreate();
@@ -20,13 +20,6 @@ function overviewInit(json) {
             }
         });
 
-        //display text init
-        dauDateRangeMax = json.usercountEachDay[json.usercountEachDay.length - 1].date;
-        dauDateRangeMin = json.usercountEachDay[0].date;
-        var dataRange = dauDateRangeMin + '~' + dauDateRangeMax;
-        $('button.overviewDate').button('option', 'label', dataRange);
-
-        overviewDateBtnInit();
         $("button.overviewDate").button({
             icons: {
                 secondary: "ui-icon-carat-1-s",
@@ -34,11 +27,33 @@ function overviewInit(json) {
         }).css({
             width: '200px'
         });
+        
+        
+        $.ajax({
+            url: 'php/_dbqueryGetOverview.php',
+            type: "GET",
+            dataType: 'json',
 
-        overviewInitTop(json);
-        overviewInitCenterLeft(json);
-        overviewInitCenterCenter(json);
-        overviewInitCenterRight(json);
+            success: function (json) {
+                overviewDateBtnInit();
+                
+                //display text init
+                dauDateRangeMax = json.usercountEachDay[json.usercountEachDay.length - 1].date;
+                dauDateRangeMin = json.usercountEachDay[0].date;
+                var dataRange = dauDateRangeMin + '~' + dauDateRangeMax;
+                $('button.overviewDate').button('option', 'label', dataRange);
+                
+                overviewInitTop(json);
+                overviewInitCenterLeft(json);
+                overviewInitCenterCenter(json);
+                overviewInitCenterRight(json);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                alert("_dbqueryGetOverview:" + xhr.status);
+                alert(thrownError);
+            }
+        });
+        
     });
 }
 
@@ -341,13 +356,14 @@ function overviewInitCenterLeft(json) {
             class: 'customScrollBar',
         })
         .css({
+            'margin-top': '10px',
             'max-height': '85%',
         })
         .appendTo(container);
 
     var table = jQuery('<table/>').css({
         'width': '90%',
-        'margin': '10px auto',
+//        'margin': '10px auto',
     }).appendTo(tableContainer);
     for (var i in json.topTenUserArray) {
         var accountName = json.topTenUserArray[i].username;
