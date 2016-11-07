@@ -3,15 +3,15 @@
 
 <head>
     <meta charset="utf-8" />
-    
+
     <script src="jquery-ui-1.11.4.custom/external/jquery/jquery.js"></script>
     <link rel="stylesheet" href="lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">
     <script src="lib/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
     <script src="jquery-ui-1.11.4.custom/jquery-ui.js"></script>
     <link rel="stylesheet" href="jquery-ui-1.11.4.custom/jquery-ui.css" />
 
-   
-   
+
+
     <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
 
     <!--JQuery icon-->
@@ -145,8 +145,8 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li id="account"><a href="#" class="cursorDefault"><span id="navAccount" class="glyphicon glyphicon-user"></span></a></li>
-                <li id="navBookmark"><a href="#" ><span class="glyphicon glyphicon-bookmark"> Bookmark</span></a></li>
-                <li id="navAddBookmark"><a href="#" ><span class="glyphicon glyphicon-star-empty"> AddBookmark</span></a></li>
+                <li id="navBookmark"><a href="#"><span class="glyphicon glyphicon-bookmark"> Bookmark</span></a></li>
+                <li id="navAddBookmark"><a href="#"><span class="glyphicon glyphicon-star-empty"> AddBookmark</span></a></li>
                 <li id="info"><a href="#"><span class="glyphicon glyphicon-info-sign"></span> info</a></li>
                 <li id="toggleControlPanel"><a href="#"><span id="toggleControlPanelIcon" class="glyphicon glyphicon-menu-up"></span></a></li>
             </ul>
@@ -230,7 +230,7 @@
                 <!--up side-->
                 <div id="control_Panel">
                     <!--right side function button-->
-<!--                    <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>-->
+                    <!--                    <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>-->
                     <div class="control_panel_btn_area_right" style="float:right;">
                         <div id='databtn' style="display: inline-block;vertical-align: top;">
                             <label>Date Range</label>
@@ -260,11 +260,11 @@
                                 </div>
                             </div>
                         </div>
-<!--
+                        <!--
                         <button class="featureBtn" id="bookmark" />
                         <button class="featureBtn" id="savebookmark" />
 -->
-<!--                        <button class="featureBtn" id="info" />-->
+                        <!--                        <button class="featureBtn" id="info" />-->
                         <!--<button class="featureBtn" id="snapshot" />-->
                     </div>
 
@@ -277,14 +277,26 @@
                         </select>
 
                         <div id="lifezoneControlPanel" class="needTohideAtFirst">
-                            <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 40px;">
+                            <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 15px;">
                                 <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
-                                <div id="lifezoneWeekDaySlider" class="sliderDiv"></div>
+                                <div id="lifezoneWeekDayBtnset">
+                                    <button class="lifezoneWeekDayBtnset" id="mon" data-value="1">Mon</button>
+                                    <button class="lifezoneWeekDayBtnset" id="tus" data-value="2">Tus</button>
+                                    <button class="lifezoneWeekDayBtnset" id="wed" data-value="3">Wed</button>
+                                    <button class="lifezoneWeekDayBtnset" id="tes" data-value="4">Tes</button>
+                                    <button class="lifezoneWeekDayBtnset" id="fri" data-value="5">Fri</button>
+                                    <button class="lifezoneWeekDayBtnset" id="sat" data-value="6">Sat</button>
+                                    <button class="lifezoneWeekDayBtnset" id="sun" data-value="7">Sun</button>
+                                </div>
                             </div>
 
-                            <div id="lifezonePartOfDay" style="margin-top: 10px;margin-bottom: 40px;">
+                            <div id="lifezonePartOfDay" style="margin: 10px 0px 15px 20px;;">
                                 <label class="buttonSetLable" for="lifezonePartOfDaySlider">PartOfDay</label>
-                                <div id="lifezonePartOfDaySlider" class="sliderDiv"></div>
+                                <div id="lifezonePartOfDayBtnset">
+                                    <button class="lifezonePartOfDayBtnset" id="timePeriod1" data-value="1">10:00 - 14:00</button>
+                                    <button class="lifezonePartOfDayBtnset" id="timePeriod2" data-value="2">14:00 - 18:00</button>
+                                    <button class="lifezonePartOfDayBtnset" id="timePeriod3" data-value="3">18:00 - 22:00</button>
+                                </div>
                             </div>
                         </div>
 

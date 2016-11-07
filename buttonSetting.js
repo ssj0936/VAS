@@ -33,6 +33,30 @@ function buttonInit() {
         }
      });
     
+    $('div#lifezoneWeekDayBtnset button').click(function(){
+        $('div#lifezoneWeekDayBtnset button').removeClass('active');
+        $(this).addClass('active');
+        
+        lifeZoneTime.week = $(this).attr('data-value');
+        if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
+            ajaxGetHeatMap();
+        }
+    });
+    
+    $('div#lifezonePartOfDayBtnset button').click(function(){
+        $('div#lifezonePartOfDayBtnset button').removeClass('active');
+        $(this).addClass('active');
+        
+        lifeZoneTime.time = $(this).attr('data-value');
+        if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
+            ajaxGetHeatMap();
+        }
+    });
+    
+    $('div#lifezoneWeekDayBtnset').buttonset();
+    $('div#lifezonePartOfDayBtnset').buttonset();
+    
+    
     //branch / Dist
     $('#locset').buttonset();
 
@@ -68,7 +92,7 @@ function buttonInit() {
 
     });
 
-    $(".control_panel_btn_area button").css({
+    $("#activationControlPanel button").css({
         width: '100px'
     })
 
@@ -798,11 +822,17 @@ function collapseBtnInit() {
         toggleTopBtnIcon.toggleClass("glyphicon-menu-up").toggleClass("glyphicon-menu-down");
         //collaspe
         if(toggleTopBtnIcon.hasClass('glyphicon-menu-down')){
-            controlPanelTop.stop(true,true).slideUp("medium");
+            controlPanelTop.stop(true,true).slideUp("medium",function(){
+                optMapSize();
+                comparisionMapResize();
+            });
         }
         //show up
         else{
-            controlPanelTop.stop(true,true).slideDown("medium");
+            controlPanelTop.stop(true,true).slideDown("medium",function(){
+                optMapSize();
+                comparisionMapResize();
+            });
         }
     });
 }

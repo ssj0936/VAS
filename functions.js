@@ -486,6 +486,10 @@ function partOfDayConvert(num){
     return partOfDay;
 }
 
+function optMapSize(){
+    $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 30) + 'px');
+}
+
 //map printing
 
 //REF: http://www.epochconverter.com/weeknumbers

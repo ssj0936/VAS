@@ -601,10 +601,12 @@
         margin-bottom: 0px;
     }
     
+/*
     div#updatetime {
         margin-top: 16px;
-        /*text-align:right;*/
+        text-align:right;
     }
+*/
     
     li.needToUncheck {
         list-style-type: none;
@@ -955,4 +957,16 @@
 
     .cursorDefault:hover{
         cursor: default;
+    }
+
+    #lifezoneWeekDay,#lifezonePartOfDay{
+        display: inline-block;
+    }
+
+    #lifezoneWeekDayBtnset,#lifezonePartOfDayBtnset{
+        display: inline-block;
+    }
+
+    button.lifezoneWeekDayBtnset {
+        width: 50px;
     }
