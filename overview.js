@@ -725,6 +725,11 @@ function createDauChartElement(c) {
     var ctx = node.getContext("2d");
     linechart = new Chart(ctx).Overlay(trendObj, newOptions);
 
+    node.onclick = function(evt)
+    {   
+        var activePoints = linechart.getPointsAtEvent(evt);
+        console.log(activePoints[0].label);
+    }
     //show up
     container.animate({
         opacity: 1,
