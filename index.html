@@ -260,12 +260,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!--
-                        <button class="featureBtn" id="bookmark" />
-                        <button class="featureBtn" id="savebookmark" />
--->
-                        <!--                        <button class="featureBtn" id="info" />-->
-                        <!--<button class="featureBtn" id="snapshot" />-->
                     </div>
 
                     <!--left side function button-->
@@ -274,9 +268,10 @@
                         <select id="dataset">
                             <option value="activation" selected="selected">Activation</option>
                             <option value="lifezone">LifeZone</option>
+<!--                            <option value="qc">QC</option>-->
                         </select>
 
-                        <div id="lifezoneControlPanel" class="needTohideAtFirst">
+                        <div id="lifezoneControlPanel" class="needTohideAtFirst controlPanel">
                             <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 15px;">
                                 <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
                                 <div id="lifezoneWeekDayBtnset">
@@ -290,7 +285,7 @@
                                 </div>
                             </div>
 
-                            <div id="lifezonePartOfDay" style="margin: 10px 0px 15px 20px;;">
+                            <div id="lifezonePartOfDay" style="margin: 10px 0px 15px 20px;">
                                 <label class="buttonSetLable" for="lifezonePartOfDaySlider">PartOfDay</label>
                                 <div id="lifezonePartOfDayBtnset">
                                     <button class="lifezonePartOfDayBtnset" id="timePeriod1" data-value="1">10:00 - 14:00</button>
@@ -300,7 +295,7 @@
                             </div>
                         </div>
 
-                        <div id="activationControlPanel">
+                        <div id="activationControlPanel" class="controlPanel">
                             <div id="mode" style="margin-top: 3px;">
                                 <label class="buttonSetLable" for="mode">Mode</label>
                                 <button class="mode" id="region">Region</button>
@@ -308,7 +303,6 @@
                                 <button class="mode" id="comparison">Comparison</button>
                                 <button class="mode" id="table">Table</button>
                                 <button class="mode" id="gap">Gap</button>
-                                <!--                        <button class="mode" id="printTest">printTest</button>-->
                             </div>
 
 
@@ -317,6 +311,25 @@
                                 <button class="overlay" id="dealer">Dealer</button>
                                 <button class="overlay" id="service">Service</button>
                             </div>
+                        </div>
+                        
+                        <div id="qcControlPanel" class="needTohideAtFirst controlPanel">
+                            <div id="qcMode" style="margin-top: 3px;">
+                                <label class="buttonSetLable">Mode</label>
+                                <button class="qcMode" id="qcRegion">Region</button>
+                                <button class="qcMode" id="qcMarker">Marker</button>
+                            </div>
+
+                            <div id="qcView" style="margin-top: 3px;">
+                                <label class="buttonSetLable">View</label>
+                                <button class="qcView" id="qcMucModule">MucModule</button>
+                                <button class="qcView" id="qcLmdPartGroup">LmdPartGroup</button>
+                            </div>
+                            
+                            <label class="buttonSetLable">Category</label>
+                            <select id="qcCategory">
+                                <option value="all" selected="selected">All</option>
+                            </select>
                         </div>
 
                         <div id="filterResult" style="margin-top: 10px;">

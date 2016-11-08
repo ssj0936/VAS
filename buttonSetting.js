@@ -1,9 +1,10 @@
 "use strict";
 
 function buttonInit() {
-    $("#databtn button,#mode button,#overlay button,#filterResult button,button.date").button();
-    //$('#dataset').buttonset();
+    //control panel button init
+    $("#databtn button,#filterResult button,button.date").button();
     
+    //dataset selector init
     $( "#dataset" ).selectmenu({
         width: '100px',
         change: function( event, data ) {
@@ -11,31 +12,80 @@ function buttonInit() {
             if (isLoading()) return;
             var dataSet = data.item.value;
             activeDatasetTmp = dataSet;
-            var updatetime = updateTime.dataSet;
+//            var updatetime = updateTime.dataSet;
             switch(dataSet){
                     case "activation":
                         //hide date button
                         $('#databtn').show('medium');
                         //control panel switch
+                        clearControlPanel();
+                        $('.controlPanel').hide();
                         $('#activationControlPanel').show("medium");
-                        $('#lifezoneControlPanel').hide();
                         break;
                     case "lifezone":
                         //hide date button
                         $('#databtn').hide();
                         //control panel switch
+                        clearControlPanel();
+                        $('.controlPanel').hide();
                         $('#lifezoneControlPanel').show("medium");
-                        $('#activationControlPanel').hide();
+                        
+                        break;
+                    case "qc":
+                        //hide date button
+                        $('#databtn').hide();
+                        //control panel switch
+                        clearControlPanel();
+                        $('.controlPanel').hide();
+                        $('#qcControlPanel').show("medium");
                         break;
             }
-            //setDataset(dataSet);
-            //setUpdateTime(updatetime);
         }
      });
+
+    //date button 
+    $("button.date").button({
+        icons: {
+            secondary: "ui-icon-carat-1-s",
+        }
+    }).css({
+        width: '260px'
+    });
     
+    actiationControlPanelInit();
+    lifezoneControlPanelInit();
+    qcControlPanelInit();
+}
+
+function clearControlPanel(){
+    $('.controlPanel').find('button').removeClass('active');
+}
+
+function qcControlPanelInit(){
+    $("#qcControlPanel button").button();
+    $("#qcControlPanel button").css({
+        width: '100px'
+    });
+    
+    $( "#qcCategory" ).selectmenu({
+        width: '100px',
+    });
+    
+    //qcMode
+    $('#qcMode button').click(function(){
+        $(this).toggleClass('active');
+    });
+    
+    //qcView
+    $('#qcView button').click(function(){
+        radioButtonClick($('#qcView'),$(this));
+    });
+}
+
+function lifezoneControlPanelInit(){
+    //lifezone time button setting
     $('div#lifezoneWeekDayBtnset button').click(function(){
-        $('div#lifezoneWeekDayBtnset button').removeClass('active');
-        $(this).addClass('active');
+        radioButtonClick($('div#lifezoneWeekDayBtnset'),$(this));
         
         lifeZoneTime.week = $(this).attr('data-value');
         if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
@@ -44,8 +94,7 @@ function buttonInit() {
     });
     
     $('div#lifezonePartOfDayBtnset button').click(function(){
-        $('div#lifezonePartOfDayBtnset button').removeClass('active');
-        $(this).addClass('active');
+        radioButtonClick($('div#lifezonePartOfDayBtnset'),$(this));
         
         lifeZoneTime.time = $(this).attr('data-value');
         if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
@@ -56,60 +105,24 @@ function buttonInit() {
     $('div#lifezoneWeekDayBtnset').buttonset();
     $('div#lifezonePartOfDayBtnset').buttonset();
     
-    
-    //branch / Dist
-    $('#locset').buttonset();
+}
 
-    $('.locset').each(function () {
-        $(this).click(function ($this) {
-            return function () {
-                if(!$this.hasClass('active'))
-                {
-                    $('.locset').removeClass('active');
-                    $this.addClass('active');
-
-                    cleanDistBranchFilter();
-                    switch($this.attr('id')){
-                        case 'branch':
-                            $('#distToBranch').stop(true,true).fadeOut('medium');
-                            $('#onlineDist').stop(true,true).fadeOut('medium');
-                            $('#branchToDist').stop(true,true).fadeIn('medium');
-                            break;
-                        case 'dist':
-                            $('#branchToDist').stop(true,true).fadeOut('medium');
-                            $('#onlineDist').stop(true,true).fadeOut('medium');
-                            $('#distToBranch').stop(true,true).fadeIn('medium');
-                            break;
-                        case 'online':
-                            $('#branchToDist').stop(true,true).fadeOut('medium');
-                            $('#distToBranch').stop(true,true).fadeOut('medium');
-                            $('#onlineDist').stop(true,true).fadeIn('medium');
-                            break;
-                    }
-                }
-            }
-        }($(this)));
-
-    });
-
+function actiationControlPanelInit(){
+    //button init
+    $("#activationControlPanel button").button();
     $("#activationControlPanel button").css({
         width: '100px'
-    })
-
-    $("#mode button,#overlay button").attr("disabled", "disabled");
-
-    $("button.date").button({
-        icons: {
-            secondary: "ui-icon-carat-1-s",
-        }
-    }).css({
-        width: '260px'
     });
-
+    
+    //disable first
+    $("#mode button,#overlay button").attr("disabled", "disabled");
+    
+    //activation mode btn setting
     var modeBtns = $("#mode button");
     modeBtns.click(function () {
         if (isLoading()) return;
 
+        //table button
         if ($(this).attr("id") == "table") {
             if (!$(this).hasClass('active')) {
                 if(isModeActive(MODE_GAP))
@@ -120,22 +133,16 @@ function buttonInit() {
             }
         }
         
-        if ($(this).attr("id") == "printTest") {
-            $('#drawMap').remove();
-            sessionStorage.patternIndex = firstMap.getColorPattern();
-            sessionStorage.colorPattern = JSON.stringify(colorPattern);
-            window.open('popup.html');
-        }
-
-        var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
-        var isTargetButtonSet = ($(this).attr("id") == 'region' || $(this).attr("id") == 'marker') ? true : false;
-        
-        //click the same btn
-        if ((!isCurrentButtonSet && !isTargetButtonSet) && $(this).hasClass("active")) return;
+        //if comparison date doesnt set in comparison mode
         if ($(this).attr("id") == 'comparison' && comparisonMap.fromFormatStr == undefined && comparisonMap.toFormatStr == undefined) {
             showAlert("plz select comparison Data...");
             return;
         }
+        
+        //check ehwther clicking the same btn or not
+        var isCurrentButtonSet = (isModeActive(MODE_REGION) || isModeActive(MODE_MARKER)) ? true : false;
+        var isTargetButtonSet = ($(this).attr("id") == 'region' || $(this).attr("id") == 'marker') ? true : false;
+        if ((!isCurrentButtonSet && !isTargetButtonSet) && $(this).hasClass("active")) return;
         
         var pressedTarget = $(this);
         //buttonset switch
@@ -173,9 +180,15 @@ function buttonInit() {
             activeModeBtn($(this));
         }
     });
-
+    
+    //init mode
     $("#activation").addClass("active");
     setDataset(DATA_ACTIVATION);
+}
+
+function radioButtonClick($buttonset,$this){
+    $buttonset.children('button').removeClass('active');
+    $this.addClass('active');
 }
 
 function unactiveModeBtn($this) {

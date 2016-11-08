@@ -105,6 +105,7 @@ function init_() {
 
             allLoc = jQuery.extend({}, json.allLoc);
             checkboxLocationInit();
+            branchDistInit();
 
             filterDataNull();
 
