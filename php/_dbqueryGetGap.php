@@ -71,40 +71,41 @@
             $str_in.="'".$row['device_name']."',";
         }
         $str_in = substr($str_in,0,-1);
-            
-		$fromTableStr='';
-		for($i=0;$i<count($isoObj);++$i){
-            
-            $fromTableStr.="SELECT branch,count,device_model.model_name model_name,map_id"
-                        ." FROM "
-                        .($isColorAll ? "" : "$colorMappingTable A2,")
-                        .($isCpuAll ? "" : "$cpuMappingTable A3,")
-                        .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-                        .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                        ."$isoObj[$i] A1,"
-                        ."$deviceTable device_model"
+        
+        $queryStr = '';
+        switch($isoObj[0]){
+            case 'IND':
+                $fromTableStr="SELECT branch,count,device_model.model_name model_name,map_id"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable device_model"
 
-                        ." WHERE "
-                        ." date BETWEEN '".$from."' AND '".$to."'"
-                        ." AND A1.device = device_model.device_name"
-                        .($isAll?"":" AND device IN(".$str_in.")")
-                        .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
-                        .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
-                        .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
+                    ." WHERE "
+                    ." date BETWEEN '".$from."' AND '".$to."'"
+                    ." AND A1.device = device_model.device_name"
+                    .($isAll?"":" AND device IN(".$str_in.")")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
 
-			if($i != count($isoObj)-1)
-				$fromTableStr.=" UNION ALL ";
-		}
-		$fromTableStr ="(".$fromTableStr.")foo";
-		//echo $fromTableStr."<br>";
-		
-		$queryStr = "SELECT branch,SUM(count) AS count,model_name"
-            ." FROM $fromTableStr,$regionTam regionTam"
-            ." WHERE branch = branchName"
-            ." and foo.map_id = regionTam.mapid"
-            ." GROUP BY branch,model_name"
-            ." ORDER BY count DESC;";
+                $fromTableStr ="(".$fromTableStr.")foo";
+                //echo $fromTableStr."<br>";
+
+                $queryStr = "SELECT branch,SUM(count) AS count,model_name"
+                    ." FROM $fromTableStr,$regionTam regionTam"
+                    ." WHERE branch = branchName"
+                    ." and foo.map_id = regionTam.mapid"
+                    ." GROUP BY branch,model_name"
+                    ." ORDER BY count DESC;";
+                break;
+//            case 'IDN':
+//                break;
+        }
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
@@ -143,7 +144,7 @@
     
 
     //3.get tam of each branch and whole country
-    $file = file('geojson/branchTam.txt');
+    $file = file('geojson/tam/'.$isoObj[0].'_branchTam.txt');
     $tam = array();
     $totalTam = 0;
     foreach($file as $val){

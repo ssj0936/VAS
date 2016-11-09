@@ -1,5 +1,4 @@
 php/_dbqueryGetCurrentDb.php
 php/DBconfig.php
-php/branchTerritoryDistTam.csv
 variable.js
 php/geojson

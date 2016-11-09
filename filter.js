@@ -1,5 +1,5 @@
 "use strict";
-
+var countryGapModeSupported = ['IND','IDN'];
 var countryNeedToShowDistBranch = ['IND'];
 
 function checkChild(el, check) {
@@ -744,7 +744,7 @@ function filterRecord(){
     });
 
     //whether Gap button can show(no branch/dist selected & only one country be select & country in the list)
-    isGapButtonCanShow = (observeDistBranch.length == 0 && !isOnlineDist && observeLoc.length == 1 && $.inArray(observeLoc[0], countryNeedToShowDistBranch) != -1) ? true : false;
+    isGapButtonCanShow = (observeDistBranch.length == 0 && !isOnlineDist && observeLoc.length == 1 && $.inArray(observeLoc[0], countryGapModeSupported) != -1) ? true : false;
     //whether any branch/dist be selected
     isDistBranchSelected = (observeDistBranch.length > 0) ? true : false;
 

@@ -11,20 +11,7 @@
     $resultsGroupByDevice = array();
     $resultsGroupByBranch = array();
 
-    //get Tam Data
-    $file = file('geojson/branchTam.txt');
-    $tam = array();
-    $totalTam = 0;
-    foreach($file as $val){
-        $str = $val;
-        $val = str_replace("\r", '', $val);
-        $val = str_replace("\n", '', $val);
-        $split = explode(',', $val);
-        
-        $branchName = strtoupper($split[0]);
-        $tam[$branchName] = intval($split[1]);
-        $totalTam += intval($split[1]);
-    }
+    
 
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
@@ -48,6 +35,21 @@
 //    $iso ='IND';
 //    $branch = 'PUNJAB';
     
+    //get Tam Data
+    $file = file('geojson/tam/'.$iso.'_branchTam.txt');
+    $tam = array();
+    $totalTam = 0;
+    foreach($file as $val){
+        $str = $val;
+        $val = str_replace("\r", '', $val);
+        $val = str_replace("\n", '', $val);
+        $split = explode(',', $val);
+        
+        $branchName = strtoupper($split[0]);
+        $tam[$branchName] = intval($split[1]);
+        $totalTam += intval($split[1]);
+    }
+
     $dataObj = json_decode($data);
     $colorObj = json_decode($color);
     $cpuObj = json_decode($cpu);

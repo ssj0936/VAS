@@ -158,7 +158,7 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 		}
 //        print_r($result);
         //create table
-        $file = file('branchTerritoryDistTam.csv');
+        $file = file('geojson/branchTerritoryDistTam/'.$isoObj[0].'_branchTerritoryDistTam.csv');
         $data = array();
         foreach($file as $line){
             $str = $line;
