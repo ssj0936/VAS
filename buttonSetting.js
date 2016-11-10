@@ -18,7 +18,7 @@ function buttonInit() {
                         //hide date button
                         $('#databtn').show('medium');
                         //control panel switch
-                        clearControlPanel();
+//                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('#activationControlPanel').show("medium");
                         break;
@@ -26,7 +26,7 @@ function buttonInit() {
                         //hide date button
                         $('#databtn').hide();
                         //control panel switch
-                        clearControlPanel();
+//                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('#lifezoneControlPanel').show("medium");
                         
@@ -60,6 +60,7 @@ function buttonInit() {
 function clearControlPanel(){
     $('.controlPanel').find('button').removeClass('active');
     lifezoneButtonsetReset();
+    actiationControlPanelReset();
 }
 
 function qcControlPanelInit(){
@@ -195,6 +196,20 @@ function actiationControlPanelInit(){
     //init mode
     $("#activation").addClass("active");
     setDataset(DATA_ACTIVATION);
+}
+
+function actiationControlPanelReset(){
+    $("#mode button").removeClass("active");
+    
+    var modeList = [MODE_MARKER,MODE_COMPARISION,MODE_REGION,MODE_GAP];
+    for(var i in modeList){
+        var mode = modeList[i];
+        
+        if(isModeActive(mode)){
+            $("#mode button#"+mode).addClass("active");
+        }
+    }
+    
 }
 
 function radioButtonClick($buttonset,$this){
@@ -510,6 +525,7 @@ function submitBtnSetting() {
                 switch(getDataset()){
                     //switch from activation
                     case DATA_ACTIVATION:
+                        console.log('DATA_ACTIVATION');
                         //un-pressed every mode btn
                         $("#mode button.active").each(function(){
                             console.log($(this).attr('id'));
