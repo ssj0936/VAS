@@ -59,6 +59,7 @@ function buttonInit() {
 
 function clearControlPanel(){
     $('.controlPanel').find('button').removeClass('active');
+    lifezoneButtonsetReset();
 }
 
 function qcControlPanelInit(){
@@ -105,6 +106,16 @@ function lifezoneControlPanelInit(){
     $('div#lifezoneWeekDayBtnset').buttonset();
     $('div#lifezonePartOfDayBtnset').buttonset();
     
+    lifezoneButtonsetReset();
+    
+}
+
+function lifezoneButtonsetReset(){
+    $('div#lifezoneWeekDayBtnset button').removeClass('active');
+    $('div#lifezonePartOfDayBtnset button').removeClass('active');
+    
+    $('div#lifezoneWeekDayBtnset button[data-value="'+lifeZoneTime.week+'"]').addClass('active');
+    $('div#lifezonePartOfDayBtnset button[data-value="'+lifeZoneTime.time+'"]').addClass('active');
 }
 
 function actiationControlPanelInit(){
