@@ -709,9 +709,14 @@ function ajaxGetBranchObject(callback){
 function ajaxSaveLog(){
     //device filter
     var observeTargetStr = '';
-    for(var i in observeTarget){
-        var type = observeTarget[i].datatype;
-        observeTargetStr += '['+observeTarget[i][type]+']';
+    if(observeTarget.length == 1 && observeTarget[0].datatype == 'all'){
+        observeTargetStr +='[all]';
+    }
+    else{
+        for(var i in observeTarget){
+            var type = observeTarget[i].datatype;
+            observeTargetStr += '['+observeTarget[i][type]+']';
+        }
     }
     
     //model filter
@@ -758,6 +763,7 @@ function ajaxSaveLog(){
             filter_country : observeLocStr,
             filter_date : dateStr,
             filter_content : JSON.stringify(filter_content),
+            dataset : getDataset(),
         },
         success: function(json){
             console.log("log saved");

@@ -11,6 +11,7 @@
 //    $end = '2016-10-2';
     $start = $_GET['start'];
     $end = $_GET['end'];
+    $dataset = $_GET['dataset'];
 
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
@@ -19,6 +20,7 @@
     $sql = "SELECT count(distinct username) count,date
         FROM $logTable
         WHERE date BETWEEN '$start' and '$end'
+        AND dataset = '$dataset'
         group by date
         order by date";
 //echo $sql;

@@ -860,12 +860,12 @@
     }
     #overviewCenterCenter{
 /*        width:20%;*/
-        height: 105%;
+        height: 95%;
     }
 
     #overviewCenterRight{
 /*        margin: 10px 10px 0px 10px;*/
-        height: 105%;
+        height: 95%;
         width:100%;
     }
     
@@ -881,12 +881,12 @@
     }
 
     #todayLogin{
-        height: 50%;
+        height: 45%;
 /*        margin-bottom: 16px;*/
     }
 
     #topTenLogin{
-        height: 50%;
+        height: 45%;
     }
 
 /*

@@ -8,11 +8,12 @@ $results = array();
 $db = new DB();
 $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 //overview
+$dataset = $_GET['dataset'];
 
     //1. today login user and count
     $date = date('Y-m-d', time());
 //    echo $date;
-    $sql = "SELECT distinct username FROM $logTable WHERE date = '$date'";
+    $sql = "SELECT distinct username FROM $logTable WHERE date = '$date' AND dataset = '$dataset'";
     $db->query($sql);
 
     $todayUserCount = 0;
@@ -25,6 +26,7 @@ $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     //2. most active user top 10
     $sql = "SELECT count(username)count,username
       FROM $logTable
+      WHERE dataset = '$dataset'
       group by username
       order by count Desc";
     $db->query($sql);
@@ -41,6 +43,7 @@ $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     //3. user count everyday
     $sql = "SELECT count(date)count,date
       FROM $logTable
+      WHERE dataset = '$dataset'
       group by date
       order by date";
     $db->query($sql);
@@ -53,6 +56,7 @@ $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     //4. observation target - model
     $sql = "SELECT count(filter_model)count,filter_model
       FROM $logTable
+      WHERE dataset = '$dataset'
       group by filter_model";
     $db->query($sql);
 
@@ -77,6 +81,7 @@ $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     //4. observation target - country/rare-camera/front-camera/cpu/color
     $sql = "SELECT count(filter_content)count,filter_content
       FROM $logTable
+      WHERE dataset = '$dataset'
       group by filter_content";
     $db->query($sql);
 
@@ -174,7 +179,7 @@ $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     }
     
     //5.allCount
-    $sql = "SELECT count(*)count FROM $logTable";
+    $sql = "SELECT count(*)count FROM $logTable WHERE dataset = '$dataset'";
     $db->query($sql);
 
     $allCount;
@@ -186,6 +191,7 @@ $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
     $dau = array();
     $sql = "SELECT count(distinct username) count,date
         FROM $logTable
+        WHERE dataset = '$dataset'
         group by date
         order by date";
     $db->query($sql);

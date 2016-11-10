@@ -21,10 +21,11 @@
     $filter_country = $_POST['filter_country'];
     $filter_date = $_POST['filter_date'];
     $filter_content = $_POST['filter_content'];
+    $dataset = $_POST['dataset'];
 
     $query="insert into ".$logTable
-        ."(date, username, filter_device, filter_model, filter_country, filter_date, filter_content) "
-        ."values('$date', '$username', '$filter_device', '$filter_model', '$filter_country', '$filter_date', '$filter_content');";
+        ."(date, username, filter_device, filter_model, filter_country, filter_date, filter_content, dataset) "
+        ."values('$date', '$username', '$filter_device', '$filter_model', '$filter_country', '$filter_date', '$filter_content', '$dataset');";
     echo $query;
     $db->query($query);
     echo json_encode("done");

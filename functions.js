@@ -453,8 +453,8 @@ function deg2num(lat_deg, lon_deg, zoom) {
 }
 
 function saveLog(){
-    if(account == "Developer") return;
-    if(window.location.href.indexOf('dev') >= 0) return;
+//    if(account == "Developer") return;
+//    if(window.location.href.indexOf('dev') >= 0) return;
     ajaxSaveLog();
 }
 
@@ -506,6 +506,18 @@ Date.prototype.getWeek = function () {
     
     return (retVal < 10 ? '0' + retVal : retVal);
 }
+
+function getDateOfISOWeek(w, y) {
+    var simple = new Date(y, 0, 1 + (w - 1) * 7);
+    var dow = simple.getDay();
+    var ISOweekStart = simple;
+    if (dow <= 4)
+        ISOweekStart.setDate(simple.getDate() - simple.getDay() + 1);
+    else
+        ISOweekStart.setDate(simple.getDate() + 8 - simple.getDay());
+    return ISOweekStart;
+}
+
 
 var QuickHull = {
 

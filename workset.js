@@ -117,7 +117,7 @@ function init_() {
 
             //overview
             if(account == "Developer" || jQuery.inArray(account,administrator) != -1){
-                overviewInit();
+                overviewSetting();
             }else{
                 $('li#info').remove();
             }
