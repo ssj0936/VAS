@@ -17,7 +17,7 @@ function overviewSetting() {
     $('li#info').click(function () {
         //container init
         $('#popupChartContainer')
-            .append('<div id="overview" style="height:100%"><div id="overviewContainer" class="container" style="height: 100%;"><ul style="margin-top:10px;" class="nav nav-tabs"><li class="active overviewtab" id="tabActivation" data-value="activation"><a href="#">Activation</a></li><li class="overviewtab" id="tabLifezone" data-value="lifezone"><a href="#">Lifezone</a></li></ul><div id="overviewContent" class="container" style="height: 100%;"></div></div></div>');
+            .append('<div id="overview" style="height:100%"><div id="overviewContainer" class="container" style="height: 100%;"><ul style="margin-top:10px;" class="nav nav-tabs"><li class="active overviewtab" id="tabActivation" data-value="activation"><a href="#">Activation</a></li><li class="overviewtab" id="tabLifezone" data-value="lifezone"><a href="#">Lifezone</a></li></ul><div id="overviewContent" class="container" style="height: 90%;"></div></div></div>');
 
         //tab pager
         $('.overviewtab').click(function(){
@@ -771,7 +771,10 @@ function createDauChartElement(c) {
         var loginHistoryContainer = jQuery('<div/>', {
             class: 'customScrollBar',
             id:'loginHistoryContainer',
-        }).css('margin-top','10px').appendTo($('#overviewCenterRight'));
+        }).css({
+            'margin-top':'10px',
+            'height':'30%',
+        }).appendTo($('#overviewCenterRight'));
         
         var startTime,endTime;
         switch($('#overviewTimePeriodSelect').val()){
@@ -814,17 +817,30 @@ function createDauChartElement(c) {
             dataType: 'json',
 
             success: function (json) {
-//                console.log(json);
+                console.log(json);
                 jQuery('<label/>', {
                     class: 'overviewTitle'
                 })
-                .text('['+activePoints[0].label+'] login user:')
+                .text('['+activePoints[0].label+']:')
                 .css('margin-bottom', '5px')
                 .appendTo(loginHistoryContainer);
                 
+                var table = jQuery('<table/>')
+                .css('width','40%')
+                .append(
+                    jQuery('<tr/>').html('<th>user</th><th>count</th>')
+                )
+                .appendTo(loginHistoryContainer);
+                
                 for(var i in json){
-                    var username = json[i];
-                    jQuery('<li/>').text(username).css('list-style-type','none').appendTo(loginHistoryContainer);
+                    var username = json[i].username;
+                    var count = json[i].count;
+                    jQuery('<tr/>')
+                    .append(
+                        jQuery('<td/>').text(username)
+                    ).append(
+                        jQuery('<td/>').text(count)
+                    ).appendTo(table);
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {

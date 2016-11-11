@@ -13,15 +13,17 @@
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 
-    $sql = "SELECT distinct(username) 
+    $sql = "SELECT count(username)count ,username
         FROM $logTable 
         WHERE date between '$startDate' and '$endDate'
-        and dataset = '$dataset'";
+        and dataset = '$dataset'
+        group by username
+        order by count DESC";
     $db->query($sql);
 
     $userArray = array();
     while($row = $db->fetch_array()){
-        $userArray[] = $row['username'];
+        $userArray[] = ['username' => $row['username'], 'count' => $row['count']];
     }
 
     $json = json_encode($userArray);
