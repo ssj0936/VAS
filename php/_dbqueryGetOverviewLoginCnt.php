@@ -13,10 +13,12 @@
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 
-    $sql = "SELECT count(username)count ,username
+    $sql = "SELECT count(count) count, username
+        FROM (SELECT count(username)count ,username
         FROM $logTable 
         WHERE date between '$startDate' and '$endDate'
         and dataset = '$dataset'
+        group by username,date)goo
         group by username
         order by count DESC";
     $db->query($sql);

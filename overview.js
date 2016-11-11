@@ -817,7 +817,7 @@ function createDauChartElement(c) {
             dataType: 'json',
 
             success: function (json) {
-                console.log(json);
+//                console.log(json);
                 jQuery('<label/>', {
                     class: 'overviewTitle'
                 })
@@ -825,22 +825,27 @@ function createDauChartElement(c) {
                 .css('margin-bottom', '5px')
                 .appendTo(loginHistoryContainer);
                 
-                var table = jQuery('<table/>')
-                .css('width','40%')
-                .append(
-                    jQuery('<tr/>').html('<th>user</th><th>count</th>')
-                )
-                .appendTo(loginHistoryContainer);
-                
-                for(var i in json){
-                    var username = json[i].username;
-                    var count = json[i].count;
-                    jQuery('<tr/>')
+                if(json.length == 0){
+                    jQuery('<h4/>').text('no history').appendTo(loginHistoryContainer);
+                }
+                else{
+                    var table = jQuery('<table/>')
+                    .css('width','40%')
                     .append(
-                        jQuery('<td/>').text(username)
-                    ).append(
-                        jQuery('<td/>').text(count)
-                    ).appendTo(table);
+                        jQuery('<tr/>').html('<th>user</th><th>count</th>')
+                    )
+                    .appendTo(loginHistoryContainer);
+
+                    for(var i in json){
+                        var username = json[i].username;
+                        var count = json[i].count;
+                        jQuery('<tr/>')
+                        .append(
+                            jQuery('<td/>').text(username)
+                        ).append(
+                            jQuery('<td/>').text(count)
+                        ).appendTo(table);
+                    }
                 }
             },
             error: function (xhr, ajaxOptions, thrownError) {
