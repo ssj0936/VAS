@@ -408,10 +408,10 @@ function snapshotBtnSetting() {
 
 
 function dealerBtnSetting() {
-    document.getElementById("dealer").onclick = function () {
-            if (isLoading()) return;
-            dealerSubmit();
-        }
+    $('#dealer').click(function(){
+        if (isLoading()) return;
+        dealerSubmit();
+    });
 }
 
 function serviceBtnSetting() {
