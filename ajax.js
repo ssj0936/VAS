@@ -338,7 +338,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
             branch: branchName,
-            iso: 'IND',
+            iso: JSON.stringify(observeLoc),
         },
         type: "POST",
         dataType: 'json',
@@ -690,6 +690,7 @@ function ajaxGetBranchObject(callback){
             async: "false",
             dataType: 'json',
             data: { 
+                iso:JSON.stringify(observeLoc),
                 branchName : JSON.stringify(observeBranchName)
             },
             success: function(json){
@@ -806,7 +807,7 @@ function ajaxGetGapData(callback){
 
 function ajaxGetGapExport(groupBy){
     loading('File creating...');
-//    console.log(currentPointingBranch);
+    console.log(currentPointingBranch);
     $.post(
         "php/_dbqueryGetGapExport.php",
         {

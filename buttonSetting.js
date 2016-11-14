@@ -598,6 +598,7 @@ function submitBtnSetting() {
                             filterRecord();
                         }else{
                             submitGap();
+                            firstMap.zoomToSelectedLocation();
                         }
                     }
                     if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
@@ -695,11 +696,34 @@ function modeBtnPress($this) {
 function submitGap(){
     loading("Data loading...");
     observeBranchName = ['all'];
-    ajaxGetGapData(function() {
-        ajaxGetBranchObject (function() {
-            ajaxFetchMapValue(false,false);
-        });
-    });
+    
+    if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !isMapModified) {
+        console.log("same world region");
+        if (observeTarget.length != 0) {
+            ajaxGetGapData(function() {
+                ajaxGetBranchObject (function() {
+                    ajaxFetchMapValue(false,false);
+                });
+            });
+        } else {
+            loadingDismiss();
+        }
+    } else {
+        console.log("diff world region");
+        ajaxExtractMap(false, function(){
+                ajaxGetGapData(function() {
+                    ajaxGetBranchObject (function() {
+                        ajaxFetchMapValue(false,false);
+                    });
+                });
+            }, [false, false]);
+    }
+    
+//    ajaxGetGapData(function() {
+//        ajaxGetBranchObject (function() {
+//            ajaxFetchMapValue(false,false);
+//        });
+//    });
 }
 
 function submitRegion() {

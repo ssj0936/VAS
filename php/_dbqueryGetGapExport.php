@@ -14,6 +14,7 @@
         array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>
 by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","ASUS Territory","Activation q'ty<br>by Territory","District","Activation q'ty<br>by District");
     $tableStyle = 'border:1px solid black';
+
 //    $color = '["all"]';
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
@@ -22,13 +23,26 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 //    $from = "2015-9-11";
 //    $to = "2016-10-11";    
 //    $iso ='["IND"]';
-//    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $distBranch = '[]';
 //    $groupBy = 'model';
 //    $singleBranch = 'Nagpur_Raipur';
 //    $singleBranch = null;
 
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $dataset = 'activation';
+//    $from = "2015-9-11";
+//    $to = "2016-10-11";    
+//    $iso ='["IDN"]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $distBranch = '[]';
+//    $groupBy = 'branch';
+//    $singleBranch = 'SOUTH_SUMATERA';
+//    $singleBranch = null;
+//
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
@@ -89,63 +103,107 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
 		//echo $str_in;	
         //group by model_name
         
+        $queryStr = '';
+        switch($isoObj[0]){
+            case 'IND':
+                $fromTableStr="SELECT device,branch,map_id,count"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1"
+
+                    ." WHERE "
+                    ."date BETWEEN '".$from."' AND '".$to."'"
+                    .($isAll?"":" AND device IN(".$str_in.")")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                    .($isDistBranch ? " AND $distBranchStr " : "");
+                
+                $fromTableStrGroupByModel ="(".$fromTableStr.")data,$deviceTable mapping";
+//                echo $fromTableStr."<br>";
+
+
+                if($groupBy == 'model'){
+                    //2.get model name And sum group by model_name, branch, map_id
+                    $queryStr = "SELECT sum(count)count,branch,model_name,map_id"
+                        ." FROM ".$fromTableStrGroupByModel
+                        ." WHERE data.device = mapping.device_name"
+                        ." GROUP BY model_name, branch, map_id";
+
+                    //3.get district name/branchName of 
+                    $queryStr = "SELECT count,branch branchSell,model_name,map_id,name2,branchName branchActivate"
+                        ." FROM ($queryStr)tmp,$regionTam regionTam"
+                        ." WHERE tmp.map_id = regionTam.mapid"
+                        ." AND branch = branchName"
+                        ." ORDER BY model_name, branchSell, map_id";
+                }
+                else if($groupBy == 'branch'){
+                    //2.get model name And sum group by model_name, branch, map_id
+                    $queryStr = "SELECT sum(count)count,branch,map_id"
+                        ." FROM ".$fromTableStrGroupByModel
+                        ." WHERE data.device = mapping.device_name"
+                        ." GROUP BY branch, map_id";
+
+                    //3.get district name/branchName of 
+                    $queryStr = "SELECT count,branch branchSell,map_id,name2,branchName branchActivate"
+                        ." FROM ($queryStr)tmp,$regionTam regionTam"
+                        ." WHERE tmp.map_id = regionTam.mapid"
+                        ." AND branch = branchName"
+                        ." ORDER BY branchSell, map_id";
+                }
+                break;
+                
+            case 'IDN':
+                $fromTableStr="SELECT device,map_id,count"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1"
+
+                    ." WHERE "
+                    ."date BETWEEN '".$from."' AND '".$to."'"
+                    .($isAll?"":" AND device IN(".$str_in.")")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                    .($isDistBranch ? " AND $distBranchStr " : "");
+                
+                $fromTableStrGroupByModel ="(".$fromTableStr.")data,$deviceTable mapping";
+//                echo $fromTableStr."<br>";
+
+
+                if($groupBy == 'model'){
+                    //2.get model name And sum group by model_name, branch, map_id
+                    $queryStr = "SELECT sum(count)count,branchName as branchSell,model_name,map_id,name2"
+                        ." FROM $fromTableStrGroupByModel , $regionTam regionTam"
+                        ." WHERE data.device = mapping.device_name"
+                        ." AND data.map_id = regionTam.mapid"
+                        ." AND regionTam.iso = '$isoObj[0]'"
+                        ." GROUP BY model_name, branchName, map_id,name2";
+                }
+                else if($groupBy == 'branch'){
+                    //2.get model name And sum group by model_name, branch, map_id
+                    $queryStr = "SELECT sum(count)count,branchName as branchSell,map_id,name2"
+                        ." FROM $fromTableStrGroupByModel , $regionTam regionTam"
+                        ." WHERE data.device = mapping.device_name"
+                        ." AND data.map_id = regionTam.mapid"
+                        ." AND regionTam.iso = '$isoObj[0]'"
+                        ." GROUP BY branchName, map_id,name2";
+                }
+                break;
+                
+        }
         //1.get all data first
 		//--------------------------------------------------------------------------------
-		$fromTableStr='';
-		for($i=0;$i<count($isoObj);++$i){
-            
-            $fromTableStr.="SELECT device,branch,map_id,count"
-                        ." FROM "
-                        .($isColorAll ? "" : "$colorMappingTable A2,")
-                        .($isCpuAll ? "" : "$cpuMappingTable A3,")
-                        .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-                        .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                        ."$isoObj[$i] A1"
-
-                        ." WHERE "
-                        ."date BETWEEN '".$from."' AND '".$to."'"
-                        .($isAll?"":" AND device IN(".$str_in.")")
-                        .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
-                        .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
-                        .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                        .($isDistBranch ? " AND $distBranchStr " : "");
-//                        .($branch != null ? " AND branch = '$branch' ": '');
-			if($i != count($isoObj)-1)
-				$fromTableStr.=" UNION ALL ";
-		}
-		$fromTableStrGroupByModel ="(".$fromTableStr.")data,$deviceTable mapping";
-//		echo $fromTableStr."<br>";
 		
-        $queryStr = '';
-        if($groupBy == 'model'){
-            //2.get model name And sum group by model_name, branch, map_id
-            $queryStr = "SELECT sum(count)count,branch,model_name,map_id"
-                ." FROM ".$fromTableStrGroupByModel
-                ." WHERE data.device = mapping.device_name"
-                ." GROUP BY model_name, branch, map_id";
-
-            //3.get district name/branchName of 
-            $queryStr = "SELECT count,branch branchSell,model_name,map_id,name2,branchName branchActivate"
-                ." FROM ($queryStr)tmp,$regionTam regionTam"
-                ." WHERE tmp.map_id = regionTam.mapid"
-                ." AND branch = branchName"
-                ." ORDER BY model_name, branchSell, map_id";
-        }
-        else if($groupBy == 'branch'){
-            //2.get model name And sum group by model_name, branch, map_id
-            $queryStr = "SELECT sum(count)count,branch,map_id"
-                ." FROM ".$fromTableStrGroupByModel
-                ." WHERE data.device = mapping.device_name"
-                ." GROUP BY branch, map_id";
-
-            //3.get district name/branchName of 
-            $queryStr = "SELECT count,branch branchSell,map_id,name2,branchName branchActivate"
-                ." FROM ($queryStr)tmp,$regionTam regionTam"
-                ." WHERE tmp.map_id = regionTam.mapid"
-                ." AND branch = branchName"
-                ." ORDER BY branchSell, map_id";
-        }
+        
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);

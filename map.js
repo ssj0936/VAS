@@ -339,7 +339,8 @@ function MapObject(mapname) {
             var totalStr = "<table class = 'model_table'>";
             if (isModeActive(MODE_GAP)) {
                 // gap info
-                currentPointingBranch = props;
+                currentPointingBranch = (props == undefined)?(currentPointingBranch):props;
+//                console.log(currentPointingBranch);
                 this._div.innerHTML = timeStr + this.updateGap(props)/* + ((props)?btnPieChartStr:'')*/;
             } else {
                 if (props) {
@@ -547,8 +548,11 @@ function MapObject(mapname) {
                                 if(currentPointingBranch == null) return;
                                 
                                 var displayName = currentPointingBranch;
-                                var buttonHTML = "<button class ='showChart' " + "onclick =showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')>Show trend</button>";
+                                var functionname = "showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')";
+//                                console.log("showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')");
+                                var buttonHTML = "<button class ='showChart' onclick ="+functionname+">Show trend</button>";
                                 var popup = "<div class='pop'>" + displayName + buttonHTML+ "</div>";
+//                                console.log(popup);
                                 mapObj.map.openPopup(popup, e.latlng);
 
                                 //zoom to location

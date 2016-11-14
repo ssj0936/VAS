@@ -10,6 +10,10 @@
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 
     $branchName = $_GET['branchName'];
+    $iso = $_GET['iso'];
+
+    $isoObj = json_decode($iso);
+
     $result = array();
     if($branchName != '[]') {
         $branchName = json_decode($branchName,true);
@@ -19,7 +23,7 @@
             "SELECT Loc_BranchName,object_id"
             ." FROM $tablename"
             .(($branchString == 'all') ? "" : " where Loc_BranchName in ('".$branchString."')")
-            .";"
+            ." WHERE iso = '$isoObj[0]';"
         );
         $objectUnion = array();
         while ($row = $db->fetch_array()) {

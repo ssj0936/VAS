@@ -17,7 +17,7 @@
 //    $dataset = 'activation';
 //    $from = "2015-9-11";
 //    $to = "2016-10-11";    
-//    $iso ='["IND"]';
+//    $iso ='["IDN"]';
 //    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 
@@ -100,11 +100,39 @@
                     ." FROM $fromTableStr,$regionTam regionTam"
                     ." WHERE branch = branchName"
                     ." and foo.map_id = regionTam.mapid"
+                    ." and regionTam.iso = '$isoObj[0]'"
                     ." GROUP BY branch,model_name"
                     ." ORDER BY count DESC;";
                 break;
-//            case 'IDN':
-//                break;
+            case 'IDN':
+                $fromTableStr="SELECT count,device_model.model_name model_name,map_id"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable device_model"
+
+                    ." WHERE "
+                    ." date BETWEEN '".$from."' AND '".$to."'"
+                    ." AND A1.device = device_model.device_name"
+                    .($isAll?"":" AND device IN(".$str_in.")")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
+                
+                $fromTableStr ="(".$fromTableStr.")foo";
+//                echo $fromTableStr."<br>";
+
+                $queryStr = "SELECT branchName AS branch,SUM(count) AS count,model_name"
+                    ." FROM $fromTableStr,$regionTam regionTam"
+                    ." WHERE foo.map_id = regionTam.mapid"
+                    ." and regionTam.iso = '$isoObj[0]'"
+                    ." GROUP BY branchName,model_name"
+                    ." ORDER BY count DESC;";
+                break;
         }
 //		echo $queryStr."<br><br><br>";
 		

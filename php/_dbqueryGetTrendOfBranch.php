@@ -11,8 +11,6 @@
     $resultsGroupByDevice = array();
     $resultsGroupByBranch = array();
 
-    
-
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
@@ -23,7 +21,7 @@
     $to = $_POST['to'];
     $data = $_POST['data'];
     $iso = $_POST['iso'];
-    
+//    
 //    $color = '["all"]';
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
@@ -32,11 +30,15 @@
 //    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
 //    $from = "2015-8-15";
 //    $to = "2016-9-14";    
-//    $iso ='IND';
+//    $iso ='["IND"]';
 //    $branch = 'PUNJAB';
+//    $iso ='["IDN"]';
+//    $branch = 'SOUTH_SUMATERA';
     
+    $isoObj = json_decode($iso);
+
     //get Tam Data
-    $file = file('geojson/tam/'.$iso.'_branchTam.txt');
+    $file = file('geojson/tam/'.$isoObj[0].'_branchTam.txt');
     $tam = array();
     $totalTam = 0;
     foreach($file as $val){
@@ -44,7 +46,7 @@
         $val = str_replace("\r", '', $val);
         $val = str_replace("\n", '', $val);
         $split = explode(',', $val);
-        
+//        echo $split[0]."/".$split[1]."<br>";
         $branchName = strtoupper($split[0]);
         $tam[$branchName] = intval($split[1]);
         $totalTam += intval($split[1]);
@@ -56,6 +58,7 @@
     $rearCameraObj = json_decode($rearCamera);
     $frontCameraObj = json_decode($frontCamera);
     
+
     $isAll = isAll($dataObj);
 
     //color
@@ -86,31 +89,58 @@
     }
     $str_in = substr($str_in,0,-1);
     
-    //Group by branch
-    $queryStr="SELECT date,count,branch,map_id"
-            ." FROM "
-            .($isColorAll ? "" : "$colorMappingTable A2,")
-            .($isCpuAll ? "" : "$cpuMappingTable A3,")
-            .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-            .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-            ."$iso A1"
+    $queryStr='';
+    switch($isoObj[0]){
+        case 'IND':
+            //Group by branch
+            $queryStr.="SELECT date,count,branch,map_id"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1"
 
-            ." WHERE"
-            ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND device IN($str_in)")
-//            ." AND branch='$branch'"
-            .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-            .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-            .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)");
-    
-    $queryStr = "SELECT sum(count) as count,branch,date"
-                ." from($queryStr)foo,$regionTam regionTam"
-                ." WHERE branch = branchName"
-                ." and foo.map_id = regionTam.mapid"
-                ." GROUP BY date,branch"
-                ." ORDER BY date";
-	
+                    ." WHERE"
+                    ." date BETWEEN '$from' AND '$to'"
+                    .($isAll?"":" AND device IN($str_in)")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)");
+
+            $queryStr = "SELECT sum(count) as count,branch,date"
+                        ." from($queryStr)foo,$regionTam regionTam"
+                        ." WHERE branch = branchName"
+                        ." and foo.map_id = regionTam.mapid"
+                        ." GROUP BY date,branch"
+                        ." ORDER BY date";
+            break;
+        case 'IDN':
+            //Group by branch
+            $queryStr.="SELECT date,count,map_id"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1"
+
+                    ." WHERE"
+                    ." date BETWEEN '$from' AND '$to'"
+                    .($isAll?"":" AND device IN($str_in)")
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)");
+
+            $queryStr = "SELECT sum(count) as count,branchName as branch,date"
+                        ." from($queryStr)foo,$regionTam regionTam"
+                        ." WHERE foo.map_id = regionTam.mapid"
+                        ." GROUP BY date,branchName"
+                        ." ORDER BY date";
+            break;
+    }
 //    echo "1:".$queryStr."<br>";
     $first = true;
     $start_date = null;
@@ -141,27 +171,52 @@
 //        $tam_ = (($resultsGroupByBranch[$i]['count']/$total)/($tam[$branch]/$totalTam))-1;
 //        $resultsGroupByBranch[$i]['count'] = round($tam_,4);
 //    }
-    
-    //Group by Model
-    $queryStr="SELECT model_name,date,SUM(count) AS count, branch"
-            ." FROM "
-            .($isColorAll ? "" : "$colorMappingTable A2,")
-            .($isCpuAll ? "" : "$cpuMappingTable A3,")
-            .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-            .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-            ."$iso A1,"
-            ."$deviceTable mapping"
+    switch($isoObj[0]){
+        case 'IND':
+            //Group by Model
+            $queryStr="SELECT model_name,date,SUM(count) AS count, branch"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable mapping"
 
-            ." WHERE"
-            ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND device IN($str_in)")
-//            ." AND branch='$branch'"
-            ." AND A1.device = mapping.device_name "
-            .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-            .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-            .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date, model_name, branch ORDER BY date,model_name";
+                    ." WHERE"
+                    ." date BETWEEN '$from' AND '$to'"
+                    .($isAll?"":" AND device IN($str_in)")
+                    ." AND A1.device = mapping.device_name "
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                    ." GROUP BY date, model_name, branch ORDER BY date,model_name";
+            break;
+        case 'IDN':
+            //Group by Model
+            $queryStr="SELECT model_name,date,SUM(count) AS count, branchName AS branch"
+                    ." FROM "
+                    .($isColorAll ? "" : "$colorMappingTable A2,")
+                    .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                    .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                    .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable mapping,"
+                    ."$regionTam regionTam"
+
+                    ." WHERE"
+                    ." date BETWEEN '$from' AND '$to'"
+                    .($isAll?"":" AND device IN($str_in)")
+                    ." AND A1.device = mapping.device_name "
+                    ." AND A1.map_id = regionTam.mapid "
+                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                    ." GROUP BY date, model_name, branchName ORDER BY date,model_name";
+            break;
+    }
 //    echo "2:".$queryStr."<br>";
     $db->query($queryStr);
     $totalModel = array();
@@ -189,25 +244,52 @@
 //    }
 
     //Group by Device
-    $queryStr="SELECT device,date,SUM(count) AS count,branch"
-            ." FROM "
-            .($isColorAll ? "" : "$colorMappingTable A2,")
-            .($isCpuAll ? "" : "$cpuMappingTable A3,")
-            .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-            .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-            ."$iso A1"
-            //."$deviceTable mapping"
+    switch($isoObj[0]){
+            case 'IND':
+                $queryStr="SELECT device,date,SUM(count) AS count,branch"
+                        ." FROM "
+                        .($isColorAll ? "" : "$colorMappingTable A2,")
+                        .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                        .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                        .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                        ."$isoObj[0] A1"
+                        //."$deviceTable mapping"
 
-            ." WHERE"
-            ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND device IN($str_in)")
-//            ." AND branch='$branch'"
-            //." AND A1.model = mapping.device_name "
-            .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-            .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-            .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-            .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-            ." GROUP BY date, device, branch ORDER BY date,device";
+                        ." WHERE"
+                        ." date BETWEEN '$from' AND '$to'"
+                        .($isAll?"":" AND device IN($str_in)")
+            //            ." AND branch='$branch'"
+                        //." AND A1.model = mapping.device_name "
+                        .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                        .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                        .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                        ." GROUP BY date, device, branch ORDER BY date,device";
+                break;
+            case 'IDN':
+                $queryStr="SELECT device,date,SUM(count) AS count,branchName AS branch"
+                        ." FROM "
+                        .($isColorAll ? "" : "$colorMappingTable A2,")
+                        .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                        .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                        .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                        ."$isoObj[0] A1,"
+                        ."$regionTam regionTam"
+                        //."$deviceTable mapping"
+
+                        ." WHERE"
+                        ." date BETWEEN '$from' AND '$to'"
+                        .($isAll?"":" AND device IN($str_in)")
+                        ." AND A1.map_id = regionTam.mapid "
+            //            ." AND branch='$branch'"
+                        //." AND A1.model = mapping.device_name "
+                        .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                        .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                        .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                        ." GROUP BY date, device, branchName ORDER BY date,device";
+                break;
+    }
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);
     $totalDevice = array();
