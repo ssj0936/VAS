@@ -22,7 +22,6 @@ function saveBookmarkBtnSetting() {
                 descStr += observeLoc[i] + ", ";
             }
             descStr += ']';
-            descStr += "[" + firstMap.fromFormatStr + " -> " + firstMap.toFormatStr + "]";
             $('#bookmark_description').val(descStr);
 
             $("#addBookmarkDialog").dialog({
@@ -71,14 +70,14 @@ function addBookmark() {
     var stringifyObserveTarget = JSON.stringify(observeTarget);
     var stringifyObserveLoc = JSON.stringify(observeLoc);
     var stringifyObserveSpec = JSON.stringify(observeSpec);
-    var firstMapTime = JSON.stringify({
-        from: firstMap.fromFormatStr,
-        to: firstMap.toFormatStr
-    });
-    var comparisonMapTime = JSON.stringify({
-        from: comparisonMap.fromFormatStr,
-        to: comparisonMap.toFormatStr
-    });
+//    var firstMapTime = JSON.stringify({
+//        from: firstMap.fromFormatStr,
+//        to: firstMap.toFormatStr
+//    });
+//    var comparisonMapTime = JSON.stringify({
+//        from: comparisonMap.fromFormatStr,
+//        to: comparisonMap.toFormatStr
+//    });
     var activeMode = (isModeActive(MODE_COMPARISION) ? MODE_COMPARISION : MODE_REGION);
     var dataset = getDataset();
     // console.log("stringifyObserveTarget:"+stringifyObserveTarget);
@@ -89,7 +88,8 @@ function addBookmark() {
     //console.log("activeMode:"+activeMode);
 
     // ajax to save bookmark
-    ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, firstMapTime, comparisonMapTime, activeMode, dataset);
+//    ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, firstMapTime, comparisonMapTime, activeMode, dataset);
+    ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, activeMode, dataset);
 }
 
 function loadBookmarkBtnSetting() {
@@ -135,8 +135,8 @@ function bookmarkSubmit(index) {
     var devicesJson = JSON.parse(bookmarkObj.devicesJson);
     var locJson = JSON.parse(bookmarkObj.locJson);
     var specJson = JSON.parse(bookmarkObj.specJson);
-    var firstMapTime = JSON.parse(bookmarkObj.firstMapTime);
-    var comparisonMapTime = JSON.parse(bookmarkObj.comparisonMapTime);
+//    var firstMapTime = JSON.parse(bookmarkObj.firstMapTime);
+//    var comparisonMapTime = JSON.parse(bookmarkObj.comparisonMapTime);
     var activeMode = bookmarkObj.activeMode;
     var dataset = bookmarkObj.dataset;
 
@@ -154,8 +154,14 @@ function bookmarkSubmit(index) {
     //dateMenuHide();
 
     //filter data collection
-    firstMap.fromFormatStr = firstMapTime.from;
-    firstMap.toFormatStr = firstMapTime.to;
+    if(firstMap.fromFormatStr == undefined || firstMap.toFormatStr== undefined ){
+        var from = $("#from").datepicker("getDate");
+        var to = $("#to").datepicker("getDate");
+        //console.log(from);
+
+        firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+        firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
+    }
 
     //clone decided filter from tmpFilter
     observeTarget = devicesJson.slice();
@@ -167,11 +173,19 @@ function bookmarkSubmit(index) {
     observeSpec = jQuery.extend({}, specJson);
     observeSpecTmp = jQuery.extend({}, specJson);
 
+    filterRecordClean();
+    filterRecord();
+    
     //dataset setting
     $("#dataset button").removeClass("active");
     $("#" + dataset).addClass("active");
     setDataset(dataset);
-
+    
+    if(isGapButtonCanShow && !isDistBranchSelected){
+        $('button#gap').show();
+    }else{
+        $('button#gap').hide();
+    }
     //--------filter----------------------------------------
 
     cleanFilterCheck();
@@ -232,17 +246,17 @@ function bookmarkSubmit(index) {
     modeReset();
     setModeOn(activeMode);
 
-    $("#from").datepicker("setDate", new Date(firstMap.fromFormatStr));
-    $("#to").datepicker("setDate", new Date(firstMap.toFormatStr));
+//    $("#from").datepicker("setDate", new Date(firstMap.fromFormatStr));
+//    $("#to").datepicker("setDate", new Date(firstMap.toFormatStr));
 
     if (isModeActive(MODE_COMPARISION)) {
         if (!$("button#comparison").hasClass("active"))
             modeBtnPress($("button#comparison"));
 
-        comparisonMap.fromFormatStr = comparisonMapTime.from;
-        comparisonMap.toFormatStr = comparisonMapTime.to;
-        $("#from_compare").datepicker("setDate", new Date(comparisonMap.fromFormatStr));
-        $("#to_compare").datepicker("setDate", new Date(comparisonMap.toFormatStr));
+//        comparisonMap.fromFormatStr = comparisonMapTime.from;
+//        comparisonMap.toFormatStr = comparisonMapTime.to;
+//        $("#from_compare").datepicker("setDate", new Date(comparisonMap.fromFormatStr));
+//        $("#to_compare").datepicker("setDate", new Date(comparisonMap.toFormatStr));
 
         setCompareCheckbox(true);
 

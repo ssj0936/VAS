@@ -256,7 +256,7 @@ function ajaxGetMarker() {
     });
 }
 
-function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, firstMapTime, comparisonMapTime, activeMode, dataset) {
+function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, activeMode, dataset) {
     $.ajax({
         type: 'GET',
         url: 'php/_dbqueryAddBookmark.php',
@@ -267,8 +267,6 @@ function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyO
             stringifyObserveTarget: stringifyObserveTarget,
             stringifyObserveLoc: stringifyObserveLoc,
             stringifyObserveSpec: stringifyObserveSpec,
-            firstMapTime: firstMapTime,
-            comparisonMapTime: comparisonMapTime,
             activeMode: activeMode,
             dataset: dataset,
         },
@@ -278,7 +276,10 @@ function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyO
             showToast("bookmark Saved");
             ajaxLoadBookmark();
         },
-        //        error: function(jqXHR, textStatus, errorThrown) {},
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+        }
     });
 }
 
