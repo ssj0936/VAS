@@ -9,10 +9,6 @@
 
 //    $tableColumnList = array('branchName','tamShareByBranch','tamOfBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','tamOfTerritory','activationSumTerritory','districtName','tamOfDistrict','activationOfDistrict');
     $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','activationSumTerritory','districtName','activationOfDistrict');
-
-    $tableColumnNameListModel = 
-        array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>
-by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","ASUS Territory","Activation q'ty<br>by Territory","District","Activation q'ty<br>by District");
     $tableStyle = 'border:1px solid black';
 
 //    $color = '["all"]';
@@ -106,6 +102,9 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
         $queryStr = '';
         switch($isoObj[0]){
             case 'IND':
+                $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"
+                        ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","ASUS Territory","Activation q'ty<br>by Territory"
+                        ,"District","Activation q'ty<br>by District");
                 $fromTableStr="SELECT device,branch,map_id,count"
                     ." FROM "
                     .($isColorAll ? "" : "$colorMappingTable A2,")
@@ -158,6 +157,9 @@ by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation
                 break;
                 
             case 'IDN':
+                $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"
+                        ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","Province","Activation q'ty<br>by Province"
+                        ,"Regency","Activation q'ty<br>by Regency");
                 $fromTableStr="SELECT device,map_id,count"
                     ." FROM "
                     .($isColorAll ? "" : "$colorMappingTable A2,")

@@ -931,3 +931,9 @@ function enableModeAndOverlay() {
     $("#mode button").removeAttr("disabled");
     $("#overlay button").removeAttr("disabled");
 }
+
+function helpBtnSetting() {
+    $('li#help').click(function () {
+        window.open("https://asus-my.sharepoint.com/personal/ian_tseng_asus_com/_layouts/15/guestaccess.aspx?guestaccesstoken=BU2IOjBOaDRC1SYG3Zbl8oleTaILoQ%2bJ2dqLlFxSDRU%3d&docid=06088da14c0af498f9fdda46073db83d9&rev=1");
+    });
+}

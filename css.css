@@ -970,3 +970,7 @@
     button.lifezoneWeekDayBtnset {
         width: 50px;
     }
+
+    div #overviewDatebtn{
+        display: inline-block;
+    }

@@ -220,10 +220,10 @@ var negOptions = {
     },
 
     tooltipTemplate: function(label) {
-        return '' + ((label.value)*100).toFixed(2) + ' %';
+        return '' + (label.datasetLabel) + ': ' + ((label.value)*100).toFixed(2) + ' %';
     },
 
     multiTooltipTemplate: function(label) {
-        return '' + ((label.value)*100).toFixed(2) + ' %';
+        return '' + (label.datasetLabel) + ': ' + ((label.value)*100).toFixed(2) + ' %';
     },
 }

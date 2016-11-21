@@ -333,7 +333,7 @@ function MapObject(mapname) {
         };
         // method that we will use to update the control based on feature properties passed
         this.info.update = function (props) {
-            var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>Activation count</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+            var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+ (isModeActive(MODE_GAP)?"GAP":"Activation count") + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
             var btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
             var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
             var totalStr = "<table class = 'model_table'>";

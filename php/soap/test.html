@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+</head>
+
+<body>
+
+    <li>
+        <label>Account:</label>
+        <input type="text" id="Account" value="BIS_AMAXAPP" disabled="disabled">
+    </li>
+    <li>
+        <label>Password:</label>
+        <input type="password" id="Password" value="Q7@dAu1Z" disabled="disabled">
+    </li>
+    <li>
+        <label>SendID:</label>
+        <input type="text" id="SendID" value="BIS_AMAXAPP" disabled="disabled">
+    </li>
+    <li>
+        <label>ReceiveID:</label>
+        <input type="text" id="ReceiveID" value="ASUS" disabled="disabled">
+    </li>
+    <li>
+        <label>Report_ID:</label>
+        <input type="text" id="Report_ID" value="R0001" disabled="disabled">
+    </li>
+    <li>
+        <label>AD_Account:</label>
+        <input type="text" id="AD_Account" value="Chiapei_Hsiao">
+    </li>
+
+    <button id="submit">submit</button>
+    
+    <div id="result"></div>
+
+
+    <script>
+        $('#submit').click(function () {
+            $('div#result').empty();
+            $('div#result').html("<h3>Loading</h3>");
+            $.ajax({
+                url: 'ajax.php',
+                type: "POST",
+                data: {
+                    Account: $('#Account').val(),
+                    Password: $('#Password').val(),
+                    SendID: $('#SendID').val(),
+                    ReceiveID: $('#ReceiveID').val(),
+                    Report_ID: $('#Report_ID').val(),
+                    AD_Account: $('#AD_Account').val(),
+                },
+                dataType: 'json',
+
+                success: function (json) {
+                    var container = $('div#result');
+                    container.empty();
+                    var dataObj = json.getBISReportPermissionResult;
+                    jQuery('<li>').text('TransactionID :' + dataObj.TransactionID).appendTo(container);
+                    jQuery('<li>').text('ReturnMsg :' + dataObj.ReturnMsg).appendTo(container);
+                    jQuery('<li>').text('ReturnCode :' + dataObj.ReturnCode).appendTo(container);
+                    jQuery('<li>').text('OutputDataList :').appendTo(container);
+                    
+                    var OutputData = jQuery('<ul>').appendTo(container);
+                    for(var i in dataObj.OutputDataList.OutputData){
+                        var data = dataObj.OutputDataList.OutputData[i];
+                        
+                        jQuery('<li>').text(i + ':' + JSON.stringify(data)).appendTo(OutputData);
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("ajaxGetDateBound:" + xhr.status);
+                    alert(thrownError);
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

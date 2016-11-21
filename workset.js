@@ -152,6 +152,7 @@ function init_() {
     collapseBtnInit();
     serviceBtnSetting();
     dealerBtnSetting();
+    helpBtnSetting();
     //custom init
     defaultDateSetting();
     updateReleaseNote();

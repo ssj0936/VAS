@@ -66,7 +66,7 @@ function overviewInit(){
                         secondary: "ui-icon-carat-1-s",
                     }
                 }).css({
-                    width: '200px'
+//                    width: '180px'
                 });
 
                 overviewDateBtnInit();
@@ -511,12 +511,15 @@ function overviewInitCenterRight(json) {
 
     var title = jQuery('<div/>', {
         class: 'centerRightTitle'
-    }).css('height', '10%').appendTo(container);
+    }).css({
+        'display':'inline-block',
+        'margin-left':'10px'
+    }).appendTo(container);
 
     jQuery('<label/>', {
             class: 'overviewTitle'
         })
-        .text('User count group:')
+        .text('Active User:')
         .css('margin-right', '5px')
         .appendTo(title);
 
@@ -537,7 +540,10 @@ function overviewInitCenterRight(json) {
         })
         .css('margin-right', '5px')
         .appendTo(
-            jQuery('<div/>').appendTo(title)
+            jQuery('<div/>').css({
+                'display':'inline-block',
+                'margin-left':'10px',
+            }).appendTo(container)
         );
 
     //jqueryUI selector setting
