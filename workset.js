@@ -95,10 +95,17 @@ function init_() {
         type: "GET",
         dataType: 'json',
         data: {
-            dataset: getDataset(),
+//            dataset: getDataset(),
+            account: account,
         },
         success: function (json) {
-//                    console.log(json);
+//            console.log(json);
+//            if(json.accountPermission.getBISReportPermissionResult.ReturnMsg != "Success" 
+//               || !(json.accountPermission.getBISReportPermissionResult.OutputDataList.OutputData && json.accountPermission.getBISReportPermissionResult.OutputDataList.OutputData.length !=0)){
+//                window.location.href = '404.html';
+//            }
+            
+            
             allDevicesList = jQuery.extend({}, json.allDevices);
             checkboxDeviceInit();
 //                    console.log(allDevicesList);
@@ -126,6 +133,8 @@ function init_() {
         },
     });
 
+    setAccount(' '+account);
+    
     ajaxLoadBookmark();
 
     //init

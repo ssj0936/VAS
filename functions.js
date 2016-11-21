@@ -385,8 +385,6 @@ function checkSSOCookie() {
         } else {
             var c = getCookie('SSO').split('&');
             account = c[3].substring((c[3].indexOf('=') + 1));
-            setAccount(' '+account);
-
             var accessable = isInArray(accessableList, account);
             //             console.log(account+" "+accessable);
             if (!accessable)

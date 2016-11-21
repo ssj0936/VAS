@@ -354,13 +354,13 @@ function createBookmarkPopup() {
         },
         buttons: [
             {
-                text: 'delete',
+                text: 'Delete',
                 class: 'bk-list-btn',
                 click: function () {
                     submitRemoveBookmark();
                 }
             }, {
-                text: 'cancel',
+                text: 'Cancel',
                 class: 'bk-list-btn',
                 click: function () {
                     closeBookmarkList();

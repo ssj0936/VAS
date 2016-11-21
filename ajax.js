@@ -273,7 +273,7 @@ function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyO
         dataType: 'json',
         success: function (response) {
             console.log("bookmark Saved success");
-            showToast("bookmark Saved");
+            showToast("Bookmark is saved");
             ajaxLoadBookmark();
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -315,7 +315,7 @@ function ajaxRemoveBookmark(idOfBookmarkDel) {
             //            bookmarkList=[];
             ajaxLoadBookmark();
             //            console.log(bookmarkList);
-            showToast("bookmark Deleted");
+            showToast("Bookmark is deleted");
         },
         error: function (jqXHR, textStatus, errorThrown) {},
     });
