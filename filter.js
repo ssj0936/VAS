@@ -2,13 +2,14 @@
 var countryGapModeSupported = ['IND','IDN'];
 var countryNeedToShowDistBranch = ['IND'];
 
+//2016-11-23 update: only apply to enable item
 function checkChild(el, check) {
     var nextUl = $(el).parent().next("ul");
     //console.log(nextUl);
     if (nextUl.length > 0) {
         //console.log("checkChild");
-        $("li input", nextUl).prop("checked", check);
-        $("li input", nextUl).each(function () {
+        $("li input:enabled", nextUl).prop("checked", check);
+        $("li input:enabled", nextUl).each(function () {
             checkChild($(this), check);
         });
     }
@@ -18,6 +19,7 @@ function checkChild(el, check) {
     }
 }
 
+//2016-11-23 update: only apply to enable item
 function checkParent(el) {
 
     //check
@@ -26,26 +28,26 @@ function checkParent(el) {
         //find latest ul from target
         var upperUl = $(el).parentsUntil("ul").parent();
         var isAllChecked = true;
-        $("li input", upperUl).each(function () {
+        $("li input:enabled", upperUl).each(function () {
             if (!$(this).prop("checked")) {
                 isAllChecked = false;
             }
         });
         if (isAllChecked) {
-            $("input", upperUl.prev("li")).prop("checked", true);
-            checkParent($("input", upperUl.prev("li"))[0]);
+            $("input:enabled", upperUl.prev("li")).prop("checked", true);
+            checkParent($("input:enabled", upperUl.prev("li"))[0]);
         }
     } else {
         var upperUl = $(el).parentsUntil("ul").parent();
         var isAllChecked = true;
-        $("li input", upperUl).each(function () {
+        $("li input:enabled", upperUl).each(function () {
             if (!$(this).prop("checked")) {
                 isAllChecked = false;
             }
         });
         if (!isAllChecked) {
-            $("input", upperUl.prev("li")).prop("checked", false);
-            checkParent($("input", upperUl.prev("li"))[0]);
+            $("input:enabled", upperUl.prev("li")).prop("checked", false);
+            checkParent($("input:enabled", upperUl.prev("li"))[0]);
         }
     }
 }
@@ -68,7 +70,7 @@ function checkboxDeviceInit() {
         text: "All",
         for: 'filter_device_' + "all",
     }).appendTo(li);
-
+//    console.log(allDevicesList);
     var productUl = jQuery('<ul/>').appendTo($(ul));
     //ui-icon-squaresmall-plus
     for (var productName in allDevicesList) {
@@ -101,6 +103,7 @@ function checkboxDeviceInit() {
             value: productName,
             datatype: "product",
             devices: productName,
+            'data-productID':productTopProductIDList[productName],
             'data-productName':productName,
             'data-modelName':productName,
             'data-devicesName':productName,
@@ -137,12 +140,12 @@ function checkboxDeviceInit() {
                     $(this).parent().next('ul').slideToggle();
                 })
                 .appendTo(li);
-
             jQuery('<input/>', {
                 id: 'filter_device_' + modelName,
                 type: 'checkbox',
                 value: modelName,
                 datatype: "model",
+                'data-productID':productTopProductIDList[productName],
                 'data-productName':productName,
                 'data-modelName':modelName,
                 'data-devicesName':modelName,
@@ -163,6 +166,7 @@ function checkboxDeviceInit() {
                     type: 'checkbox',
                     value: allDevicesList[productName][modelName][i],
                     datatype: "devices",
+                    'data-productID':productTopProductIDList[productName],
                     'data-productName':productName,
                     'data-modelName':modelName,
                     'data-devicesName':allDevicesList[productName][modelName][i],
@@ -190,10 +194,106 @@ function checkboxDeviceInit() {
 //            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
 //            console.log(specDeviceTmp);
+            
+            applyPermittedLoc();
+            
             ajaxGetDeviceSpec(specDeviceTmp);
             disableSubmit();
         });
     });
+}
+
+function applyPermittedLoc(){
+    if(isVIP) return;
+    
+    //reset disable 
+    $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
+
+    //get chosen productID
+    var productID = [];
+    $('input[name="devicesList"][datatype="model"]:checkbox:checked'
+      +',input[name="devicesList"][datatype="devices"]:checkbox:checked').each(function(){
+        if($.inArray($(this).attr('data-productid') , productID) == -1){
+            productID.push($(this).attr('data-productid'));
+        }
+    });
+
+    //lock some loc
+    //only normal user need to do this
+    if(productID.length != 0){
+        var showableISO = [];
+        for(var iso in permission){
+            for(var i in productID){
+                var id = productID[i];
+                
+                //found this ID in this country
+                if($.inArray(id,permission[iso]) != -1 || $.inArray("",permission[iso])!= -1){
+                    showableISO.push(iso);
+                    break;
+                }
+            }
+        }
+        console.log(showableISO);
+
+        //disable some item
+        $('input[datatype="country"]').each(function(){
+            //country shoud be disable
+            if($.inArray($(this).attr('iso'),showableISO) == -1){
+                //unclick the item already clicked
+                if($(this).is(":checked"))
+                    $(this).trigger('click');
+
+                $(this).attr("disabled", "disabled");
+            }
+        });
+        
+        //disable 2nd level
+        $('input[datatype="terrority"]').each(function(){
+            var child = $(this).parent().next('ul');
+            
+            if (child.length > 0) {
+                //init flag of empty set with 'false'
+                var alldisable = true;   
+                $("li input", child).each(function () {
+                    if(!$(this).is(':disabled')){
+                        console.log($(this).val());
+                        alldisable = false;
+
+                        return false;
+                    }
+                });
+            }
+            console.log($(this).attr('id')+":"+alldisable);
+            if(alldisable)
+                $(this).attr("disabled", "disabled");
+        });
+    }
+    
+    //check the level checkbox
+    $('input[datatype="terrority"]').each(function(){
+        var child = $(this).parent().next('ul');
+
+        if (child.length > 0) {
+            //init flag of empty set with 'false'
+            var allchecked = !($("li input:enabled", child).length == 0);   
+            $("li input:enabled", child).each(function () {
+                console.log($(this).val() + '/ checked:' + $(this).is(':checked'));
+                if(!$(this).is(':checked')){
+                    console.log($(this).val());
+                    allchecked = false;
+
+                    return false;
+                }
+            });
+        }
+        console.log($(this).attr('id')+":"+allchecked);
+        $(this).prop('checked',allchecked);
+    });
+    
+    //final: record
+    observeLocTmp.length = 0;
+    observeLocFullNameTmp.length = 0;
+    checkLocPush();
 }
 
 function checkboxLocationInit() {
@@ -271,7 +371,7 @@ function checkboxLocationInit() {
                     type: 'checkbox',
                     value: countryName,
                     datatype: "country",
-                    iso: allLoc[terrorityName][countryName][0],
+                    iso: allLoc[terrorityName][countryName],
                     name: "loc",
 //                    inActivation: allLoc[terrorityName][countryName][1],
 //                    inLifezone: allLoc[terrorityName][countryName][2],
@@ -337,6 +437,23 @@ function checkboxLocationInit() {
             }
         });
     });
+}
+
+function applyPermittedDevice(){
+    if(isVIP) return;
+    
+    //reset disable 
+    $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
+
+    //get chosen productID
+    var productID = [];
+    $('input[name="devicesList"][datatype="model"]:checkbox:checked'
+      +',input[name="devicesList"][datatype="devices"]:checkbox:checked').each(function(){
+        if($.inArray($(this).attr('data-productid') , productID) == -1){
+            productID.push($(this).attr('data-productid'));
+        }
+    });
+
 }
 
 function checkboxSpecInit(checkOption) {

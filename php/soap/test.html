@@ -71,7 +71,7 @@
                     for(var i in dataObj.OutputDataList.OutputData){
                         var data = dataObj.OutputDataList.OutputData[i];
                         
-                        jQuery('<li>').text(i + ':' + JSON.stringify(data)).appendTo(OutputData);
+                        jQuery('<li>').text(i + ':[' + data.Country + '][' + data.Product_ID + ']').appendTo(OutputData);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {

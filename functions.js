@@ -397,6 +397,10 @@ function checkSSOCookie() {
     }
 }
 
+function isVIP(){
+    return (jQuery.inArray(account,administrator) != -1);
+}
+
 function updateReleaseNote() {
     $('#homepage').empty();
     jQuery('<h2/>').text('Welcome').appendTo('#homepage');

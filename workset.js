@@ -20,74 +20,6 @@ function init_() {
     $("#to_compare").datepicker();
     $("#to_compare").datepicker('setDate', new Date());
 
-//    //Lifezone slider - weekday
-//    $('#lifezoneWeekDaySlider').slider({
-//        min:1,
-//        max:7,
-//        change: function( event, ui ) {
-//            var dayTime = weekdayConvert(ui.value);
-//            lifeZoneTime.week = ui.value;
-//            if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
-//                ajaxGetHeatMap();
-//            }
-//        } 
-//    }).each(function() {
-//        var opt = $(this).data().uiSlider.options;
-//        var vals = opt.max - opt.min;
-//        for (var i = opt.min; i <= opt.max; i++) {
-//            var weekday = weekdayConvert(i);
-//
-//            var el = $('<label>'+weekday+'</label>').css('left',((i-1)/vals*100)+'%');
-//            $( "#lifezoneWeekDaySlider" ).append(el);
-//        }
-//    });
-//
-//    //Lifezone slider - dayofPart
-//    var slider = $('#lifezonePartOfDaySlider').slider({
-//        range: true,
-//        min: 1,
-//        max: 4,
-//        values: [1,2],
-//        create:function(event, ui){
-//            //hide handler
-//            $(this).children("span.ui-slider-handle").hide();
-//        },
-//        slide: function( event, ui ) {
-//            //set bound
-//            if(ui.values[ 0 ] > 3 || ui.values[ 1 ] < 2){
-//                return false;
-//            }
-//
-//            //move another handler
-//            var startTime = partOfDayConvert(ui.values[ 0 ]);
-//            var endTime = partOfDayConvert(ui.values[ 1 ]);
-//            if(slider.children(".ui-slider-handle").first().hasClass('ui-state-active')){
-//                slider.slider('values', 1, ui.values[0]+1, true );
-//            }
-//            if(slider.children(".ui-slider-handle").last().hasClass('ui-state-active')){
-//                slider.slider('values', 0, ui.values[1]-1, true );
-//            }
-//        },
-//        stop:function( event, ui ){
-//            //get value
-////            console.log(ui.values[ 0 ]+'-'+ui.values[ 1 ]);
-//            lifeZoneTime.time = ui.values[ 0 ];
-//            if (isDifferentTime() && !$.isEmptyObject(heatmapLayer)) {
-//                ajaxGetHeatMap();
-//            }
-//        }
-//    }).each(function() {
-//        var opt = $(this).data().uiSlider.options;
-//        var vals = opt.max - opt.min;
-//        for (var i = opt.min; i <= opt.max; i++) {
-//            var partOfDay = partOfDayConvert(i);
-//
-//            var el = $('<label>'+partOfDay+'</label>').css('left',((i-1)/vals*100)+'%');
-//            $( "#lifezonePartOfDaySlider" ).append(el);
-//        }
-//    });
-
-
     //selector option init
     var URLs = "php/dbqueryInit.php";
     $.ajax({
@@ -95,16 +27,21 @@ function init_() {
         type: "GET",
         dataType: 'json',
         data: {
-//            dataset: getDataset(),
             account: account,
+            isVIP: isVip,
         },
         success: function (json) {
-//            console.log(json);
-//            if(json.accountPermission.getBISReportPermissionResult.ReturnMsg != "Success" 
-//               || !(json.accountPermission.getBISReportPermissionResult.OutputDataList.OutputData && json.accountPermission.getBISReportPermissionResult.OutputDataList.OutputData.length !=0)){
-//                window.location.href = '404.html';
-//            }
+            console.log(json);
+            if(!json.isPass){
+                window.location.href = '404.html';
+            }
             
+            permission = jQuery.extend({}, json.accountPermission);
+            console.log(permission);
+            isVIP = json.isVIP;
+            
+            productTopProductIDList = jQuery.extend({}, json.productToProductID);
+//            console.log(productTopProductIDList);
             
             allDevicesList = jQuery.extend({}, json.allDevices);
             checkboxDeviceInit();
@@ -131,6 +68,10 @@ function init_() {
             
             loadingDismiss();
         },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+        }
     });
 
     setAccount(' '+account);
