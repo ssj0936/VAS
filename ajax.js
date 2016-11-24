@@ -448,21 +448,7 @@ function ajaxGetDeviceSpec(devices, checkOption) {
 function ajaxFetchTableValue(isComparison) {
     var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
-    
-    console.log(JSON.stringify(observeLoc));
-    console.log(JSON.stringify(observeDistBranch));
-    console.log(JSON.stringify(observeDistName));
-    console.log(JSON.stringify(observeTarget));
-    console.log(JSON.stringify(mapObj.fromFormatStr));
-    console.log(JSON.stringify(mapObj.toFormatStr));
-    console.log(JSON.stringify(DATA_ACTIVATION));
-    
-    console.log(JSON.stringify(observeSpec.color));
-    console.log(JSON.stringify(observeSpec.cpu));
-    console.log(JSON.stringify(observeSpec.rear_camera));
-    console.log(JSON.stringify(observeSpec.front_camera));
-    
-    var URLs = "php/_dbqueryCntGroupByISO.php";
+    var URLs = "php/_dbqueryGetTableContent.php";
     return $.ajax({
         url: URLs,
         data: {
@@ -482,19 +468,21 @@ function ajaxFetchTableValue(isComparison) {
         dataType: 'json',
 
         success: function (json) {
+            console.log(json);
+            console.log(mapObj.jsonData.features);
             console.log("ajaxFetchTableValue start");
             $("#tableContainer").empty();
 
 //            popupChartShow(false);
-
-            var tableContent = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
-            $("#tableContainer").append(tableContent);
+            var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>' +  '<th>Activated Date</th>' +  '<th>Activated Week</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
+            $("#popupChartContainer").append(tableContenr);
 
             var finalTableArray = [];
             for (var i = 0; i < json.length; ++i) {
                 var countryID = json[i].countryID;
                 json[i]['displayName'] = '';
                 json[i]['iso'] = '';
+                json[i]['week'] = '';
                 var find = mapObj.jsonData.features.filter(function (obj) {
                     return (obj.properties.OBJECTID == countryID)
                 });
@@ -505,15 +493,23 @@ function ajaxFetchTableValue(isComparison) {
                     if (!isInArray(forcingName2List, find[0].properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, find[0].properties.ISO))) {
                         json[i].displayName = find[0].properties.NAME_1;
                     }
+                }else{
+                    console.log('false');
                 }
                 //post process
                 json[i]['cnt'] = numToString(json[i]['cnt']);
+                
+                var d = new Date(json[i].date);
+                json[i]['week'] = d.getWeek();
                 
                 if(json[i].displayName != ''){
                     finalTableArray.push({
                         displayName:json[i].displayName,
                         iso:json[i].iso,
                         cnt:json[i].cnt,
+                        model:json[i].models,
+                        date:json[i].date,
+                        week:json[i].week,
                     });
                 }
             }
@@ -526,6 +522,15 @@ function ajaxFetchTableValue(isComparison) {
                     },
                     {
                         data: 'displayName'
+                    },
+                    {
+                        data: 'model'
+                    },
+                    {
+                        data: 'date'
+                    },
+                    {
+                        data: 'week'
                     },
                     {
                         data: 'cnt'
