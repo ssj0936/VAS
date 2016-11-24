@@ -11,6 +11,11 @@
 //    $now = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //    echo "<br>-----------<br>".$now->format('Y-m-d H:i:s')."<br>-----------<br>";
 //    $color = '["Black","BLACK"]';
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $dataset = 'activation';
 //    $from = "2016-7-9";
 //    $to = "2016-8-3";    
 //    $iso ='["IND"]';
@@ -22,9 +27,26 @@
 //$rearCamera = '["13 Mega Pixel","8 Mega Pixel","5 Mega Pixel","Unknown"]';
 //$frontCamera = '["0.3 Mega Pixel","2 Mega Pixel","8 Mega Pixel","Unknown"]';
 //$dataset = 'lifezone';
+//$from = "2015-8-15";
+//$to = "2016-9-14";    
+//$iso ='["PHL"]';
+//$data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
+//$distBranch = '[]';
+//$onlineDist = '[]';
 
 
 //
+    $color = $_POST['color'];
+    $cpu = $_POST['cpu'];
+    $rearCamera = $_POST['rearCamera'];
+    $frontCamera = $_POST['frontCamera'];
+    $dataset = $_POST['dataset'];
+    $from = $_POST['from'];
+    $to = $_POST['to'];
+    $data = $_POST['data'];
+    $iso = $_POST['iso'];
+    $distBranch = $_POST['distBranch'];
+    $onlineDist = $_POST['onlineDist'];
 
     $countryArray = array();
 
