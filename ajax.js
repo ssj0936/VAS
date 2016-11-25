@@ -468,8 +468,8 @@ function ajaxFetchTableValue(isComparison) {
         dataType: 'json',
 
         success: function (json) {
-            console.log(json);
-            console.log(mapObj.jsonData.features);
+//            console.log(json);
+//            console.log(mapObj.jsonData.features);
             console.log("ajaxFetchTableValue start");
             $("#tableContainer").empty();
 
@@ -513,7 +513,7 @@ function ajaxFetchTableValue(isComparison) {
                     });
                 }
             }
-            console.log(json);
+//            console.log(json);
             var table = $('table#table').DataTable({
                 data: finalTableArray,
                 columns: [
