@@ -377,28 +377,26 @@ function getCookie(cname) {
 }
 
 function checkSSOCookie() {
+    //no need to check developer's permission
     if (window.location.href.indexOf('localhost') >= 0 || window.location.href.indexOf('127.0.0.1') >= 0) {
-        setAccount(" Dev");
+        return;
     } else if (window.location.href.indexOf('asus.com') >= 0) {
         if (getCookie('SSO') == "") {
             window.location = "./sso/sso.html";
         } else {
             var c = getCookie('SSO').split('&');
             account = c[3].substring((c[3].indexOf('=') + 1));
-            var accessable = isInArray(accessableList, account);
-            //             console.log(account+" "+accessable);
-            if (!accessable)
-                window.location.href = '404.html';
+//            var accessable = isInArray(accessableList, account);
+//            if (!accessable)
+//                window.location.href = '404.html';
         }
     } else {
-        //setAccount("Hello, guest");
-        setAccount("Dev");
         window.location.href = '404.html';
     }
 }
 
 function isVIP(){
-    return (jQuery.inArray(account,administrator) != -1);
+    return (isInArray(administrator,account) || isInArray(vipList,account));
 }
 
 function updateReleaseNote() {

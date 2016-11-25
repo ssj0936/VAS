@@ -20,6 +20,10 @@ function init_() {
     $("#to_compare").datepicker();
     $("#to_compare").datepicker('setDate', new Date());
 
+    //account isVIP init
+    isVip = isVIP();
+//    console.log('account:'+account);
+//    console.log('isVip:'+isVip);
     //selector option init
     var URLs = "php/dbqueryInit.php";
     $.ajax({
@@ -31,14 +35,17 @@ function init_() {
             isVIP: isVip,
         },
         success: function (json) {
-            console.log(json);
-            if(!json.isPass){
+//            console.log(json);
+            if(!isVip && !json.isPass){
                 window.location.href = '404.html';
             }
             
-            permission = jQuery.extend({}, json.accountPermission);
-            console.log(permission);
             isVIP = json.isVIP;
+            permission = jQuery.extend({}, json.accountPermission);
+//            console.log(permission);
+            console.log('ispass:'+json.isPass);
+            console.log('isVIP:'+isVip);
+            
             
             productTopProductIDList = jQuery.extend({}, json.productToProductID);
 //            console.log(productTopProductIDList);

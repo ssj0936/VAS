@@ -65,6 +65,7 @@ function checkboxDeviceInit() {
         'data-modelName':"all",
         'data-devicesName':"all",
         name: "devicesList",
+        disabled: (allDevicesList.length==0)?"true":"false",
     }).appendTo($(li));
     jQuery('<label/>', {
         text: "All",
@@ -213,7 +214,7 @@ function applyPermittedLoc(){
     var productID = [];
     $('input[name="devicesList"][datatype="model"]:checkbox:checked'
       +',input[name="devicesList"][datatype="devices"]:checkbox:checked').each(function(){
-        if($.inArray($(this).attr('data-productid') , productID) == -1){
+        if(!isInArray(productID,$(this).attr('data-productid'))){
             productID.push($(this).attr('data-productid'));
         }
     });
@@ -227,18 +228,22 @@ function applyPermittedLoc(){
                 var id = productID[i];
                 
                 //found this ID in this country
-                if($.inArray(id,permission[iso]) != -1 || $.inArray("",permission[iso])!= -1){
+                if(isInArray(permission[iso],id) || isInArray(permission[iso],"")){
                     showableISO.push(iso);
                     break;
                 }
             }
         }
         console.log(showableISO);
+        
+        //means is no limit
+        //no need to lock any country
+        if(isInArray(showableISO,'')) return;
 
         //disable some item
         $('input[datatype="country"]').each(function(){
             //country shoud be disable
-            if($.inArray($(this).attr('iso'),showableISO) == -1){
+            if(!isInArray(showableISO,$(this).attr('iso'))){
                 //unclick the item already clicked
                 if($(this).is(":checked"))
                     $(this).trigger('click');
@@ -256,14 +261,14 @@ function applyPermittedLoc(){
                 var alldisable = true;   
                 $("li input", child).each(function () {
                     if(!$(this).is(':disabled')){
-                        console.log($(this).val());
+//                        console.log($(this).val());
                         alldisable = false;
 
                         return false;
                     }
                 });
             }
-            console.log($(this).attr('id')+":"+alldisable);
+//            console.log($(this).attr('id')+":"+alldisable);
             if(alldisable)
                 $(this).attr("disabled", "disabled");
         });
@@ -277,16 +282,16 @@ function applyPermittedLoc(){
             //init flag of empty set with 'false'
             var allchecked = !($("li input:enabled", child).length == 0);   
             $("li input:enabled", child).each(function () {
-                console.log($(this).val() + '/ checked:' + $(this).is(':checked'));
+//                console.log($(this).val() + '/ checked:' + $(this).is(':checked'));
                 if(!$(this).is(':checked')){
-                    console.log($(this).val());
+//                    console.log($(this).val());
                     allchecked = false;
 
                     return false;
                 }
             });
         }
-        console.log($(this).attr('id')+":"+allchecked);
+//        console.log($(this).attr('id')+":"+allchecked);
         $(this).prop('checked',allchecked);
     });
     
@@ -435,6 +440,9 @@ function checkboxLocationInit() {
                     //UI remove
                     destroyDistBranchCheckBox();
             }
+            
+            //
+            applyPermittedDevice();
         });
     });
 }
@@ -443,16 +451,72 @@ function applyPermittedDevice(){
     if(isVIP) return;
     
     //reset disable 
-    $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
+    $('input[name="devicesList"]').removeAttr('disabled');
 
     //get chosen productID
-    var productID = [];
-    $('input[name="devicesList"][datatype="model"]:checkbox:checked'
-      +',input[name="devicesList"][datatype="devices"]:checkbox:checked').each(function(){
-        if($.inArray($(this).attr('data-productid') , productID) == -1){
-            productID.push($(this).attr('data-productid'));
+    var loc = [];
+    $('input[name="loc"][datatype="country"]:checkbox:checked').each(function(){
+        if(!isInArray(loc,$(this).attr('iso'))){
+            loc.push($(this).attr('iso'));
         }
     });
+    
+    console.log(loc);
+    
+    if(loc.length != 0){
+        var showableProduct = [];
+        for(var iso in permission){
+            console.log(iso);
+            //found this iso in permission
+            if(isInArray(loc,iso)){
+//                $.inArray(iso,loc) !=-1){
+                for(var i in permission[iso]){
+                    if(!isInArray(showableProduct,permission[iso][i])){
+//                        $.inArray(permission[iso][i],showableProduct) == -1){
+                        showableProduct.push(permission[iso][i]);
+                    }
+                }
+            }
+        }
+        
+        if(permission['']){
+            for(var i in permission['']){
+                if(!isInArray(showableProduct,permission[''][i])){
+                    showableProduct.push(permission[''][i]);
+                }
+            }
+        }
+        console.log(showableProduct);
+        
+        //unchecked the item and disable some item
+        
+        //''in array means all device is allowed
+        if(!isInArray(showableProduct,'')){
+//            $.inArray("",showableProduct) == -1){
+            $('input[name="devicesList"]').each(function(){
+                if(!isInArray(showableProduct,$(this).attr('data-productid'))){
+//                    $.inArray($(this).attr('data-productid'), showableProduct) == -1){
+                    if($(this).is(":checked")){
+                        $(this).prop('checked', false);
+                    }
+
+                    $(this).attr("disabled", "disabled");
+                }
+            });
+        }
+    }
+    
+    //final, record the result
+    observeTargetTmp.length = 0;
+    specDeviceTmp.length = 0;
+    observeTargetDeviceOnlyTmp.length = 0;
+    var checktarget = $("#check_device_li");
+    checkDevicePush(checktarget);
+            console.log(observeTargetTmp);
+    updateSpecFilter(checktarget);
+            console.log(specDeviceTmp);
+
+    ajaxGetDeviceSpec(specDeviceTmp);
 
 }
 

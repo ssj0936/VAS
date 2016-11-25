@@ -14,10 +14,8 @@
     $db = new DB();
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['dbnameService']);
     
-//    $account = $_GET['account'];
-//    $isVIP = (($_GET['isVIP']=='true')?true:false);
-    $account = 'PETER_CHANG';
-    $isVIP = false;
+    $account = $_GET['account'];
+    $isVIP = (($_GET['isVIP']=='true')?true:false);
 
     $permission;
     $permissionProductId = array();
@@ -50,11 +48,25 @@
               && count($permission -> getBISReportPermissionResult -> OutputDataList -> OutputData)!=0){
                 $isPass = true;
                 
-                foreach($permission -> getBISReportPermissionResult -> OutputDataList -> OutputData as $value){
+                //different format of permission data
+                //1.array 
+                if(is_array($permission -> getBISReportPermissionResult -> OutputDataList -> OutputData)){
+                    foreach($permission -> getBISReportPermissionResult -> OutputDataList -> OutputData as $value){
+                        $permissionProductId[] = $value->Product_ID;
+                        $permissionLoc[] = $value->Country;
+                        $permissionPair[] = ['country' => $value->Country, 'productID' => $value->Product_ID];
+
+                        if(!isset($permissionResult[$value->Country]) || !in_array($value->Product_ID,$permissionResult[$value->Country]))
+                            $permissionResult[$value->Country][] = $value->Product_ID;
+                    }
+                }
+                //2.single object
+                else{
+                    $value = $permission -> getBISReportPermissionResult -> OutputDataList -> OutputData;
                     $permissionProductId[] = $value->Product_ID;
                     $permissionLoc[] = $value->Country;
                     $permissionPair[] = ['country' => $value->Country, 'productID' => $value->Product_ID];
-                    
+
                     if(!isset($permissionResult[$value->Country]) || !in_array($value->Product_ID,$permissionResult[$value->Country]))
                         $permissionResult[$value->Country][] = $value->Product_ID;
                 }
@@ -98,17 +110,17 @@
         }
     }
     //-----------------------------------fake data test-----------------------------------
-    $permissionResult = array(
-        'IND' => array('NT','AT'),
-        'IDN' => array('AZ','AT'),
-        'TWN' => array('NT','AX'),
-        'VNM' => array('AZ','AX'),
-        'BGD' => array('','AX','AZ')
-    ) ;
-    $permissionProductId = array('','NT','AT','AZ','AX');
-    $permissionLoc = array('IN','ID','TW','VN','BD');
-    $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
-    $permissionLocStr = "'".implode("','",$permissionLoc)."'";
+//    $permissionResult = array(
+//        'IND' => array('NT','AT'),
+//        'IDN' => array('AZ','AT'),
+//        'TWN' => array('NT','AX'),
+//        'VNM' => array('AZ','AX'),
+//        'BGD' => array('','AX','AZ')
+//    ) ;
+//    $permissionProductId = array('','NT','AT','AZ','AX');
+//    $permissionLoc = array('IN','ID','TW','VN','BD');
+//    $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
+//    $permissionLocStr = "'".implode("','",$permissionLoc)."'";
     //-----------------------------------fake data test-----------------------------------
 
     $allDevices = array();

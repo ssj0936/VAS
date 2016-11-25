@@ -12,12 +12,12 @@
         $client = new SoapClient($url,array('stream_context' => $context, 'trace'=>true,'exceptions'=>true));
         $result = $client->getBISReportPermission(
             array("objRequest" => 
-                // array('Account' => 'BIS_AMAXAPP',
-                     // 'Password' => 'BIS_AMAXAPP#1234',
-                     // 'SendID' => 'BIS_AMAXAPP',
-                     // 'ReceiveID' => 'ASUS',
-                     // 'Report_ID' => 'R0001',
-                     // 'AD_Account' => 'Chiapei_Hsiao')
+//                 array('Account' => 'BIS_AMAXAPP',
+//                      'Password' => 'Q7@dAu1Z',
+//                      'SendID' => 'BIS_AMAXAPP',
+//                      'ReceiveID' => 'ASUS',
+//                      'Report_ID' => 'R0001',
+//                      'AD_Account' => 'JONAS_TSAI')
 				 array('Account' => $Account,
                      'Password' => $Password,
                      'SendID' => $SendID,

@@ -59,6 +59,7 @@
                 dataType: 'json',
 
                 success: function (json) {
+                    console.log(json);
                     var container = $('div#result');
                     container.empty();
                     var dataObj = json.getBISReportPermissionResult;
@@ -66,12 +67,19 @@
                     jQuery('<li>').text('ReturnMsg :' + dataObj.ReturnMsg).appendTo(container);
                     jQuery('<li>').text('ReturnCode :' + dataObj.ReturnCode).appendTo(container);
                     jQuery('<li>').text('OutputDataList :').appendTo(container);
+                    console.log(dataObj.OutputDataList.OutputData);
                     
-                    var OutputData = jQuery('<ul>').appendTo(container);
-                    for(var i in dataObj.OutputDataList.OutputData){
-                        var data = dataObj.OutputDataList.OutputData[i];
+                    if(Array.isArray(dataObj.OutputDataList.OutputData)){
+                        var OutputData = jQuery('<ul>').appendTo(container);
+                        for(var i in dataObj.OutputDataList.OutputData){
+                            var data = dataObj.OutputDataList.OutputData[i];
+
+                            jQuery('<li>').text(i + ':[' + data.Country + '][' + data.Product_ID + ']').appendTo(OutputData);
+                        }
+                    }else if(typeof dataObj.OutputDataList.OutputData === "object"){
+                        var OutputData = jQuery('<ul>').appendTo(container);
+                        jQuery('<li>').text('[' + dataObj.OutputDataList.OutputData.Country + '][' + dataObj.OutputDataList.OutputData.Product_ID + ']').appendTo(OutputData);
                         
-                        jQuery('<li>').text(i + ':[' + data.Country + '][' + data.Product_ID + ']').appendTo(OutputData);
                     }
                 },
                 error: function (xhr, ajaxOptions, thrownError) {
