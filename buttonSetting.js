@@ -6,7 +6,7 @@ function buttonInit() {
     
     //dataset selector init
     $( "#dataset" ).selectmenu({
-        width: '100px',
+        width: '130px',
         change: function( event, data ) {
             //not allow switching while loading
             if (isLoading()) return;

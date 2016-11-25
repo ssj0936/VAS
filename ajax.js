@@ -475,7 +475,7 @@ function ajaxFetchTableValue(isComparison) {
 
 //            popupChartShow(false);
             var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>' +  '<th>Activated Date</th>' +  '<th>Activated Week</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
-            $("#popupChartContainer").append(tableContenr);
+            $("#tableContainer").append(tableContenr);
 
             var finalTableArray = [];
             for (var i = 0; i < json.length; ++i) {
