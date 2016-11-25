@@ -448,6 +448,20 @@ function ajaxGetDeviceSpec(devices, checkOption) {
 function ajaxFetchTableValue(isComparison) {
     var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
+    
+    console.log(JSON.stringify(observeLoc));
+    console.log(JSON.stringify(observeDistBranch));
+    console.log(JSON.stringify(observeDistName));
+    console.log(JSON.stringify(observeTarget));
+    console.log(JSON.stringify(mapObj.fromFormatStr));
+    console.log(JSON.stringify(mapObj.toFormatStr));
+    console.log(JSON.stringify(DATA_ACTIVATION));
+    
+    console.log(JSON.stringify(observeSpec.color));
+    console.log(JSON.stringify(observeSpec.cpu));
+    console.log(JSON.stringify(observeSpec.rear_camera));
+    console.log(JSON.stringify(observeSpec.front_camera));
+    
     var URLs = "php/_dbqueryCntGroupByISO.php";
     return $.ajax({
         url: URLs,
@@ -462,19 +476,19 @@ function ajaxFetchTableValue(isComparison) {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: getDataset(),
+            dataset: DATA_ACTIVATION,
         },
         type: "POST",
         dataType: 'json',
 
         success: function (json) {
             console.log("ajaxFetchTableValue start");
-            $("#popupChartContainer").empty();
+            $("#tableContainer").empty();
 
-            popupChartShow(false);
+//            popupChartShow(false);
 
-            var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
-            $("#popupChartContainer").append(tableContenr);
+            var tableContent = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
+            $("#tableContainer").append(tableContent);
 
             var finalTableArray = [];
             for (var i = 0; i < json.length; ++i) {
@@ -520,21 +534,12 @@ function ajaxFetchTableValue(isComparison) {
                 pageLength: -1,
                 dom: 'Bfrtip',
                 buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
+                        /*'copy', 'csv', */'excel', 'pdf', 'print'
                     ]
             });
 
-            //adding all option
-            //                jQuery('<option/>', {
-            //                    value: -1,
-            //                })
-            //                .text("All")
-            //                .appendTo($("select[name='table_length']"));
-
             $('#table_wrapper').css({
-                "padding-left": "10%",
-                "padding-right": "10%",
-                "padding-top": "5%",
+                "padding": "10px",
             });
 
             console.log("ajaxFetchTableValue end");
@@ -542,7 +547,7 @@ function ajaxFetchTableValue(isComparison) {
         },
 
         error: function (xhr, ajaxOptions, thrownError) {
-            alert("ajaxFetchMapValue:" + xhr.status);
+            alert("ajaxFetchTableValue:" + xhr.status);
             alert(thrownError);
         }
     });

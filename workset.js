@@ -217,6 +217,10 @@ function showFilterResult() {
                 if (isModeActive(MODE_LIFEZONE)) {
                     submitHeatMap();
                 }
+                if (getDataset() == DATA_ACTIVATION_TABLE){
+                    $(tableContainer).empty();
+                    showTable();
+                }
 
                 $(this).off();
                 $(this).remove();

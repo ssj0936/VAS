@@ -39,6 +39,16 @@ function buttonInit() {
                         $('.controlPanel').hide();
                         $('#qcControlPanel').show("medium");
                         break;
+
+                    case "activationTable":
+                        //hide date button
+                        $('#databtn').show('medium');
+                        //control panel switch
+                        clearControlPanel();
+                        $('.controlPanel').hide();
+//                        $('#qcControlPanel').show("medium");
+                        break;
+                    
             }
         }
      });
@@ -519,6 +529,7 @@ function submitBtnSetting() {
                 enableControlPanel();
             }
             
+            //if change dataset
             //need to clean old setting
             if(getDataset()!=null && activeDatasetTmp != null && getDataset() != activeDatasetTmp){
                 console.log(activeDatasetTmp);
@@ -548,6 +559,9 @@ function submitBtnSetting() {
                             
                             console.log('lifezone off');
                         }
+                        break;
+                    case DATA_ACTIVATION_TABLE:
+                        $('#tableContainer').empty();
                         break;
                 }
                 setDataset(activeDatasetTmp);
@@ -581,6 +595,9 @@ function submitBtnSetting() {
             
             switch(getDataset()){
                 case DATA_ACTIVATION:
+                    $('#tableContainer').hide();
+                    $('#workset').show('medium');
+                    
                     //filter data collection
                     var from = $("#from").datepicker("getDate");
                     var to = $("#to").datepicker("getDate");
@@ -673,8 +690,30 @@ function submitBtnSetting() {
                     }
                     break;
                 case DATA_LIFEZONE:
+                    $('#tableContainer').hide();
+                    $('#workset').show('medium');
                     firstMap.zoomToSelectedLocation();
                     submitHeatMap();
+                    break;
+                    
+                case DATA_ACTIVATION_TABLE:
+                    //clear the content
+                    $(tableContainer).empty();
+                    
+                    //hide map
+                    $('#workset').hide();
+                    $('#tableContainer').show('medium');
+                    
+                    //filter data collection
+                    var from = $("#from").datepicker("getDate");
+                    var to = $("#to").datepicker("getDate");
+                    //console.log(from);
+
+                    firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+                    firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
+                    
+                    showTable();
+                    
                     break;
             }
             
@@ -910,12 +949,6 @@ function showTable() {
         console.log("diff region");
         ajaxExtractMap(false, ajaxFetchTableValue, [false]);
     }
-}
-
-function closeTable() {
-    $("#workset").show();
-    $("#homepage").hide();
-    $("#homepage").empty();
 }
 
 function enableControlPanel() {
