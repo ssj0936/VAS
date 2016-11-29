@@ -857,6 +857,11 @@ function submitBtnSetting() {
                     break;
                     
                 case FUNC_GAP:
+                    if(!isGapButtonCanShow){
+                        alert('GAP mode only supported in single selected country');
+                        return;
+                    }
+                    
                     $('#tableContainer').hide();
                     $('#workset').show('medium');
                     

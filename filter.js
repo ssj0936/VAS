@@ -207,7 +207,16 @@ function checkboxDeviceInit() {
 }
 
 function applyPermittedLoc(){
-    if(isVip) return;
+    if(isVip) {
+        if(activeFunctionTmp == 'gap'){
+            permission = {'IND':[''],'IDN':[''],};
+        }
+        else{
+            $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
+            permission = {};
+            return;
+        }
+    }
     
     var needTofilt = (activeFunctionTmp == 'distBranch' || activeFunctionTmp == 'gap');
     
@@ -424,8 +433,9 @@ function checkboxLocationInit() {
             observeLocFullNameTmp.length = 0;
             checkLocPush();
 //            console.log(JSON.stringify(observeLocTmp));
-            
-            if(getFunction()==FUNC_DISTBRANCH){
+//            console.log('1111111111');
+            if(activeFunctionTmp == FUNC_DISTBRANCH){
+//                console.log('00000000000');
                 var needToShowDistBranch = false;
                 for(var i in observeLocTmp){
                     if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
