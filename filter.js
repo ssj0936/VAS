@@ -53,6 +53,8 @@ function checkParent(el) {
 }
 
 function checkboxDeviceInit() {
+    
+//    console.log(Object.keys(allDevicesList).length);
     var ul = jQuery('<ul/>').appendTo($("#deviceFilter"));
 
     var li = jQuery('<li/>').attr("id", "check_device_li").appendTo($(ul));
@@ -65,13 +67,13 @@ function checkboxDeviceInit() {
         'data-modelName':"all",
         'data-devicesName':"all",
         name: "devicesList",
-        disabled: (allDevicesList.length==0)?"true":"false",
+        disabled: ((Object.keys(allDevicesList).length == 0) ? true : false),
     }).appendTo($(li));
     jQuery('<label/>', {
         text: "All",
         for: 'filter_device_' + "all",
     }).appendTo(li);
-//    console.log(allDevicesList);
+
     var productUl = jQuery('<ul/>').appendTo($(ul));
     //ui-icon-squaresmall-plus
     for (var productName in allDevicesList) {
@@ -205,7 +207,9 @@ function checkboxDeviceInit() {
 }
 
 function applyPermittedLoc(){
-    if(isVIP) return;
+    if(isVip) return;
+    
+    var needTofilt = (activeFunctionTmp == 'distBranch' || activeFunctionTmp == 'gap');
     
     //reset disable 
     $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
@@ -229,12 +233,18 @@ function applyPermittedLoc(){
                 
                 //found this ID in this country
                 if(isInArray(permission[iso],id) || isInArray(permission[iso],"")){
+                    if(needTofilt 
+                      && ((activeFunctionTmp == 'distBranch' && !isInArray(countryNeedToShowDistBranch,iso))
+                         || (activeFunctionTmp == 'gap' && !isInArray(countryGapModeSupported,iso)))){
+                        break;
+                    }
+                    
                     showableISO.push(iso);
                     break;
                 }
             }
         }
-        console.log(showableISO);
+//        console.log(showableISO);
         
         //means is no limit
         //no need to lock any country
@@ -314,7 +324,7 @@ function checkboxLocationInit() {
         value: "world",
         name: "loc",
         iso: "world",
-        disabled: "true",
+        disabled: true,
     }).appendTo($(li));
     jQuery('<label/>', {
         text: "World",
@@ -398,7 +408,7 @@ function checkboxLocationInit() {
             checkChild(this, ($(this).prop("checked") ? true : false));
             checkParent(this);
             
-            if (getDataset() == DATA_LIFEZONE) {
+            if (getFunction() == FUNC_LIFEZONE) {
                 var locStr = '';
                 $('input:checked[name="loc"][datatype="country"][inLifezone="0"]').each(function(){
                     locStr += $(this).val()+', ';
@@ -415,32 +425,34 @@ function checkboxLocationInit() {
             checkLocPush();
 //            console.log(JSON.stringify(observeLocTmp));
             
-            var needToShowDistBranch = false;
-            for(var i in observeLocTmp){
-                if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
-                    needToShowDistBranch = true;
-                    break;
+            if(getFunction()==FUNC_DISTBRANCH){
+                var needToShowDistBranch = false;
+                for(var i in observeLocTmp){
+                    if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+                        needToShowDistBranch = true;
+                        break;
+                    }
                 }
-            }
 
-            //create dist branch filter
-            if(needToShowDistBranch && observeLocTmp.length == 1){
-                if(!isDistBranchFilterShowing){
-                    isDistBranchFilterShowing = true;
-                    //filter show up
-                    $('#section_branch_dist').stop(true,true).fadeIn('medium');
-                    $('#section_branch_dist').collapsible('open');
-                    
-                    ajaxLoadBranchDist();
+                //create dist branch filter
+                if(needToShowDistBranch && observeLocTmp.length == 1){
+                    if(!isDistBranchFilterShowing){
+                        isDistBranchFilterShowing = true;
+                        //filter show up
+                        $('#section_branch_dist').stop(true,true).fadeIn('medium');
+                        $('#section_branch_dist').collapsible('open');
+
+                        ajaxLoadBranchDist();
+                    }
+                }else{
+                    if(isDistBranchFilterShowing){
+                        //data delete
+                        observeDistBranch.length = 0;
+                        //UI remove
+                        destroyDistBranchCheckBox();
+                    }
                 }
-            }else{
-                if(isDistBranchFilterShowing)
-                    //data delete
-                    observeDistBranch.length = 0;
-                    //UI remove
-                    destroyDistBranchCheckBox();
             }
-            
             //
             applyPermittedDevice();
         });
@@ -448,7 +460,7 @@ function checkboxLocationInit() {
 }
 
 function applyPermittedDevice(){
-    if(isVIP) return;
+    if(isVip) return;
     
     //reset disable 
     $('input[name="devicesList"]').removeAttr('disabled');
@@ -461,12 +473,12 @@ function applyPermittedDevice(){
         }
     });
     
-    console.log(loc);
+//    console.log(loc);
     
     if(loc.length != 0){
         var showableProduct = [];
         for(var iso in permission){
-            console.log(iso);
+//            console.log(iso);
             //found this iso in permission
             if(isInArray(loc,iso)){
 //                $.inArray(iso,loc) !=-1){
@@ -486,7 +498,7 @@ function applyPermittedDevice(){
                 }
             }
         }
-        console.log(showableProduct);
+//        console.log(showableProduct);
         
         //unchecked the item and disable some item
         
@@ -512,9 +524,9 @@ function applyPermittedDevice(){
     observeTargetDeviceOnlyTmp.length = 0;
     var checktarget = $("#check_device_li");
     checkDevicePush(checktarget);
-            console.log(observeTargetTmp);
+//            console.log(observeTargetTmp);
     updateSpecFilter(checktarget);
-            console.log(specDeviceTmp);
+//            console.log(specDeviceTmp);
 
     ajaxGetDeviceSpec(specDeviceTmp);
 

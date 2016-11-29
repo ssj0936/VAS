@@ -2,14 +2,14 @@
 //get observation target data maxDate and minDate
 function ajaxGetDateBound() {
     loading("Calculating...");
-    //console.log(getDataset());
+    //console.log(getFunction());
     var URLs = "php/_dbqueryGetDate.php";
     $.ajax({
         url: URLs,
         type: "GET",
         data: {
             data: JSON.stringify(observeTargetTmp),
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         dataType: 'json',
 
@@ -56,7 +56,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         type: "POST",
         dataType: 'json',
@@ -215,7 +215,7 @@ function ajaxGetMarker() {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         type: "POST",
         dataType: 'json',
@@ -330,7 +330,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
     $.ajax({
         url: URLs,
         data: {
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -367,7 +367,7 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
     $.ajax({
         url: URLs,
         data: {
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -410,7 +410,7 @@ function ajaxTrendChart(mapObj) {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: getDataset()
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         function (json) {
             //            console.log(json);
@@ -462,7 +462,7 @@ function ajaxFetchTableValue(isComparison) {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: DATA_ACTIVATION,
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         type: "POST",
         dataType: 'json',
@@ -713,7 +713,10 @@ function ajaxGetBranchObject(callback){
 //                console.log(allHighlighBranch);
                 callback();
             },
-            error: function(jqXHR, textStatus, errorThrown) {},
+            error: function(jqXHR, textStatus, errorThrown) {
+                alert("ajaxGetBranchObject:" + jqXHR.status);
+                alert(errorThrown);
+            },
         });
     }
 }
@@ -775,7 +778,7 @@ function ajaxSaveLog(){
             filter_country : observeLocStr,
             filter_date : dateStr,
             filter_content : JSON.stringify(filter_content),
-            dataset : getDataset(),
+            dataset : getFunction(),
         },
         success: function(json){
             console.log("log saved");
@@ -799,7 +802,7 @@ function ajaxGetGapData(callback){
             data: JSON.stringify(observeTarget),
             from: firstMap.fromFormatStr,
             to: firstMap.toFormatStr,
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         success: function(json){
 //            console.log(json);
@@ -830,7 +833,7 @@ function ajaxGetGapExport(groupBy){
             data: JSON.stringify(observeTarget),
             from: firstMap.fromFormatStr,
             to: firstMap.toFormatStr,
-            dataset: getDataset(),
+            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             distBranch: JSON.stringify(observeDistBranch),
             groupBy:groupBy,
             branch: (isNowBranchTrend ? currentPointingBranch : null),

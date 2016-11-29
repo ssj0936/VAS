@@ -40,7 +40,7 @@ function init_() {
                 window.location.href = '404.html';
             }
             
-            isVIP = json.isVIP;
+            isVip = json.isVIP;
             permission = jQuery.extend({}, json.accountPermission);
 //            console.log(permission);
             console.log('ispass:'+json.isPass);
@@ -164,10 +164,6 @@ function resizeInit() {
 }
 
 function showFilterResult() {
-    //text in date button
-    var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("(" + $('button.btn_pressed').children('span').text() + ")");
-    $('button.date').button('option', 'label', (isModeActive(MODE_COMPARISION)) ? "Date" : (firstMap.fromFormatStr + "~" + firstMap.toFormatStr + buttonStr));
-
     var spanDevice = $("#filterBarResults");
     for (var i = 0; i < observeTarget.length; ++i) {
         var devicebtn = jQuery('<button/>').appendTo(spanDevice);
@@ -217,7 +213,7 @@ function showFilterResult() {
                 if (isModeActive(MODE_LIFEZONE)) {
                     submitHeatMap();
                 }
-                if (getDataset() == DATA_ACTIVATION_TABLE){
+                if (getFunction() == FUNC_ACTIVATION_TABLE){
                     $(tableContainer).empty();
                     showTable();
                 }

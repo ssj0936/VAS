@@ -11,6 +11,9 @@
 
     $branchName = $_GET['branchName'];
     $iso = $_GET['iso'];
+//
+//    $branchName = '["ANDHRA_PRADESH", "DELHI"]';
+//    $iso = '["IND"]';
 
     $isoObj = json_decode($iso);
 
@@ -22,9 +25,11 @@
         $db->query(
             "SELECT Loc_BranchName,object_id"
             ." FROM $tablename"
-            .(($branchString == 'all') ? "" : " where Loc_BranchName in ('".$branchString."')")
-            ." WHERE iso = '$isoObj[0]';"
+            ." WHERE iso = '$isoObj[0]'"
+            .(($branchString == 'all') ? "" : " AND Loc_BranchName in ('".$branchString."')")
         );
+        
+        
         $objectUnion = array();
         while ($row = $db->fetch_array()) {
             $tmp = json_decode($row['object_id'],true);

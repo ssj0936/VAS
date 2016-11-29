@@ -6,47 +6,127 @@ function buttonInit() {
     
     //dataset selector init
     $( "#dataset" ).selectmenu({
-        width: '130px',
+        width: '120px',
         change: function( event, data ) {
             //not allow switching while loading
             if (isLoading()) return;
             var dataSet = data.item.value;
-            activeDatasetTmp = dataSet;
+            activeFunctionTmp = dataSet;
 //            var updatetime = updateTime.dataSet;
             switch(dataSet){
                     case "activation":
-                        //hide date button
-                        $('#databtn').show('medium');
+                        //show date button
+                        $('#dateFilter').show('medium');
                         //control panel switch
 //                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('#activationControlPanel').show("medium");
+                    
+                        if(isDistBranchFilterShowing){
+                            //data delete
+                            observeDistBranch.length = 0;
+                            //UI remove
+                            destroyDistBranchCheckBox();
+                        }
+                        applyPermittedLoc();
                         break;
                     case "lifezone":
                         //hide date button
-                        $('#databtn').hide();
+                        $('#dateFilter').hide();
                         //control panel switch
 //                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('#lifezoneControlPanel').show("medium");
+                    
+                        if(isDistBranchFilterShowing){
+                            //data delete
+                            observeDistBranch.length = 0;
+                            //UI remove
+                            destroyDistBranchCheckBox();
+                        }
+                        applyPermittedLoc();
                         
                         break;
                     case "qc":
                         //hide date button
-                        $('#databtn').hide();
+                        $('#dateFilter').hide();
                         //control panel switch
                         clearControlPanel();
                         $('.controlPanel').hide();
                         $('#qcControlPanel').show("medium");
+                    
+                        if(isDistBranchFilterShowing){
+                            //data delete
+                            observeDistBranch.length = 0;
+                            //UI remove
+                            destroyDistBranchCheckBox();
+                        }
                         break;
 
                     case "activationTable":
-                        //hide date button
-                        $('#databtn').show('medium');
+                        //show date button
+                        $('#dateFilter').show('medium');
+                        //control panel switch
+//                        clearControlPanel();
+                        $('.controlPanel').hide();
+                    
+                        if(isDistBranchFilterShowing){
+                            //data delete
+                            observeDistBranch.length = 0;
+                            //UI remove
+                            destroyDistBranchCheckBox();
+                        }
+                        applyPermittedLoc();
+                        break;
+                    
+                case "distBranch":
+                        //show date button
+                        $('#dateFilter').show('medium');
+                        //control panel switch
+                        clearControlPanel();
+                        $('#activationControlPanel').show("medium");
+                        
+                        var needToShowDistBranch = false;
+                        for(var i in observeLocTmp){
+                            if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+                                needToShowDistBranch = true;
+                                break;
+                            }
+                        }
+                        //create dist branch filter
+                        if(needToShowDistBranch && observeLocTmp.length == 1){
+                            if(!isDistBranchFilterShowing){
+                                isDistBranchFilterShowing = true;
+                                //filter show up
+                                $('#section_branch_dist').stop(true,true).fadeIn('medium');
+                                $('#section_branch_dist').collapsible('open');
+
+                                ajaxLoadBranchDist();
+                            }
+                        }else{
+                            if(isDistBranchFilterShowing)
+                                //data delete
+                                observeDistBranch.length = 0;
+                                //UI remove
+                                destroyDistBranchCheckBox();
+                        }
+                        applyPermittedLoc();
+                        break;
+                    
+                case "gap":
+                        //show date button
+                        $('#dateFilter').show('medium');
                         //control panel switch
                         clearControlPanel();
                         $('.controlPanel').hide();
-//                        $('#qcControlPanel').show("medium");
+                        
+                        if(isDistBranchFilterShowing){
+                            //data delete
+                            observeDistBranch.length = 0;
+                            //UI remove
+                            destroyDistBranchCheckBox();
+                        }
+                        applyPermittedLoc();
                         break;
                     
             }
@@ -59,7 +139,45 @@ function buttonInit() {
             secondary: "ui-icon-carat-1-s",
         }
     }).css({
-        width: '260px'
+        width: '120px',
+//        width: '260px'
+    });
+    
+    //section_more
+    $('#moreFilterContainer').css({
+        "left" : ''+($('#section_more').position().left + $('.filter_wrapper').width()) + 'px',
+        "top" : '' + $('#section_more').position().top + 'px',
+        "width" : '' + $('.filter_wrapper').width() + 'px',
+    });
+    $('#section_more').click(function(){
+        var target = $('#moreFilterContainer');
+        
+        if(target.is(':visible')){
+            target.hide();
+        }else{
+            $('#moreFilterContainer').css({
+                "left" : ''+($('#section_more').position().left + $('.filter_wrapper').width()) + 'px',
+                "top" : '' + $('#section_more').position().top + 'px',
+                "width" : '' + $('.filter_wrapper').width() + 'px',
+            });
+            
+            $('#moreFilterContainer').fadeIn('medium');
+        }
+    });
+    
+    $(document.body).click(function (e) {
+        //console.log(e.target);
+        //click target is not dropdown menu
+        if ((!$("#moreFilterContainer").is(e.target) && $("#moreFilterContainer").has(e.target).length === 0)) {
+            //click target is not date button & datepicker is not showing
+            if (!$("#section_more").is(e.target) && $("#section_more").has(e.target).length === 0) {
+                //if menu is showing, hide it
+                if (!$('#moreFilterContainer').is(':hidden')) {
+                    $('#moreFilterContainer').fadeOut(300);
+                    //console.log("need to hide");
+                }
+            }
+        }
     });
     
     actiationControlPanelInit();
@@ -116,6 +234,9 @@ function lifezoneControlPanelInit(){
     
     $('div#lifezoneWeekDayBtnset').buttonset();
     $('div#lifezonePartOfDayBtnset').buttonset();
+    
+    $('div#lifezoneWeekDayBtnset').buttonset( "disable" );
+    $('div#lifezonePartOfDayBtnset').buttonset( "disable" );
     
     lifezoneButtonsetReset();
     
@@ -205,7 +326,7 @@ function actiationControlPanelInit(){
     
     //init mode
     $("#activation").addClass("active");
-    setDataset(DATA_ACTIVATION);
+    setFunction(FUNC_ACTIVATION);
 }
 
 function actiationControlPanelReset(){
@@ -468,7 +589,7 @@ function dateMenuShow() {
     dropdown.css({
         "left": '' + pos.left + 'px',
 //        "top": '' + (pos.top + dateBtn.height() + 2) + 'px',
-        "width": '' + dateBtn.width() - 8 + 'px',
+        "width": '250px',
         "z-index": 9999,
     });
     dropdown.fadeIn(300);
@@ -526,17 +647,18 @@ function submitBtnSetting() {
                 if (document.getElementById("mapid").childNodes.length == 0) {
                     mapInit();
                 }
-                enableControlPanel();
+//                enableControlPanel();
             }
             
             //if change dataset
             //need to clean old setting
-            if(getDataset()!=null && activeDatasetTmp != null && getDataset() != activeDatasetTmp){
-                console.log(activeDatasetTmp);
-                switch(getDataset()){
+            if(getFunction() != null && activeFunctionTmp != null && getFunction() != activeFunctionTmp){
+                console.log(activeFunctionTmp);
+                switch(getFunction()){
                     //switch from activation
-                    case DATA_ACTIVATION:
-                        console.log('DATA_ACTIVATION');
+                    case FUNC_DISTBRANCH:
+                    case FUNC_ACTIVATION:
+                        console.log('FUNC_ACTIVATION');
                         //un-pressed every mode btn
                         $("#mode button.active").each(function(){
                             console.log($(this).attr('id'));
@@ -549,22 +671,33 @@ function submitBtnSetting() {
                         closeService();
                         break;
                     //switch from lifezone
-                    case DATA_LIFEZONE:
+                    case FUNC_LIFEZONE:
                         if(isModeActive(MODE_LIFEZONE)){
                             removeHeatMap();
                             setModeOff(MODE_LIFEZONE);
-                            enableModeAndOverlay();
+                            disableLifezoneControl();
+//                            enableModeAndOverlay();
                             
                             firstMap.addSnapshot();
                             
                             console.log('lifezone off');
                         }
                         break;
-                    case DATA_ACTIVATION_TABLE:
+                    case FUNC_ACTIVATION_TABLE:
                         $('#tableContainer').empty();
                         break;
+                        
+                    case FUNC_GAP:
+                        //change table button text
+                        $('#table').button('option','label','Table');
+
+                        firstMap.removePolygonMap();
+                        cleanBranch();
+                        setModeOff(MODE_GAP);
+                        break;
+                    
                 }
-                setDataset(activeDatasetTmp);
+                setFunction(activeFunctionTmp);
                 console.log('diff');
             }
             
@@ -591,53 +724,66 @@ function submitBtnSetting() {
             filterRecordClean();
             filterRecord();
 
-            saveLog();
+            //filter data collection
+            var from = $("#from").datepicker("getDate");
+            var to = $("#to").datepicker("getDate");
+            //console.log(from);
+
+            firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+            firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
             
-            switch(getDataset()){
-                case DATA_ACTIVATION:
+            saveLog();
+//            console.log(getFunction());
+            switch(getFunction()){
+                case FUNC_ACTIVATION:
+                case FUNC_DISTBRANCH:
+                    
+                    if(getFunction() == FUNC_DISTBRANCH 
+                      && $('input[name="branchDist"]:checked').length == 0
+                      && $('input[name="distBranch"]:checked').length == 0
+                      && $('input[name="onlineDist"]:checked').length == 0){
+                        alert('plz check any dist/branch');
+                        break;
+                    }
+                    
                     $('#tableContainer').hide();
                     $('#workset').show('medium');
                     
-                    //filter data collection
-                    var from = $("#from").datepicker("getDate");
-                    var to = $("#to").datepicker("getDate");
-                    //console.log(from);
-
-                    firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
-                    firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
+//                    if(getFunction() == FUNC_ACTIVATION)
+                        enableModeAndOverlay();
 
                     //default mode = region
-                    if ($("#mode button#gap").hasClass("active")) {
-                        if(!isGapButtonCanShow){
-                            setModeOn(MODE_REGION);
-                            modeBtnPress($("button#region"));
-                            filterRecordClean();
-                            filterRecord();
-                        }else{
-                            submitGap();
-                            firstMap.zoomToSelectedLocation();
-                        }
-                    }
-                    if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
-                        if (!$("button#comparison").hasClass("active"))
-                            modeBtnPress($("button#comparison"));
-                        //$("button#comparison").toggleClass("active");
-
-                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
-                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
-
-                        var from = $("#from_compare").datepicker("getDate");
-                        var to = $("#to_compare").datepicker("getDate");
-                        comparisonMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
-                        comparisonMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
-
-                        submitComparision();
-                        //map zoom in
-                        firstMap.zoomToSelectedLocation();
-                        comparisonMap.zoomToSelectedLocation();
-
-                        //console.log("compareFromFormatStr:"+compareFromFormatStr+"/"+"compareToFormatStr:"+compareToFormatStr);
-                    }
+//                    if ($("#mode button#gap").hasClass("active")) {
+//                        if(!isGapButtonCanShow){
+//                            setModeOn(MODE_REGION);
+//                            modeBtnPress($("button#region"));
+//                            filterRecordClean();
+//                            filterRecord();
+//                        }else{
+//                            submitGap();
+//                            firstMap.zoomToSelectedLocation();
+//                        }
+//                    }
+//                    if ($("#mode button#comparison").hasClass("active") || $("#compare").prop("checked")) {
+//                        if (!$("button#comparison").hasClass("active"))
+//                            modeBtnPress($("button#comparison"));
+//                        //$("button#comparison").toggleClass("active");
+//
+//                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+//                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+//
+//                        var from = $("#from_compare").datepicker("getDate");
+//                        var to = $("#to_compare").datepicker("getDate");
+//                        comparisonMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
+//                        comparisonMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
+//
+//                        submitComparision();
+//                        //map zoom in
+//                        firstMap.zoomToSelectedLocation();
+//                        comparisonMap.zoomToSelectedLocation();
+//
+//                        //console.log("compareFromFormatStr:"+compareFromFormatStr+"/"+"compareToFormatStr:"+compareToFormatStr);
+//                    }
                     if ($("#mode button.active").length == 0 || $("button#region").hasClass("active")) {
                         setModeOn(MODE_REGION);
                         if (!$("button#region").hasClass("active"))
@@ -683,20 +829,22 @@ function submitBtnSetting() {
                     });
                     
                     //decide whether need to show dist/branch filter or not
-                    if(isGapButtonCanShow && !isDistBranchSelected){
-                        $('button#gap').show();
-                    }else{
-                        $('button#gap').hide();
-                    }
+//                    if(isGapButtonCanShow && !isDistBranchSelected){
+//                        $('button#gap').show();
+//                    }else{
+//                        $('button#gap').hide();
+//                    }
                     break;
-                case DATA_LIFEZONE:
+                case FUNC_LIFEZONE:
+                    enableLifezoneControl();
+                    
                     $('#tableContainer').hide();
                     $('#workset').show('medium');
                     firstMap.zoomToSelectedLocation();
                     submitHeatMap();
                     break;
                     
-                case DATA_ACTIVATION_TABLE:
+                case FUNC_ACTIVATION_TABLE:
                     //clear the content
                     $(tableContainer).empty();
                     
@@ -704,18 +852,22 @@ function submitBtnSetting() {
                     $('#workset').hide();
                     $('#tableContainer').show('medium');
                     
-                    //filter data collection
-                    var from = $("#from").datepicker("getDate");
-                    var to = $("#to").datepicker("getDate");
-                    //console.log(from);
-
-                    firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
-                    firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
-                    
                     showTable();
                     
                     break;
+                    
+                case FUNC_GAP:
+                    $('#tableContainer').hide();
+                    $('#workset').show('medium');
+                    
+                    setModeOn(MODE_GAP);
+                    submitGap();
+                    firstMap.zoomToSelectedLocation();
+                    break;
             }
+            //text in date button
+            var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("(" + $('button.btn_pressed').children('span').text() + ")");
+            $('button.date').button('option', 'label', (isModeActive(MODE_COMPARISION)) ? "Date" : (firstMap.fromFormatStr + "~<br>" + firstMap.toFormatStr + buttonStr));
             
             clearFilterResult();
             showFilterResult();
@@ -736,17 +888,30 @@ function submitGap(){
     loading("Data loading...");
     observeBranchName = ['all'];
     
-    if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !isMapModified) {
+    console.log(firstMap.currentRegionIso);
+    console.log(observeLoc);
+    console.log(isMapModified);
+    
+    //button class reset
+    $("#timeSection button").each(function () {
+        $(this).removeClass("btn_pressed").addClass("btn_unpressed");
+    });
+    
+    if (observeTarget.length == 0) {
+        firstMap.info.update();
+        firstMap.removePolygonMap();
+        cleanBranch();
+        loadingDismiss();
+        return;
+    }
+    
+    if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc)) {
         console.log("same world region");
-        if (observeTarget.length != 0) {
-            ajaxGetGapData(function() {
-                ajaxGetBranchObject (function() {
-                    ajaxFetchMapValue(false,false);
-                });
+        ajaxGetGapData(function() {
+            ajaxGetBranchObject (function() {
+                ajaxFetchMapValue(false,false);
             });
-        } else {
-            loadingDismiss();
-        }
+        });
     } else {
         console.log("diff world region");
         ajaxExtractMap(false, function(){
@@ -757,12 +922,6 @@ function submitGap(){
                 });
             }, [false, false]);
     }
-    
-//    ajaxGetGapData(function() {
-//        ajaxGetBranchObject (function() {
-//            ajaxFetchMapValue(false,false);
-//        });
-//    });
 }
 
 function submitRegion() {
@@ -952,17 +1111,32 @@ function showTable() {
 }
 
 function enableControlPanel() {
+//    console.log('enable ControlPanel');
     $("#control_Panel button").removeAttr("disabled");
 }
 
 function disableModeAndOverlay() {
+//    console.log('disable activation');
     $("#mode button").attr("disabled",true);
     $("#overlay button").attr("disabled",true);
 }
 
 function enableModeAndOverlay() {
+//    console.log('enable activation');
     $("#mode button").removeAttr("disabled");
     $("#overlay button").removeAttr("disabled");
+}
+
+function disableLifezoneControl() {
+//    console.log('disable lifezone');
+    $('div#lifezoneWeekDayBtnset').buttonset( "disable" );
+    $('div#lifezonePartOfDayBtnset').buttonset( "disable" );
+}
+
+function enableLifezoneControl() {
+//    console.log('enable lifezone');
+    $('div#lifezoneWeekDayBtnset').buttonset( "enable" );
+    $('div#lifezonePartOfDayBtnset').buttonset( "enable" );
 }
 
 function helpBtnSetting() {

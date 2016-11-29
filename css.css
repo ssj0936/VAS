@@ -238,6 +238,13 @@
         margin-bottom: 5px;
         padding-top: 8px;
     }
+
+    #moreFilterContainer .filter_section {
+        margin: 5px 5px 10px 5px;
+/*        margin: 5px;*/
+/*        margin-bottom: 5px;*/
+/*        padding-top: 8px;*/
+    }
     
     .btn_unpressed {
         padding-left: 5px;
@@ -973,4 +980,18 @@
 
     div #overviewDatebtn{
         display: inline-block;
+    }
+
+    div#moreFilterContainer{
+        position: absolute;
+        display: none;
+        z-index: 10;
+        border: solid #e7e7e7 2pt;
+        margin-bottom: 20px;
+        background: white;
+    }
+
+    div.hr{
+        border-top: solid #c4c4c4 1pt;
+        margin: 5px;
     }

@@ -85,14 +85,14 @@
     <script src="world_country_min.js"></script>
 
     <!--FUNCTION-->
-    
+
     <script src="workset.js"></script>
     <script src="overview.js"></script>
 
     <script src="ajax.js"></script>
     <script src="chartInMap.js"></script>
     <script src="map.js"></script>
-    
+
     <script src="markerMap.js"></script>
     <script src="comparisionMap.js"></script>
     <script src="overlay.js"></script>
@@ -174,8 +174,65 @@
                 <div class="filter_wrapper panel">
                     <div class="panel-heading">Filter</div>
                     <div class="panel-body">
-                        <button class="selector submit" id="submit">Apply</button>
 
+                        <div id="selector_target" class="selector">
+                            <div id="dataSelectorFilter">
+                                <table>
+                                    <tr id="functionFilter">
+                                        <td>
+                                            <label>Function:</label>
+                                        </td>
+                                        <td style="width: 100%;text-align: right;">
+                                            <select id="dataset">
+                                                <option value="activation" selected="selected">Activation</option>
+                                                <option value="lifezone">LifeZone</option>
+                                                <option value="activationTable">Activation Table</option>
+                                                <option value="gap">Gap</option>
+                                                <option value="distBranch">Dist & Branch</option>
+                                                <!--                            <option value="qc">QC</option>-->
+                                            </select>
+                                        </td>
+                                    </tr>
+
+                                    <tr id="dateFilter">
+                                        <td>
+                                            <label>Date:</label>
+                                        </td>
+                                        <td style="width: 100%;text-align: right;">
+                                            <div id='databtn' style="display: inline-block;vertical-align: top;">
+                                                <button class="date">Date</button>
+                                                <div id="dateDropdown" class="selector">
+                                                    <div id="timeSection">
+                                                        <button class="btn_unpressed" id="btnToday">Today</button>
+                                                        <button class="btn_unpressed" id="btnYesterday">Yesterday</button>
+                                                        <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
+                                                        <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
+                                                        <button class="btn_unpressed" id="btnThisMonth">This Month</button>
+                                                        <button class="btn_unpressed" id="btnLastMonth">Last Month</button>
+                                                        <!--                            <button class="btn_unpressed" id="btnAllTime">All Time</button>-->
+                                                    </div>
+                                                    <p style="margin-left:3%;text-align: left;"><b>Custom date range</b></p>
+                                                    <div id="date_selection_zone_1" style="text-align: center;">
+                                                        <input value="From Time" type="text" id="from" name="from"> -
+                                                        <input value="To Time" type="text" id="to" name="to">
+                                                    </div>
+                                                    <!--
+                                                    <input id="compare" type="checkbox">Compare to</input>
+                                                    <div id="date_selection_zone_2" style="display:none">
+                                                        <input value="From Time" type="text" id="from_compare" name="from"> -
+                                                        <input value="To Time" type="text" id="to_compare" name="to">
+                                                    </div>
+                    -->
+                                                    <div style="display: block;">
+                                                        <button class="submit">Apply</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                         <!--filter-->
                         <div class="filter_section collapsible" id="section_target">Device<span></span></div>
                         <div id="selector_target" class="selector">
@@ -203,25 +260,33 @@
                             </div>
                         </div>
 
-                        <div class="filter_section collapsible hardware_filter" id="section_cpu">CPU<span></span></div>
-                        <div id="selector_cpu" class="selector">
-                            <div id="cpuFilter" class="specFilter customScrollBar"></div>
-                        </div>
+                        <div class="filter_section more_filter" id="section_more" style="border-top: solid #c4c4c4 1pt;">MORE<span></span></div>
 
-                        <div class="filter_section collapsible hardware_filter" id="section_color">Color<span></span></div>
-                        <div id="selector_color" class="selector">
-                            <div id="colorFilter" class="specFilter customScrollBar"></div>
-                        </div>
+                        <div id="moreFilterContainer">
+                            <div class="filter_section collapsible hardware_filter" id="section_cpu" style="border-top:0px">CPU<span></span></div>
+                            <div id="selector_cpu" class="selector">
+                                <div id="cpuFilter" class="specFilter customScrollBar"></div>
+                            </div>
+                            <div class="hr"></div>
 
-                        <div class="filter_section collapsible hardware_filter" id="section_rear_camera">Rear Camera<span></span></div>
-                        <div id="selector_rear_camera" class="selector">
-                            <div id="rearCameraFilter" class="specFilter customScrollBar"></div>
-                        </div>
+                            <div class="filter_section collapsible hardware_filter" id="section_color" style="border-top:0px">Color<span></span></div>
+                            <div id="selector_color" class="selector">
+                                <div id="colorFilter" class="specFilter customScrollBar"></div>
+                            </div>
+                            <div class="hr"></div>
 
-                        <div class="filter_section collapsible hardware_filter" id="section_front_camera">Front Camera<span></span></div>
-                        <div id="selector_front_camera" class="selector">
-                            <div id="frontCameraFilter" class="specFilter customScrollBar"></div>
+                            <div class="filter_section collapsible hardware_filter" id="section_rear_camera" style="border-top:0px">Rear Camera<span></span></div>
+                            <div id="selector_rear_camera" class="selector">
+                                <div id="rearCameraFilter" class="specFilter customScrollBar"></div>
+                            </div>
+                            <div class="hr"></div>
+
+                            <div class="filter_section collapsible hardware_filter" id="section_front_camera" style="border-top:0px">Front Camera<span></span></div>
+                            <div id="selector_front_camera" class="selector">
+                                <div id="frontCameraFilter" class="specFilter customScrollBar"></div>
+                            </div>
                         </div>
+                        <button class="selector submit" id="submit">Apply</button>
                     </div>
                 </div>
             </div>
@@ -233,49 +298,14 @@
                 <div id="control_Panel">
                     <!--right side function button-->
                     <!--                    <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>-->
+                    <!--
                     <div class="control_panel_btn_area_right" style="float:right;">
-                        <div id='databtn' style="display: inline-block;vertical-align: top;">
-                            <label>Date Range</label>
-                            <button class="date">Date</button>
-                            <div id="dateDropdown" class="selector">
-                                <div id="timeSection">
-                                    <button class="btn_unpressed" id="btnToday">Today</button>
-                                    <button class="btn_unpressed" id="btnYesterday">Yesterday</button>
-                                    <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
-                                    <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
-                                    <button class="btn_unpressed" id="btnThisMonth">This Month</button>
-                                    <button class="btn_unpressed" id="btnLastMonth">Last Month</button>
-                                    <!--                            <button class="btn_unpressed" id="btnAllTime">All Time</button>-->
-                                </div>
-                                <p style="margin-left:3%"><b>Custom date range</b></p>
-                                <div id="date_selection_zone_1">
-                                    <input value="From Time" type="text" id="from" name="from"> -
-                                    <input value="To Time" type="text" id="to" name="to">
-                                </div>
-<!--
-                                <input id="compare" type="checkbox">Compare to</input>
-                                <div id="date_selection_zone_2" style="display:none">
-                                    <input value="From Time" type="text" id="from_compare" name="from"> -
-                                    <input value="To Time" type="text" id="to_compare" name="to">
-                                </div>
--->
-                                <div style="display: block;">
-                                    <button class="submit">Apply</button>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
+-->
 
                     <!--left side function button-->
                     <div class="control_panel_btn_area">
-                        <label class="buttonSetLable" for="dataset">Data Set</label>
-                        <select id="dataset">
-                            <option value="activation" selected="selected">Activation</option>
-                            <option value="lifezone">LifeZone</option>
-                            <option value="activationTable">Activation Table</option>
-<!--                            <option value="qc">QC</option>-->
-                        </select>
-
                         <div id="lifezoneControlPanel" class="needTohideAtFirst controlPanel">
                             <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 15px;">
                                 <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
@@ -305,13 +335,13 @@
                                 <label class="buttonSetLable" for="mode">Mode</label>
                                 <button class="mode" id="region">Region</button>
                                 <button class="mode" id="marker">Marker</button>
-<!--                                <button class="mode" id="comparison">Comparison</button>-->
-<!--                                <button class="mode" id="table">Table</button>-->
-                                <button class="mode" id="gap">Gap</button>
+                                <!--                                <button class="mode" id="comparison">Comparison</button>-->
+                                <!--                                <button class="mode" id="table">Table</button>-->
+<!--                                <button class="mode" id="gap">Gap</button>-->
                             </div>
 
 
-<!--
+                            <!--
                             <div id="overlay" style="margin-top: 3px;">
                                 <label class="buttonSetLable" for="overlay">Overlay</label>
                                 <button class="overlay" id="dealer">Dealer</button>
@@ -319,7 +349,7 @@
                             </div>
 -->
                         </div>
-                        
+
                         <div id="qcControlPanel" class="needTohideAtFirst controlPanel">
                             <div id="qcMode" style="margin-top: 3px;">
                                 <label class="buttonSetLable">Mode</label>
@@ -332,7 +362,7 @@
                                 <button class="qcView" id="qcMucModule">MucModule</button>
                                 <button class="qcView" id="qcLmdPartGroup">LmdPartGroup</button>
                             </div>
-                            
+
                             <label class="buttonSetLable">Category</label>
                             <select id="qcCategory">
                                 <option value="all" selected="selected">All</option>

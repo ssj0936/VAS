@@ -16,6 +16,8 @@
     
     $account = $_GET['account'];
     $isVIP = (($_GET['isVIP']=='true')?true:false);
+//    $account = 'JONAS_TSAI';
+//    $isVIP = false;
 
     $permission;
     $permissionProductId = array();
@@ -110,17 +112,24 @@
         }
     }
     //-----------------------------------fake data test-----------------------------------
-//    $permissionResult = array(
-//        'IND' => array('NT','AT'),
-//        'IDN' => array('AZ','AT'),
-//        'TWN' => array('NT','AX'),
-//        'VNM' => array('AZ','AX'),
-//        'BGD' => array('','AX','AZ')
-//    ) ;
-//    $permissionProductId = array('','NT','AT','AZ','AX');
-//    $permissionLoc = array('IN','ID','TW','VN','BD');
-//    $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
-//    $permissionLocStr = "'".implode("','",$permissionLoc)."'";
+    if($account == 'JONAS_TSAI'){
+        $permissionResult = array(
+//            'IND' => array('NT','AT','AZ'),
+//            'IDN' => array('AZ','AT'),
+//            'TWN' => array('NT','AX'),
+//            'VNM' => array('AZ','AX'),
+//            'BGD' => array('','AX','AZ')
+            'IND' => array('NK','AT','AZ'),
+            'IDN' => array('AZ','AT'),
+            'TWN' => array('NK','AX'),
+            'JPN' => array('NP','AX')
+        ) ;
+        $permissionProductId = array('NK','NP','AT','AZ','AX');
+        $permissionLoc = array('IN','ID','TW','JP');
+        $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
+        $permissionLocStr = "'".implode("','",$permissionLoc)."'";
+        $isVIP = false;
+    }
     //-----------------------------------fake data test-----------------------------------
 
     $allDevices = array();

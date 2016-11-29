@@ -79,7 +79,7 @@ function addBookmark() {
 //        to: comparisonMap.toFormatStr
 //    });
     var activeMode = (isModeActive(MODE_COMPARISION) ? MODE_COMPARISION : MODE_REGION);
-    var dataset = getDataset();
+    var dataset = getFunction();
     // console.log("stringifyObserveTarget:"+stringifyObserveTarget);
     // console.log("stringifyObserveLoc:"+stringifyObserveLoc);
     //     console.log("stringifyObserveSpec:"+stringifyObserveSpec);
@@ -179,7 +179,7 @@ function bookmarkSubmit(index) {
     //dataset setting
     $("#dataset button").removeClass("active");
     $("#" + dataset).addClass("active");
-    setDataset(dataset);
+    setFunction(dataset);
     
     if(isGapButtonCanShow && !isDistBranchSelected){
         $('button#gap').show();

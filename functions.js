@@ -71,12 +71,12 @@ function isRegionMarkerSametime() {
     return (isRegionOn && isMarkerOn);
 }
 
-function setDataset(dataset) {
-    activeDataset = dataset;
+function setFunction(func) {
+    activeFunction = func;
 }
 
-function getDataset() {
-    return activeDataset;
+function getFunction() {
+    return activeFunction;
 }
 
 function setModeOn(mode) {
