@@ -37,7 +37,7 @@ function createFunctionalBtn(){
         })
         .text('EXPORT')
         .click(function () {
-            if(isModeActive(MODE_GAP))
+            if(getFunction() == FUNC_GAP)
                 return gapReportExportDialogShow();
             else
                 return exportFile(getActiveTrend(), true);
@@ -1919,6 +1919,8 @@ function gapExportToExcel(text){
 
 function gapReportExportDialogShow(){
 
+    if(getFunction() != FUNC_GAP) return;
+    
     var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ? 
         (jQuery('<div/>',{id:'exportTypeDialogDiv'}).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
         ($('#exportTypeDialogDiv'));

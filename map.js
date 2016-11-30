@@ -98,7 +98,7 @@ function MapObject(mapname) {
             var countryID = this.jsonData.features[i].properties.OBJECTID;
 
             //delete place not owned by any branch
-            if (isModeActive(MODE_GAP)) {
+            if (getFunction() == FUNC_GAP) {
                 if($.inArray(countryID,allBranchObject) == -1) {
                     this.jsonData.features.splice(i, 1);
                     isMapModified = true;
@@ -185,7 +185,7 @@ function MapObject(mapname) {
                 //style option
                 ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
                 //if gap mode fill gap color
-                if (isModeActive(MODE_GAP)) {
+                if (getFunction() == FUNC_GAP) {
                     var fillBranch;
                     $.each(allHighlighBranch,function (branch,object) {
                         if($.inArray(feature.tags.OBJECTID,object) != -1) {
@@ -201,7 +201,7 @@ function MapObject(mapname) {
                     }
                 }
 
-                if (allBranchObject.length > 0 && !isModeActive(MODE_GAP)) {
+                if (allBranchObject.length > 0 && getFunction() != FUNC_GAP) {
                     // if not in gap mode and some branch has been selected, use another stroke
                     if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
                         ctx.globalCompositeOperation = 'source-over';
@@ -270,7 +270,7 @@ function MapObject(mapname) {
                 labels = [];
 
             // loop through our density intervals and generate a label with a colored square for each interval
-            if (!isModeActive(MODE_GAP)) {
+            if (getFunction() != FUNC_GAP) {
                 div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
                 for (var i = 0; i < grades.length - 1; i++) {
                     div.innerHTML +=
@@ -294,7 +294,7 @@ function MapObject(mapname) {
         };
         this.legend.addTo(this.map);
         //if not in gap mode, can highlight the label on legend
-        if (!isModeActive(MODE_GAP))
+        if (getFunction() != FUNC_GAP)
             this.legendColorHoverSetting();
     };
 
@@ -333,11 +333,11 @@ function MapObject(mapname) {
         };
         // method that we will use to update the control based on feature properties passed
         this.info.update = function (props) {
-            var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+ (isModeActive(MODE_GAP)?"GAP":"Activation count") + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+            var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+ (getFunction() == FUNC_GAP?"GAP":"Activation count") + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
             var btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
             var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
             var totalStr = "<table class = 'model_table'>";
-            if (isModeActive(MODE_GAP)) {
+            if (getFunction() == FUNC_GAP) {
                 // gap info
                 currentPointingBranch = (props == undefined)?(currentPointingBranch):props;
 //                console.log(currentPointingBranch);
@@ -376,7 +376,7 @@ function MapObject(mapname) {
                 //                console.log('maxHeight change:'+maxHeight);
             }
             //no need to display info all the time
-            if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION) && !isModeActive(MODE_GAP))
+            if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION) && getFunction() != FUNC_GAP)
                 $('#showModelCount_' + mapObj.mapName).hide();
 
             if (observeTarget.length == 0) {
@@ -526,7 +526,7 @@ function MapObject(mapname) {
                         simplifyJson.geometry.coordinates.push(simplifyGeometry(layerJson.geometry.coordinates[k], torance));
                     }
                 }
-                if(allHighlighBranch && isModeActive(MODE_GAP)) {
+                if(allHighlighBranch && getFunction() == FUNC_GAP) {
                     // highlight branch region
                     var branchLayer = mapObj.getHighlightBranchLayer(layerJson);
                     simplifyJson = (branchLayer != null)?branchLayer:simplifyJson;
@@ -544,7 +544,7 @@ function MapObject(mapname) {
                     .on('click', function (e) {
                         //set popup
                         if (!isPointPopup) {
-                            if(isModeActive(MODE_GAP)){
+                            if(getFunction() == FUNC_GAP){
                                 if(currentPointingBranch == null) return;
                                 
                                 var displayName = currentPointingBranch;
@@ -582,7 +582,7 @@ function MapObject(mapname) {
                     .addTo(mapObj.map);
                 //$('.leaflet-overlay-pane svg').css( "pointer-events", "none" );
                 //update the info
-                if (simplifyJson.branch && isModeActive(MODE_GAP)) {
+                if (simplifyJson.branch && getFunction() == FUNC_GAP) {
                     mapObj.info.update(simplifyJson.branch);
                 } else {
                     mapObj.info.update(layerJson.properties);

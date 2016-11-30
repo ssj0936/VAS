@@ -207,10 +207,10 @@ function showFilterResult() {
                 if (isModeActive(MODE_COMPARISION)) {
                     submitComparision();
                 }
-                if (isModeActive(MODE_GAP)) {
+                if (getFunction() == FUNC_GAP) {
                     submitGap();
                 }
-                if (isModeActive(MODE_LIFEZONE)) {
+                if (getFunction() == FUNC_LIFEZONE) {
                     submitHeatMap();
                 }
                 if (getFunction() == FUNC_ACTIVATION_TABLE){

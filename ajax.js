@@ -268,7 +268,7 @@ function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyO
             stringifyObserveLoc: stringifyObserveLoc,
             stringifyObserveSpec: stringifyObserveSpec,
             activeMode: activeMode,
-            dataset: dataset,
+            dataset: ((dataset == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         dataType: 'json',
         success: function (response) {

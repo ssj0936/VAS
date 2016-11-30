@@ -8,7 +8,6 @@ function removeHeatMap() {
     heatmapLayer = null;
     heatData = {max: '',data: []};
     $('div.heatTip').remove();
-    setModeOff(MODE_LIFEZONE);
 }
 
 var heat

@@ -172,7 +172,6 @@
                 </div>-->
 
                 <div class="filter_wrapper panel">
-                    <div class="panel-heading">Filter</div>
                     <div class="panel-body">
 
                         <div id="selector_target" class="selector">
@@ -184,11 +183,11 @@
                                         </td>
                                         <td style="width: 100%;text-align: right;">
                                             <select id="dataset">
-                                                <option value="activation" selected="selected">Activation</option>
-                                                <option value="lifezone">LifeZone</option>
+                                                <option value="activation" selected="selected">Activation Map</option>
                                                 <option value="activationTable">Activation Table</option>
-                                                <option value="gap">Gap</option>
-                                                <option value="distBranch">Dist & Branch</option>
+                                                <option value="gap">GAP by branch</option>
+                                                <option value="distBranch">Branch vs. Disti</option>
+                                                <option value="lifezone">LifeZone</option>
                                                 <!--                            <option value="qc">QC</option>-->
                                             </select>
                                         </td>
@@ -223,9 +222,11 @@
                                                         <input value="To Time" type="text" id="to_compare" name="to">
                                                     </div>
                     -->
+<!--
                                                     <div style="display: block;">
                                                         <button class="submit">Apply</button>
                                                     </div>
+-->
                                                 </div>
                                             </div>
                                         </td>
@@ -298,11 +299,11 @@
                 <div id="control_Panel">
                     <!--right side function button-->
                     <!--                    <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>-->
-                    <!--
-                    <div class="control_panel_btn_area_right" style="float:right;">
-                        
+                    
+                    <div class="control_panel_right" style="float:right; display:none;">
+                        <button id="export" class="rightPanelButton">Export</button>
                     </div>
--->
+
 
                     <!--left side function button-->
                     <div class="control_panel_btn_area">

@@ -128,6 +128,7 @@
         $permissionLoc = array('IN','ID','TW','JP');
         $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
         $permissionLocStr = "'".implode("','",$permissionLoc)."'";
+        $isPass = true;
         $isVIP = false;
     }
     //-----------------------------------fake data test-----------------------------------

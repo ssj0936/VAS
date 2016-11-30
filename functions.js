@@ -14,13 +14,16 @@ function isHighlightNeeded() {
     //no data need to observe
     if (observeTarget.length == 0)
         return false;
-    //only mark mode is active -> disable
-    if (!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER) && !isModeActive(MODE_COMPARISION) && !isModeActive(MODE_GAP))
+    else if(getFunction() != FUNC_ACTIVATION && getFunction() != FUNC_DISTBRANCH && getFunction() != FUNC_GAP)
         return false;
-    //all 3 modes are not active -> disable
-    if (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER) && !isModeActive(MODE_COMPARISION) && !isModeActive(MODE_GAP))
-        return false;
-    return true;
+    else if(getFunction() == FUNC_ACTIVATION){
+        if((!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER)) || (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER)))
+            return false;
+        else
+            return true;
+    }else{
+        return true;
+    }
 }
 
 //function checkInvalidCountryAlert(checkAttr) {
@@ -86,11 +89,11 @@ function setModeOn(mode) {
         isMarkerOn = true;
     } else if (mode == MODE_COMPARISION) {
         isComparisonOn = true;
-    } else if (mode == MODE_GAP) {
+    } /*else if (mode == MODE_GAP) {
         isGapOn = true;
     } else if (mode == MODE_LIFEZONE) {
         isLifeZoneOn = true;
-    }
+    }*/
 }
 
 function setModeOff(mode) {
@@ -100,11 +103,11 @@ function setModeOff(mode) {
         isMarkerOn = false;
     } else if (mode == MODE_COMPARISION) {
         isComparisonOn = false;
-    } else if (mode == MODE_GAP) {
+    } /*else if (mode == MODE_GAP) {
         isGapOn = false;
     } else if (mode == MODE_LIFEZONE) {
         isLifeZoneOn = false;
-    }
+    }*/
 }
 
 function isModeActive(mode) {
@@ -114,11 +117,11 @@ function isModeActive(mode) {
         return isMarkerOn;
     } else if (mode == MODE_COMPARISION) {
         return isComparisonOn;
-    } else if (mode == MODE_GAP) {
+    } /*else if (mode == MODE_GAP) {
         return isGapOn;
     } else if (mode == MODE_LIFEZONE) {
         return isLifeZoneOn;
-    }
+    }*/
 }
 
 function isClickFromFilterResult() {

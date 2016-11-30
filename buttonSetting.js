@@ -6,7 +6,7 @@ function buttonInit() {
     
     //dataset selector init
     $( "#dataset" ).selectmenu({
-        width: '120px',
+        width: '122px',
         change: function( event, data ) {
             //not allow switching while loading
             if (isLoading()) return;
@@ -20,6 +20,7 @@ function buttonInit() {
                         //control panel switch
 //                        clearControlPanel();
                         $('.controlPanel').hide();
+                        $('.control_panel_right').hide();
                         $('#activationControlPanel').show("medium");
                     
                         if(isDistBranchFilterShowing){
@@ -36,6 +37,7 @@ function buttonInit() {
                         //control panel switch
 //                        clearControlPanel();
                         $('.controlPanel').hide();
+                        $('.control_panel_right').hide();
                         $('#lifezoneControlPanel').show("medium");
                     
                         if(isDistBranchFilterShowing){
@@ -53,6 +55,7 @@ function buttonInit() {
                         //control panel switch
                         clearControlPanel();
                         $('.controlPanel').hide();
+                        $('.control_panel_right').hide();
                         $('#qcControlPanel').show("medium");
                     
                         if(isDistBranchFilterShowing){
@@ -69,6 +72,7 @@ function buttonInit() {
                         //control panel switch
 //                        clearControlPanel();
                         $('.controlPanel').hide();
+                        $('.control_panel_right').hide();
                     
                         if(isDistBranchFilterShowing){
                             //data delete
@@ -84,6 +88,7 @@ function buttonInit() {
                         $('#dateFilter').show('medium');
                         //control panel switch
                         clearControlPanel();
+                        $('.control_panel_right').hide();
                         $('#activationControlPanel').show("medium");
                         
                         var needToShowDistBranch = false;
@@ -119,6 +124,7 @@ function buttonInit() {
                         //control panel switch
                         clearControlPanel();
                         $('.controlPanel').hide();
+                        $('.control_panel_right').show('medium');
                         
                         if(isDistBranchFilterShowing){
                             //data delete
@@ -183,12 +189,18 @@ function buttonInit() {
     actiationControlPanelInit();
     lifezoneControlPanelInit();
     qcControlPanelInit();
+    rightControlPanelInit();
 }
 
 function clearControlPanel(){
     $('.controlPanel').find('button').removeClass('active');
     lifezoneButtonsetReset();
     actiationControlPanelReset();
+}
+
+function rightControlPanelInit(){
+    $("button.rightPanelButton ").button();
+    $("button.rightPanelButton").click(gapReportExportDialogShow);
 }
 
 function qcControlPanelInit(){
@@ -266,15 +278,15 @@ function actiationControlPanelInit(){
         if (isLoading()) return;
 
         //table button
-        if ($(this).attr("id") == "table") {
-            if (!$(this).hasClass('active')) {
-                if(isModeActive(MODE_GAP))
-                    gapReportExportDialogShow();
-                else
-                    showTable();
-                return;
-            }
-        }
+//        if ($(this).attr("id") == "table") {
+//            if (!$(this).hasClass('active')) {
+//                if(getFunction() == FUNC_GAP)
+//                    gapReportExportDialogShow();
+//                else
+//                    showTable();
+//                return;
+//            }
+//        }
         
         //if comparison date doesnt set in comparison mode
         if ($(this).attr("id") == 'comparison' && comparisonMap.fromFormatStr == undefined && comparisonMap.toFormatStr == undefined) {
@@ -332,7 +344,7 @@ function actiationControlPanelInit(){
 function actiationControlPanelReset(){
     $("#mode button").removeClass("active");
     
-    var modeList = [MODE_MARKER,MODE_COMPARISION,MODE_REGION,MODE_GAP];
+    var modeList = [MODE_MARKER,/*MODE_COMPARISION*/,MODE_REGION,/*MODE_GAP*/];
     for(var i in modeList){
         var mode = modeList[i];
         
@@ -382,7 +394,6 @@ function unactiveModeBtn($this) {
     
         firstMap.removePolygonMap();
         cleanBranch();
-        setModeOff(MODE_GAP);
         break;
     }
 }
@@ -411,10 +422,6 @@ function activeModeBtn($this) {
         }
         break;
     case "gap":
-        //change table button text
-        $('#table').button('option','label','Export');
-
-        setModeOn(MODE_GAP);
         submitGap();
         break;
     }
@@ -672,16 +679,13 @@ function submitBtnSetting() {
                         break;
                     //switch from lifezone
                     case FUNC_LIFEZONE:
-                        if(isModeActive(MODE_LIFEZONE)){
-                            removeHeatMap();
-                            setModeOff(MODE_LIFEZONE);
-                            disableLifezoneControl();
+                        removeHeatMap();
+                        disableLifezoneControl();
 //                            enableModeAndOverlay();
-                            
-                            firstMap.addSnapshot();
-                            
-                            console.log('lifezone off');
-                        }
+
+                        firstMap.addSnapshot();
+
+                        console.log('lifezone off');
                         break;
                     case FUNC_ACTIVATION_TABLE:
                         $('#tableContainer').empty();
@@ -693,7 +697,6 @@ function submitBtnSetting() {
 
                         firstMap.removePolygonMap();
                         cleanBranch();
-                        setModeOff(MODE_GAP);
                         break;
                     
                 }
@@ -864,8 +867,6 @@ function submitBtnSetting() {
                     
                     $('#tableContainer').hide();
                     $('#workset').show('medium');
-                    
-                    setModeOn(MODE_GAP);
                     submitGap();
                     firstMap.zoomToSelectedLocation();
                     break;
@@ -1013,7 +1014,6 @@ function submitComparision() {
 }
 
 function submitHeatMap(){
-    setModeOn(MODE_LIFEZONE);
     ajaxGetHeatMap();
 }
 
