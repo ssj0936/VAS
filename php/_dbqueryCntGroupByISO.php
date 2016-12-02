@@ -16,25 +16,16 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $from = "2016-7-9";
-//    $to = "2016-8-3";    
-//    $iso ='["IND"]';
-//    $data = '[{"model":"all","devices":"all","datatype":"model"}]';
-//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-//$data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZENFONE-D","devices":"ZENFONE-D","product":"ZENFONE-D","datatype":"product"}]';
-//$color = '["Aqua Blue (IMR)","BLACK","BLUE","Gold (IMR)","RED","WHITE","black","blue","Orange","white","White; ABS","White;ABS","Black","Gold","White","GOLD","Golden","Red","Silver","SILVER BLUE","Yellow","Glacier Silver","Titanium Gray","Unknown"]';
-//$cpu = '["MTK MT6580; Quad-Core CPUs; 1.3GHz","Qualcomm Snapdragon410 MSM8916; Quad-core CPU; 1.0 GHz","Qualcomm Snapdragon410 MSM8916; Quad-core CPUs;  1.2 GHz","MTK MT6737T; Quad-Core CPUs","MTK MT6737V/C; Quad-Core CPUs; 1.25G","Qualcomm Snapdragon200 MSM8212; Quad-core CPUs; 1.2GHz","Qualcomm Snapdragon625 MSM8953; octa-core CPUs; 2.0 GHz","Unknown"] ';
-//$rearCamera = '["13 Mega Pixel","8 Mega Pixel","5 Mega Pixel","Unknown"]';
-//$frontCamera = '["0.3 Mega Pixel","2 Mega Pixel","8 Mega Pixel","Unknown"]';
-//$dataset = 'lifezone';
-//$from = "2015-8-15";
-//$to = "2016-9-14";    
-//$iso ='["IND"]';
-//$data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
-//$distBranch = '[{"dist":"FLIPKART","branch":"KARNATAKA"}]';
+//    $from = "2016-11-02";
+//    $to = "2016-12-02";    
+//    $iso ='["TWN","IND"]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $distBranch = '[]';
+//    $onlineDist = '[]';
+//$permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+//$permission = '{}';
 
-
-
+//
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
@@ -46,6 +37,7 @@
     $iso = $_POST['iso'];
     $distBranch = $_POST['distBranch'];
     $onlineDist = $_POST['onlineDist'];
+    $permission = $_POST['permission'];
 
     $countryArray = array();
 
@@ -58,9 +50,11 @@
         $frontCameraObj = json_decode($frontCamera);
         $distBranchObj = json_decode($distBranch);
         $onlineDistObj = json_decode($onlineDist);
+        $permissionObj = json_decode($permission);
         
         $isDistBranch = (count($distBranchObj)!=0);
         $isOnlineDist = (count($onlineDistObj)!=0);
+        $isFullPermission = (empty((array)$permissionObj));
         $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
         $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
 
@@ -98,14 +92,21 @@
         $str_in = substr($str_in,0,-1);
             
 		$fromTableStr='';
+
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT map_id,count,device_model.model_name model_name"
+            if(!$isFullPermission){
+                $result = permissionCheck($isFullPermission,$permissionObj,$isoObj[$i]);
+                if(!$result['queryable']) continue;
+            }
+            
+            $tmpfromTableStr="SELECT map_id,count,device_model.model_name model_name"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
                         .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                         .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                        .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                         ."$isoObj[$i] A1,"
                         ."$deviceTable device_model"
 
@@ -118,10 +119,18 @@
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
                         .($isDistBranch ? " AND $distBranchStr " : "")
-                        .($isOnlineDist ? " AND $onlineDistStr " : "");
+                        .($isOnlineDist ? " AND $onlineDistStr " : "")
+                        .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
-			if($i != count($isoObj)-1)
-				$fromTableStr.=" UNION ALL ";
+            if(strlen($fromTableStr)==0){
+                $fromTableStr .= $tmpfromTableStr;
+            }
+            else{
+                $fromTableStr.=(" UNION ALL ".$tmpfromTableStr);
+            }
+//            
+//			if($i != count($isoObj)-1)
+//				$fromTableStr.=" UNION ALL ";
 		}
 		$fromTableStr ="(".$fromTableStr.")foo";
 		//echo $fromTableStr."<br>";

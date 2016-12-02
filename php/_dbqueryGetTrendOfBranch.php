@@ -21,6 +21,7 @@
     $to = $_POST['to'];
     $data = $_POST['data'];
     $iso = $_POST['iso'];
+    $permission = $_POST['permission'];
 //    
 //    $color = '["all"]';
 //    $cpu = '["all"]';
@@ -57,9 +58,10 @@
     $cpuObj = json_decode($cpu);
     $rearCameraObj = json_decode($rearCamera);
     $frontCameraObj = json_decode($frontCamera);
-    
+    $permissionObj = json_decode($permission);
 
     $isAll = isAll($dataObj);
+    $isFullPermission = (empty((array)$permissionObj));
 
     //color
     $isColorAll=isAll($colorObj);
@@ -90,6 +92,12 @@
     $str_in = substr($str_in,0,-1);
     
     $queryStr='';
+
+    if(!$isFullPermission){
+        $result = permissionCheck($isFullPermission,$permissionObj,$isoObj[0]);
+        if(!$result['queryable']) continue;
+    }
+
     switch($isoObj[0]){
         case 'IND':
             //Group by branch
@@ -99,15 +107,19 @@
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                    ."$isoObj[0] A1"
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable device_model"
 
                     ." WHERE"
                     ." date BETWEEN '$from' AND '$to'"
+                    ." AND A1.device = device_model.device_name"
                     .($isAll?"":" AND device IN($str_in)")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)");
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
             $queryStr = "SELECT sum(count) as count,branch,date"
                         ." from($queryStr)foo,$regionTam regionTam"
@@ -124,15 +136,19 @@
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                    ."$isoObj[0] A1"
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable device_model"
 
                     ." WHERE"
                     ." date BETWEEN '$from' AND '$to'"
+                    ." AND A1.device = device_model.device_name"
                     .($isAll?"":" AND device IN($str_in)")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)");
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
             $queryStr = "SELECT sum(count) as count,branchName as branch,date"
                         ." from($queryStr)foo,$regionTam regionTam"

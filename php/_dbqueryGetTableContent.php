@@ -47,6 +47,7 @@
     $iso = $_POST['iso'];
     $distBranch = $_POST['distBranch'];
     $onlineDist = $_POST['onlineDist'];
+    $permission = $_POST['permission'];
 
     $countryArray = array();
 
@@ -59,9 +60,11 @@
         $frontCameraObj = json_decode($frontCamera);
         $distBranchObj = json_decode($distBranch);
         $onlineDistObj = json_decode($onlineDist);
+        $permissionObj = json_decode($permission);
         
         $isDistBranch = (count($distBranchObj)!=0);
         $isOnlineDist = (count($onlineDistObj)!=0);
+        $isFullPermission = (empty((array)$permissionObj));
         $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
         $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
 
@@ -101,12 +104,18 @@
 		$fromTableStr='';
 		for($i=0;$i<count($isoObj);++$i){
             
-            $fromTableStr.="SELECT map_id,count,device_model.model_name model_name,date"
+            if(!$isFullPermission){
+                $result = permissionCheck($isFullPermission,$permissionObj,$isoObj[$i]);
+                if(!$result['queryable']) continue;
+            }
+            
+            $tmpFromTableStr="SELECT map_id,count,device_model.model_name model_name,date"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
                         .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                         .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                        .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                         ."$isoObj[$i] A1,"
                         ."$deviceTable device_model"
 
@@ -119,10 +128,15 @@
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
                         .($isDistBranch ? " AND $distBranchStr " : "")
-                        .($isOnlineDist ? " AND $onlineDistStr " : "");
+                        .($isOnlineDist ? " AND $onlineDistStr " : "")
+                        .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
-			if($i != count($isoObj)-1)
-				$fromTableStr.=" UNION ALL ";
+			if(strlen($fromTableStr)==0){
+                $fromTableStr .= $tmpFromTableStr;
+            }
+            else{
+                $fromTableStr.=(" UNION ALL ".$tmpFromTableStr);
+            }
 		}
 		$fromTableStr ="(".$fromTableStr.")foo";
 		//echo $fromTableStr."<br>";
@@ -141,35 +155,8 @@
                     'cnt' => $row['count'],
                     'models' => $row['model_name']
                 );
-            
-//            $countryArray[$row['map_id']][$row['date']]['models'][$row['model_name']] = $row['count'];
-//            if (empty($countryArray[$row['map_id']][$row['date']]['count'])) {
-//                $countryArray[$row['map_id']][$row['date']]['count'] = $row['count'];
-//            } else {
-//                $countryArray[$row['map_id']][$row['date']]['count'] += $row['count'];
-//            }
 		}
-//        print_r($countryArray);
     }
-//    foreach($countryArray as $map_id => $countryData) {
-//        arsort($countryData['models']);
-//        $results[] = array(
-//                'countryID' => ($map_id),
-//                'cnt' => ($countryData['count']),
-//                'models' => ($countryData['models'])
-//            );
-//    }
-//    foreach($countryArray as $map_id => $arr) {
-//        foreach($arr as $date =>$countryData){
-//        arsort($countryData['models']);
-//        $results[] = array(
-//                'countryID' => ($map_id),
-//                'date' => ($date),
-//                'cnt' => ($countryData['count']),
-//                'models' => ($countryData['models'])
-//            );
-//        }
-//    }
     $json = json_encode($results);
     echo $json;
 

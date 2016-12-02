@@ -16,7 +16,7 @@
     
     $account = $_GET['account'];
     $isVIP = (($_GET['isVIP']=='true')?true:false);
-//    $account = 'JONAS_TSAI';
+//    $account = 'ERIC_CHEN';
 //    $isVIP = false;
 
     $permission;
@@ -119,7 +119,7 @@
 //            'TWN' => array('NT','AX'),
 //            'VNM' => array('AZ','AX'),
 //            'BGD' => array('','AX','AZ')
-            'IND' => array('NK','AT','AZ'),
+            'IND' => array('NK','QQ','gg','AT','AZ','tt','ee','ww'),
             'IDN' => array('AZ','AT'),
             'TWN' => array('NK','AX'),
             'JPN' => array('NP','AX')
@@ -191,11 +191,27 @@
         }
     }
 
+    $allEmpty = true;
+    foreach($permissionResult as &$productArr){
+//        for($i=0;$i<count($productArr);++$i){
+        for($i=count($productArr)-1;$i>=0;--$i){
+            if(!in_array($productArr[$i],$productToProductID)){
+                unset($productArr[$i]);
+            }
+        }
+        $productArr = array_values($productArr);
+        
+        if(count($productArr) != 0)
+            $allEmpty = false;
+    }
+//    echo '<br><br>';
+//    print_r($permissionResult);
+
     $result['allDevices']=$allDevices;
     $result['allLoc']=$allLoc;
     $result['activationUpdateTime']=$_DB['activation']['updatetime'];
     $result['lifezoneUpdateTime']=$_DB['lifezone']['updatetime'];
-    $result['isPass']= (!$isPass && !$isVIP)? false :true ;
+    $result['isPass']= ($allEmpty ||(!$isPass && !$isVIP))? false :true ;
     $result['isVIP']= $isVIP;
     $result['accountPermission']= $permissionResult ;
     $result['productToProductID']= $productToProductID ;

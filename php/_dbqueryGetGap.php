@@ -15,11 +15,11 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $from = "2015-9-11";
-//    $to = "2016-10-11";    
+//    $from = "2016-11-1";
+//    $to = "2016-12-1";  
 //    $iso ='["IDN"]';
-//    $data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"},{"model":"A450CG","devices":"A450CG","product":"ZENFONE","datatype":"model"}]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//$permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 
     $color = $_GET['color'];
     $cpu = $_GET['cpu'];
@@ -30,6 +30,7 @@
     $to = $_GET['to'];
     $data = $_GET['data'];
     $iso = $_GET['iso'];
+    $permission = $_GET['permission'];
 
     $countryArray = array();
 
@@ -42,8 +43,10 @@
         $cpuObj = json_decode($cpu);
         $rearCameraObj = json_decode($rearCamera);
         $frontCameraObj = json_decode($frontCamera);
+        $permissionObj = json_decode($permission);
 
         $isAll = isAll($dataObj);
+        $isFullPermission = (empty((array)$permissionObj));
         
         //color
         $isColorAll=isAll($colorObj);
@@ -73,6 +76,12 @@
         $str_in = substr($str_in,0,-1);
         
         $queryStr = '';
+        
+        if(!$isFullPermission){
+            $result = permissionCheck($isFullPermission,$permissionObj,$isoObj[0]);
+            if(!$result['queryable']) continue;
+        }
+        
         switch($isoObj[0]){
             case 'IND':
                 $fromTableStr="SELECT branch,count,device_model.model_name model_name,map_id"
@@ -81,6 +90,7 @@
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                     ."$isoObj[0] A1,"
                     ."$deviceTable device_model"
 
@@ -91,7 +101,8 @@
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
                 $fromTableStr ="(".$fromTableStr.")foo";
                 //echo $fromTableStr."<br>";
@@ -111,6 +122,7 @@
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                     ."$isoObj[0] A1,"
                     ."$deviceTable device_model"
 
@@ -121,7 +133,8 @@
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")");
+                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
                 
                 $fromTableStr ="(".$fromTableStr.")foo";
 //                echo $fromTableStr."<br>";

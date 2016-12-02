@@ -30,6 +30,7 @@ $iso = $_POST['iso'];
 $distBranch = $_POST['distBranch'];
 $onlineDist = $_POST['onlineDist'];
 $lifeZoneTime = $_POST['time'];
+$permission = $_POST['permission'];
 
 $lifeZoneTimeObj = json_decode($lifeZoneTime,true);
 $dataObj = json_decode($data);
@@ -42,10 +43,11 @@ if(count($dataObj) != 0){
     $frontCameraObj = json_decode($frontCamera);
     $distBranchObj = json_decode($distBranch);
     $onlineDistObj = json_decode($onlineDist);
-
+    $permissionObj = json_decode($permission);
 
     $isDistBranch = (count($distBranchObj)!=0);
     $isOnlineDist = (count($onlineDistObj)!=0);
+    $isFullPermission = (empty((array)$permissionObj));
     $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
     $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
 
@@ -80,13 +82,19 @@ if(count($dataObj) != 0){
 
     $queryStr='';
     for($i=0;$i<count($isoObj);++$i){
+        
+        if(!$isFullPermission){
+            $result = permissionCheck($isFullPermission,$permissionObj,$isoObj[$i]);
+            if(!$result['queryable']) continue;
+        }
 
-        $queryStr.="SELECT volume as count,lng,lat,week,time"
+        $tmpQueryStr="SELECT volume as count,lng,lat,week,time"
                     ." FROM "
                     .($isColorAll ? "" : "$colorMappingTable A2,")
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                     ."$isoObj[$i] A1,"
                     ."$deviceTable device_model"
 
@@ -100,10 +108,15 @@ if(count($dataObj) != 0){
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
                     .($isDistBranch ? " AND $distBranchStr " : "")
-                    .($isOnlineDist ? " AND $onlineDistStr " : "");
+                    .($isOnlineDist ? " AND $onlineDistStr " : "")
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
-        if($i != count($isoObj)-1)
-            $queryStr.=" UNION ALL ";
+        if(strlen($queryStr)==0){
+            $queryStr .= $tmpQueryStr;
+        }
+        else{
+            $queryStr.=(" UNION ALL ".$tmpQueryStr);
+        }
     }
 //    echo $queryStr."<br>";
 

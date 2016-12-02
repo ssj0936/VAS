@@ -39,6 +39,21 @@
 //    $singleBranch = 'SOUTH_SUMATERA';
 //    $singleBranch = null;
 //
+
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $dataset = 'activation';
+//    $from = "2016-11-1";
+//    $to = "2016-12-1";  
+//    $iso ='["IND"]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+//    $distBranch = '[]';
+//    $groupBy = 'model';
+//    $singleBranch = 'Nagpur_Raipur';
+
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
@@ -51,6 +66,7 @@
     $distBranch = $_POST['distBranch'];
     $groupBy = $_POST['groupBy'];
     $singleBranch = $_POST['branch'];
+    $permission = $_POST['permission'];
 
     if($data!="[]"){
         $isoObj = json_decode($iso);
@@ -60,8 +76,10 @@
         $rearCameraObj = json_decode($rearCamera);
         $frontCameraObj = json_decode($frontCamera);
         $distBranchObj = json_decode($distBranch);
+        $permissionObj = json_decode($permission);
         
         $isDistBranch = (count($distBranchObj)!=0);
+        $isFullPermission = (empty((array)$permissionObj));
         $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
         
         $isAll = isAll($dataObj);
@@ -99,6 +117,11 @@
 		//echo $str_in;	
         //group by model_name
         
+        if(!$isFullPermission){
+            $permissionResult = permissionCheck($isFullPermission,$permissionObj,$isoObj[0]);
+            if(!$permissionResult['queryable']) continue;
+        }
+        
         $queryStr = '';
         switch($isoObj[0]){
             case 'IND':
@@ -111,16 +134,20 @@
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                    ."$isoObj[0] A1"
+                    .(($isFullPermission || $permissionResult['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable device_model"
 
                     ." WHERE "
                     ."date BETWEEN '".$from."' AND '".$to."'"
+                    ." AND A1.device = device_model.device_name"
                     .($isAll?"":" AND device IN(".$str_in.")")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                    .($isDistBranch ? " AND $distBranchStr " : "");
+                    .($isDistBranch ? " AND $distBranchStr " : "")
+                    .(($isFullPermission || $permissionResult['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$permissionResult['permissionProductIDStr'].")");
                 
                 $fromTableStrGroupByModel ="(".$fromTableStr.")data,$deviceTable mapping";
 //                echo $fromTableStr."<br>";
@@ -166,16 +193,20 @@
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
                     .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                    ."$isoObj[0] A1"
+                    .(($isFullPermission || $permissionResult['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
+                    ."$isoObj[0] A1,"
+                    ."$deviceTable device_model"
 
                     ." WHERE "
                     ."date BETWEEN '".$from."' AND '".$to."'"
+                    ." AND A1.device = device_model.device_name"
                     .($isAll?"":" AND device IN(".$str_in.")")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
-                    .($isDistBranch ? " AND $distBranchStr " : "");
+                    .($isDistBranch ? " AND $distBranchStr " : "")
+                    .(($isFullPermission || $permissionResult['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$permissionResult['permissionProductIDStr'].")");
                 
                 $fromTableStrGroupByModel ="(".$fromTableStr.")data,$deviceTable mapping";
 //                echo $fromTableStr."<br>";

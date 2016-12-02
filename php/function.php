@@ -126,4 +126,43 @@ function getModel($inStr){
 function lowerprecise($number){
     return (float)number_format((float) $number, 3, '.', '');
 }
+
+//return array($queryable,$isFullPermissionThisIso,$permissionProductIDStr)
+function permissionCheck($isFullPermission,$permissionObj,$iso){
+    $isFullPermissionThisIso = false;
+    $queryable = true;
+    $permissionProductIDStr = '';
+    if(!$isFullPermission){
+        if( !isset($permissionObj -> $iso) && !isset($permissionObj -> _empty_)){
+            $queryable = false;
+            return array("queryable" => $queryable 
+                         , "isFullPermissionThisIso" => false
+                         , "permissionProductIDStr" =>null);
+        }
+        else{
+            $tmpArr = array();
+            if(isset($permissionObj -> _empty_)){
+                $tmpArr = array_merge($tmpArr,$permissionObj -> _empty_);
+            }
+            if(isset($permissionObj -> $iso)){
+                $tmpArr = array_merge($tmpArr,$permissionObj -> $iso);
+            }
+            $tmpArr = array_unique ($tmpArr);
+
+            if(in_array('',$tmpArr)){
+                $isFullPermissionThisIso = true;
+                return array("queryable" => $queryable 
+                             , "isFullPermissionThisIso" => $isFullPermissionThisIso
+                             , "permissionProductIDStr" =>null);
+            }
+            else {
+                $permissionProductIDStr = implode("','", $tmpArr);
+                $permissionProductIDStr = "'".$permissionProductIDStr."'";
+                return array("queryable" => $queryable
+                             , "isFullPermissionThisIso" => $isFullPermissionThisIso
+                             , "permissionProductIDStr" =>$permissionProductIDStr);
+            }
+        }
+    }
+}
 ?>

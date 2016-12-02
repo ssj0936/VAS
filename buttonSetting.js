@@ -29,7 +29,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
-                        applyPermittedLoc();
+//                        applyPermittedLoc();
                         break;
                     case "lifezone":
                         //hide date button
@@ -46,7 +46,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
-                        applyPermittedLoc();
+//                        applyPermittedLoc();
                         
                         break;
                     case "qc":
@@ -80,7 +80,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
-                        applyPermittedLoc();
+//                        applyPermittedLoc();
                         break;
                     
                 case "distBranch":
@@ -115,7 +115,7 @@ function buttonInit() {
                                 //UI remove
                                 destroyDistBranchCheckBox();
                         }
-                        applyPermittedLoc();
+//                        applyPermittedLoc();
                         break;
                     
                 case "gap":
@@ -132,7 +132,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
-                        applyPermittedLoc();
+//                        applyPermittedLoc();
                         break;
                     
             }
@@ -227,6 +227,8 @@ function qcControlPanelInit(){
 function lifezoneControlPanelInit(){
     //lifezone time button setting
     $('div#lifezoneWeekDayBtnset button').click(function(){
+        if (isLoading()) return;
+        
         radioButtonClick($('div#lifezoneWeekDayBtnset'),$(this));
         
         lifeZoneTime.week = $(this).attr('data-value');
@@ -236,6 +238,8 @@ function lifezoneControlPanelInit(){
     });
     
     $('div#lifezonePartOfDayBtnset button').click(function(){
+        if (isLoading()) return;
+        
         radioButtonClick($('div#lifezonePartOfDayBtnset'),$(this));
         
         lifeZoneTime.time = $(this).attr('data-value');
@@ -660,12 +664,12 @@ function submitBtnSetting() {
             //if change dataset
             //need to clean old setting
             if(getFunction() != null && activeFunctionTmp != null && getFunction() != activeFunctionTmp){
-                console.log(activeFunctionTmp);
+                console.log('activeFunctionTmp:'+activeFunctionTmp);
                 switch(getFunction()){
                     //switch from activation
                     case FUNC_DISTBRANCH:
                     case FUNC_ACTIVATION:
-                        console.log('FUNC_ACTIVATION');
+                        console.log('switch from FUNC_ACTIVATION');
                         //un-pressed every mode btn
                         $("#mode button.active").each(function(){
                             console.log($(this).attr('id'));
@@ -679,19 +683,20 @@ function submitBtnSetting() {
                         break;
                     //switch from lifezone
                     case FUNC_LIFEZONE:
+                        console.log('switch from FUNC_LIFEZONE');
                         removeHeatMap();
                         disableLifezoneControl();
 //                            enableModeAndOverlay();
 
                         firstMap.addSnapshot();
-
-                        console.log('lifezone off');
                         break;
                     case FUNC_ACTIVATION_TABLE:
+                        console.log('switch from FUNC_ACTIVATION_TABLE');
                         $('#tableContainer').empty();
                         break;
                         
                     case FUNC_GAP:
+                        console.log('switch from FUNC_GAP');
                         //change table button text
                         $('#table').button('option','label','Table');
 

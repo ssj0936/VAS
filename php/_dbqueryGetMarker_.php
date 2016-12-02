@@ -9,18 +9,20 @@
 
 //     $start = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //     echo "<br>-----------<br>".$start->format('Y-m-d H:i:s')."<br>-----------<br>";
-//    $from = "2013-7-9";
-//    $to = "2016-8-1";
+//    $from = "2016-10-31";
+//    $to = "2016-11-30";    
 //    $iso ='["IND"]';
 //    $dataset = 'activation';
-//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZENFONE-D","devices":"ZENFONE-D","product":"ZENFONE-D","datatype":"product"}]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $color = '["all"]';
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $distBranch = '[{"dist":"KARNATAKA","branch":"FLIPKART"}]';
-//    $distBranch = '[{"dist":"GUJARAT","branch":"COMP1"},{"dist":"GUJARAT","branch":"RASHIIN"},{"dist":"GUJARAT","branch":"CAREOFF1"},{"dist":"GUJARAT","branch":"REDTN"},{"dist":"GUJARAT","branch":"COMPUAGE"}]';
+//    $distBranch = '[]';
 //    $onlineDist = '[]';
+//    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+//    $permission = '{}';
 
     $dataset = $_POST['dataset'];
     $from = $_POST['from'];
@@ -33,6 +35,7 @@
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
     $frontCamera = $_POST['frontCamera'];
+    $permission = $_POST['permission'];
 
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameMarker_']);
     if($data!="[]"){
@@ -44,11 +47,13 @@
         $frontCameraObj = json_decode($frontCamera);
         $distBranchObj = json_decode($distBranch);
         $onlineDistObj = json_decode($onlineDist);
+        $permissionObj = json_decode($permission);
         
         $isDistBranch = (count($distBranchObj)!=0);
         $isOnlineDist = (count($onlineDistObj)!=0);
-        $distBranchStr = getSQLDistBranchStr($distBranchObj,true);
-        $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,true);
+        $isFullPermission = (empty((array)$permissionObj));
+        $distBranchStr = getSQLDistBranchStr($distBranchObj,false);
+        $onlineDistStr = getSQLOnlineDistStr($onlineDistObj,false);
         
         $isAll = isAll($dataObj);
         
@@ -82,26 +87,38 @@
         for($i=0;$i<count($isoObj);++$i){
             $iso = $isoObj[$i];
             
-            $queryStr.="SELECT count,lng,lat"
+            if(!$isFullPermission){
+                $result = permissionCheck($isFullPermission,$permissionObj,$isoObj[$i]);
+                if(!$result['queryable']) continue;
+            }
+            
+            $tmpQueryStr="SELECT count,lng,lat"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
                         .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                         .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                        .strtolower($iso)." A1"
+                        .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
+                        .strtolower($iso)." A1,"
+                        ."$deviceTable device_model"
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
+                        ." AND A1.device = device_model.device_name"
                         .($isAll?"":" AND device IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
                         .($isDistBranch ? " AND $distBranchStr " : "")
-                        .($isOnlineDist ? " AND $onlineDistStr " : "");
+                        .($isOnlineDist ? " AND $onlineDistStr " : "")
+                        .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
-            if($i != count($isoObj)-1){
-                $queryStr .= " UNION ALL ";
+            if(strlen($queryStr)==0){
+                $queryStr .= $tmpQueryStr;
+            }
+            else{
+                $queryStr.=(" UNION ALL ".$tmpQueryStr);
             }
         }
 

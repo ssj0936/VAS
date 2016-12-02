@@ -198,7 +198,7 @@ function checkboxDeviceInit() {
             updateSpecFilter(checktarget);
 //            console.log(specDeviceTmp);
             
-            applyPermittedLoc();
+//            applyPermittedLoc();
             
             ajaxGetDeviceSpec(specDeviceTmp);
             disableSubmit();
@@ -464,7 +464,7 @@ function checkboxLocationInit() {
                 }
             }
             //
-            applyPermittedDevice();
+//            applyPermittedDevice();
         });
     });
 }

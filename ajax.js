@@ -42,6 +42,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
 //    console.log(JSON.stringify(observeSpec.cpu));
 //    console.log(JSON.stringify(observeSpec.rear_camera));
 //    console.log(JSON.stringify(observeSpec.front_camera));
+//    console.log(JSON.stringify(permission));
     var URLs = "php/_dbqueryCntGroupByISO.php";
     $.ajax({
         url: URLs,
@@ -57,6 +58,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
             dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            permission: JSON.stringify(permission),
         },
         type: "POST",
         dataType: 'json',
@@ -216,6 +218,7 @@ function ajaxGetMarker() {
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
             dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            permission: JSON.stringify(permission),
         },
         type: "POST",
         dataType: 'json',
@@ -340,6 +343,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
             to: mapObj.toFormatStr,
             branch: branchName,
             iso: JSON.stringify(observeLoc),
+            permission: JSON.stringify(permission),
         },
         type: "POST",
         dataType: 'json',
@@ -379,7 +383,8 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
             isL1: isL1(firstMap),
             iso: iso,
             distBranch: JSON.stringify(observeDistBranch),
-            onlineDist: JSON.stringify(observeDistName)
+            onlineDist: JSON.stringify(observeDistName),
+            permission: JSON.stringify(permission),
         },
         type: "POST",
         dataType: 'json',
@@ -411,6 +416,7 @@ function ajaxTrendChart(mapObj) {
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
             dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            permission: JSON.stringify(permission),
         },
         function (json) {
             //            console.log(json);
@@ -463,6 +469,7 @@ function ajaxFetchTableValue(isComparison) {
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
             dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            permission: JSON.stringify(permission),
         },
         type: "POST",
         dataType: 'json',
@@ -787,8 +794,12 @@ function ajaxSaveLog(){
 }
 
 function ajaxGetGapData(callback){
-//    console.log(firstMap.fromFormatStr);
-//    console.log(firstMap.toFormatStr);
+    console.log(JSON.stringify(observeLoc));
+    console.log(JSON.stringify(observeTarget));
+    console.log(firstMap.fromFormatStr);
+    console.log(firstMap.toFormatStr);
+    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
+    console.log(JSON.stringify(permission));
     $.ajax({
         type:'GET',
         url: 'php/_dbqueryGetGap.php',
@@ -803,6 +814,7 @@ function ajaxGetGapData(callback){
             from: firstMap.fromFormatStr,
             to: firstMap.toFormatStr,
             dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            permission: JSON.stringify(permission),
         },
         success: function(json){
 //            console.log(json);
@@ -837,6 +849,7 @@ function ajaxGetGapExport(groupBy){
             distBranch: JSON.stringify(observeDistBranch),
             groupBy:groupBy,
             branch: (isNowBranchTrend ? currentPointingBranch : null),
+            permission: JSON.stringify(permission),
         },
         function (text) {
 //            console.log(text);
@@ -860,12 +873,18 @@ function ajaxGetHeatMap(){
             distBranch: JSON.stringify(observeDistBranch),
             onlineDist: JSON.stringify(observeDistName),
             time: JSON.stringify(lifeZoneTime),
-            data: JSON.stringify(observeTarget)
+            data: JSON.stringify(observeTarget),
+            permission: JSON.stringify(permission),
         },
         dataType: 'json',
 
         success: function (json) {
 //            console.log(json);
+            
+            //empty data return
+            if(json[lifeZoneTime['week']][lifeZoneTime['time']].length == 0)
+                showToast("Empty Data");
+            
             if($.isEmptyObject(heatmapLayer)) {
                 addHeatMap(json);
             } else {

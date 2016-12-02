@@ -42,7 +42,7 @@ function init_() {
             
             isVip = json.isVIP;
             permission = jQuery.extend({}, json.accountPermission);
-//            console.log(permission);
+            console.log(permission);
             console.log('ispass:'+json.isPass);
             console.log('isVIP:'+isVip);
             
