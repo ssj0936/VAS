@@ -481,7 +481,7 @@ function ajaxFetchTableValue(isComparison) {
             $("#tableContainer").empty();
 
 //            popupChartShow(false);
-            var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>' +  '<th>Activated Date</th>' +  '<th>Activated Week</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
+            var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>'+ '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
             $("#tableContainer").append(tableContenr);
 
             var finalTableArray = [];
@@ -489,7 +489,6 @@ function ajaxFetchTableValue(isComparison) {
                 var countryID = json[i].countryID;
                 json[i]['displayName'] = '';
                 json[i]['iso'] = '';
-                json[i]['week'] = '';
                 var find = mapObj.jsonData.features.filter(function (obj) {
                     return (obj.properties.OBJECTID == countryID)
                 });
@@ -506,17 +505,12 @@ function ajaxFetchTableValue(isComparison) {
                 //post process
                 json[i]['cnt'] = numToString(json[i]['cnt']);
                 
-                var d = new Date(json[i].date);
-                json[i]['week'] = d.getWeek();
-                
                 if(json[i].displayName != ''){
                     finalTableArray.push({
                         displayName:json[i].displayName,
                         iso:json[i].iso,
                         cnt:json[i].cnt,
                         model:json[i].models,
-                        date:json[i].date,
-                        week:json[i].week,
                     });
                 }
             }
@@ -532,12 +526,6 @@ function ajaxFetchTableValue(isComparison) {
                     },
                     {
                         data: 'model'
-                    },
-                    {
-                        data: 'date'
-                    },
-                    {
-                        data: 'week'
                     },
                     {
                         data: 'cnt'
@@ -794,12 +782,12 @@ function ajaxSaveLog(){
 }
 
 function ajaxGetGapData(callback){
-    console.log(JSON.stringify(observeLoc));
-    console.log(JSON.stringify(observeTarget));
-    console.log(firstMap.fromFormatStr);
-    console.log(firstMap.toFormatStr);
-    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
-    console.log(JSON.stringify(permission));
+//    console.log(JSON.stringify(observeLoc));
+//    console.log(JSON.stringify(observeTarget));
+//    console.log(firstMap.fromFormatStr);
+//    console.log(firstMap.toFormatStr);
+//    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
+//    console.log(JSON.stringify(permission));
     $.ajax({
         type:'GET',
         url: 'php/_dbqueryGetGap.php',

@@ -6,7 +6,7 @@ function buttonInit() {
     
     //dataset selector init
     $( "#dataset" ).selectmenu({
-        width: '122px',
+        width: '102%',
         change: function( event, data ) {
             //not allow switching while loading
             if (isLoading()) return;
@@ -29,6 +29,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
+                        checkboxLocationInit(allLoc);
 //                        applyPermittedLoc();
                         break;
                     case "lifezone":
@@ -46,6 +47,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
+                        checkboxLocationInit(allLoc);
 //                        applyPermittedLoc();
                         
                         break;
@@ -80,6 +82,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
+                        checkboxLocationInit(allLoc);
 //                        applyPermittedLoc();
                         break;
                     
@@ -115,6 +118,7 @@ function buttonInit() {
                                 //UI remove
                                 destroyDistBranchCheckBox();
                         }
+                        checkboxLocationInit(distBranchLoc);
 //                        applyPermittedLoc();
                         break;
                     
@@ -132,6 +136,7 @@ function buttonInit() {
                             //UI remove
                             destroyDistBranchCheckBox();
                         }
+                        checkboxLocationInit(gapLoc);
 //                        applyPermittedLoc();
                         break;
                     
@@ -145,7 +150,7 @@ function buttonInit() {
             secondary: "ui-icon-carat-1-s",
         }
     }).css({
-        width: '120px',
+        width: '100%',
 //        width: '260px'
     });
     
@@ -750,7 +755,7 @@ function submitBtnSetting() {
                       && $('input[name="branchDist"]:checked').length == 0
                       && $('input[name="distBranch"]:checked').length == 0
                       && $('input[name="onlineDist"]:checked').length == 0){
-                        alert('plz check any dist/branch');
+                        showAlert('plz check any dist/branch');
                         break;
                     }
                     
@@ -866,7 +871,7 @@ function submitBtnSetting() {
                     
                 case FUNC_GAP:
                     if(!isGapButtonCanShow){
-                        alert('GAP mode only supported in single selected country');
+                        showAlert('GAP mode only supported in single selected country');
                         return;
                     }
                     

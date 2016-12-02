@@ -110,7 +110,7 @@
         $(document).ready(function () {
             //collapsible management
             $('.collapsible').collapsible({
-                defaultOpen: 'section_target',
+                defaultOpen: 'section_target,section_country',
             });
 
             //jquery dialog
@@ -175,72 +175,57 @@
                     <div class="panel-body">
 
                         <div id="selector_target" class="selector">
-                            <div id="dataSelectorFilter">
-                                <table>
-                                    <tr id="functionFilter">
-                                        <td>
-                                            <label>Function:</label>
-                                        </td>
-                                        <td style="width: 100%;text-align: right;">
-                                            <select id="dataset">
-                                                <option value="activation" selected="selected">Activation Map</option>
-                                                <option value="activationTable">Activation Table</option>
-                                                <option value="gap">GAP by branch</option>
-                                                <option value="distBranch">Branch vs. Disti</option>
-                                                <option value="lifezone">LifeZone</option>
-                                                <!--                            <option value="qc">QC</option>-->
-                                            </select>
-                                        </td>
-                                    </tr>
-
-                                    <tr id="dateFilter">
-                                        <td>
-                                            <label>Date:</label>
-                                        </td>
-                                        <td style="width: 100%;text-align: right;">
-                                            <div id='databtn' style="display: inline-block;vertical-align: top;">
-                                                <button class="date">Date</button>
-                                                <div id="dateDropdown" class="selector">
-                                                    <div id="timeSection">
-                                                        <button class="btn_unpressed" id="btnToday">Today</button>
-                                                        <button class="btn_unpressed" id="btnYesterday">Yesterday</button>
-                                                        <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
-                                                        <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
-                                                        <button class="btn_unpressed" id="btnThisMonth">This Month</button>
-                                                        <button class="btn_unpressed" id="btnLastMonth">Last Month</button>
-                                                        <!--                            <button class="btn_unpressed" id="btnAllTime">All Time</button>-->
-                                                    </div>
-                                                    <p style="margin-left:3%;text-align: left;"><b>Custom date range</b></p>
-                                                    <div id="date_selection_zone_1" style="text-align: center;">
-                                                        <input value="From Time" type="text" id="from" name="from"> -
-                                                        <input value="To Time" type="text" id="to" name="to">
-                                                    </div>
-                                                    <!--
-                                                    <input id="compare" type="checkbox">Compare to</input>
-                                                    <div id="date_selection_zone_2" style="display:none">
-                                                        <input value="From Time" type="text" id="from_compare" name="from"> -
-                                                        <input value="To Time" type="text" id="to_compare" name="to">
-                                                    </div>
-                    -->
-<!--
-                                                    <div style="display: block;">
-                                                        <button class="submit">Apply</button>
-                                                    </div>
--->
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                           <div id="functionContainer" class="filterSelector">
+                               <label>Function:</label>
+                               <select id="dataset">
+                                    <option value="activation" selected="selected">Activation Map</option>
+                                    <option value="activationTable">Activation Table</option>
+                                    <option value="gap">GAP by branch</option>
+                                    <option value="distBranch">Branch vs. Disti</option>
+                                    <option value="lifezone">LifeZone</option>
+                                    <!--                            <option value="qc">QC</option>-->
+                                </select>
+                           </div>
+                           <div id="dateContainer" class="filterSelector">
+                               <label>Date:</label>
+                               <div id='databtn' style="display: inline-block;vertical-align: top; width:100%">
+                                    <button class="date">Date</button>
+                                    <div id="dateDropdown" class="selector">
+                                        <div id="timeSection">
+                                            <button class="btn_unpressed" id="btnToday">Today</button>
+                                            <button class="btn_unpressed" id="btnYesterday">Yesterday</button>
+                                            <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
+                                            <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
+                                            <button class="btn_unpressed" id="btnThisMonth">This Month</button>
+                                            <button class="btn_unpressed" id="btnLastMonth">Last Month</button>
+                                            <!--                            <button class="btn_unpressed" id="btnAllTime">All Time</button>-->
+                                        </div>
+                                        <p style="margin-left:3%;text-align: left;"><b>Custom date range</b></p>
+                                        <div id="date_selection_zone_1" style="text-align: left;">
+                                            <input value="From Time" type="text" id="from" name="from"> -
+                                            <input value="To Time" type="text" id="to" name="to">
+                                        </div>
+                                        <!--
+                                        <input id="compare" type="checkbox">Compare to</input>
+                                        <div id="date_selection_zone_2" style="display:none">
+                                            <input value="From Time" type="text" id="from_compare" name="from"> -
+                                            <input value="To Time" type="text" id="to_compare" name="to">
+                                        </div>
+        -->
+                                        <div style="display: block; text-align: left;">
+                                            <button class="submit">OK</button>
+                                        </div>
+                                    </div>
+                                </div>
+                           </div>
                         </div>
                         <!--filter-->
-                        <div class="filter_section collapsible" id="section_target">Device<span></span></div>
+                        <div class="filter_section" id="section_target">Device<span></span></div>
                         <div id="selector_target" class="selector">
                             <div id="deviceFilter" class="customScrollBar"></div>
                         </div>
 
-                        <div class="filter_section collapsible" id="section_country">Country<span></span></div>
+                        <div class="filter_section" id="section_country">Country<span></span></div>
                         <div id="selector_location" class="selector">
                             <div id="locationFilter" class="customScrollBar"></div>
                         </div>
@@ -261,7 +246,7 @@
                             </div>
                         </div>
 
-                        <div class="filter_section more_filter" id="section_more" style="border-top: solid #c4c4c4 1pt;">MORE<span></span></div>
+                        <div class="filter_section filter_section_lastone more_filter" id="section_more" style="border-top: solid #c4c4c4 1pt; border-bottom: solid #c4c4c4 1pt;">MORE<span class="ui-icon ui-icon-triangle-1-e">icon</span></div>
 
                         <div id="moreFilterContainer">
                             <div class="filter_section collapsible hardware_filter" id="section_cpu" style="border-top:0px">CPU<span></span></div>
@@ -333,7 +318,7 @@
 
                         <div id="activationControlPanel" class="controlPanel">
                             <div id="mode" style="margin-top: 3px;">
-                                <label class="buttonSetLable" for="mode">Mode</label>
+                                <label class="buttonSetLable" for="mode">Layer</label>
                                 <button class="mode" id="region">Region</button>
                                 <button class="mode" id="marker">Marker</button>
                                 <!--                                <button class="mode" id="comparison">Comparison</button>-->

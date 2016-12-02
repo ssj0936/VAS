@@ -10,32 +10,21 @@
 
 //    $now = new DateTime(null,new DateTimeZone('Asia/Taipei'));
 //    echo "<br>-----------<br>".$now->format('Y-m-d H:i:s')."<br>-----------<br>";
-//    $color = '["Black","BLACK"]';
 //    $color = '["all"]';
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $from = "2016-7-9";
-//    $to = "2016-8-3";    
+//    $from = "2016-11-02";
+//    $to = "2016-12-02";    
 //    $iso ='["IND"]';
-//    $data = '[{"model":"all","devices":"all","datatype":"model"}]';
-//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-//$data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZENFONE-D","devices":"ZENFONE-D","product":"ZENFONE-D","datatype":"product"}]';
-//$color = '["Aqua Blue (IMR)","BLACK","BLUE","Gold (IMR)","RED","WHITE","black","blue","Orange","white","White; ABS","White;ABS","Black","Gold","White","GOLD","Golden","Red","Silver","SILVER BLUE","Yellow","Glacier Silver","Titanium Gray","Unknown"]';
-//$cpu = '["MTK MT6580; Quad-Core CPUs; 1.3GHz","Qualcomm Snapdragon410 MSM8916; Quad-core CPU; 1.0 GHz","Qualcomm Snapdragon410 MSM8916; Quad-core CPUs;  1.2 GHz","MTK MT6737T; Quad-Core CPUs","MTK MT6737V/C; Quad-Core CPUs; 1.25G","Qualcomm Snapdragon200 MSM8212; Quad-core CPUs; 1.2GHz","Qualcomm Snapdragon625 MSM8953; octa-core CPUs; 2.0 GHz","Unknown"] ';
-//$rearCamera = '["13 Mega Pixel","8 Mega Pixel","5 Mega Pixel","Unknown"]';
-//$frontCamera = '["0.3 Mega Pixel","2 Mega Pixel","8 Mega Pixel","Unknown"]';
-//$dataset = 'lifezone';
-//$from = "2015-8-15";
-//$to = "2016-9-14";    
-//$iso ='["PHL"]';
-//$data = '[{"model":"A501CG","devices":"A501CG","product":"ZENFONE","datatype":"model"}]';
-//$distBranch = '[]';
-//$onlineDist = '[]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $distBranch = '[]';
+//    $onlineDist = '[]';
+//$permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 
 
-//
+
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
     $rearCamera = $_POST['rearCamera'];
@@ -109,7 +98,7 @@
                 if(!$result['queryable']) continue;
             }
             
-            $tmpFromTableStr="SELECT map_id,count,device_model.model_name model_name,date"
+            $tmpFromTableStr="SELECT map_id,count,device_model.model_name model_name"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -141,9 +130,9 @@
 		$fromTableStr ="(".$fromTableStr.")foo";
 		//echo $fromTableStr."<br>";
 		
-		$queryStr = "SELECT map_id,SUM(count) AS count,model_name,date
+		$queryStr = "SELECT map_id,SUM(count) AS count,model_name
                     FROM ".$fromTableStr." 
-                    GROUP BY map_id,model_name,date ORDER BY date, model_name DESC;";
+                    GROUP BY map_id,model_name ORDER BY model_name DESC;";
 //		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
@@ -151,7 +140,6 @@
 		{
             $results[] = array(
                     'countryID' => $row['map_id'],
-                    'date' => $row['date'],
                     'cnt' => $row['count'],
                     'models' => $row['model_name']
                 );

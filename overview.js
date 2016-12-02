@@ -27,7 +27,7 @@ function overviewSetting() {
             $(this).addClass('active');
 
             currentTab = $(this).attr('data-value');
-            console.log(currentTab);
+//            console.log(currentTab);
             overviewInit();
         });
         popupChartShow(true);
@@ -46,7 +46,7 @@ function overviewInit(){
             dataset:currentTab,
         },
         success: function (json) {
-            console.log(json);
+//            console.log(json);
             
             //no data
             if(json.allCount == 0){

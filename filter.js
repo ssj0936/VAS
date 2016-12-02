@@ -54,27 +54,7 @@ function checkParent(el) {
 
 function checkboxDeviceInit() {
     
-//    console.log(Object.keys(allDevicesList).length);
-    var ul = jQuery('<ul/>').appendTo($("#deviceFilter"));
-
-    var li = jQuery('<li/>').attr("id", "check_device_li").appendTo($(ul));
-    jQuery('<input/>', {
-        id: 'filter_device_' + "all",
-        type: 'checkbox',
-        value: "all",
-        datatype: "all",
-        'data-productName':"all",
-        'data-modelName':"all",
-        'data-devicesName':"all",
-        name: "devicesList",
-        disabled: ((Object.keys(allDevicesList).length == 0) ? true : false),
-    }).appendTo($(li));
-    jQuery('<label/>', {
-        text: "All",
-        for: 'filter_device_' + "all",
-    }).appendTo(li);
-
-    var productUl = jQuery('<ul/>').appendTo($(ul));
+    var productUl = jQuery('<ul/>',{id:'productUl'}).appendTo($("#deviceFilter"));
     //ui-icon-squaresmall-plus
     for (var productName in allDevicesList) {
         var li = jQuery('<li/>').appendTo($(productUl));
@@ -192,13 +172,11 @@ function checkboxDeviceInit() {
             observeTargetTmp.length = 0;
             specDeviceTmp.length = 0;
             observeTargetDeviceOnlyTmp.length = 0;
-            var checktarget = $("#check_device_li");
+            var checktarget = $("#productUl");
             checkDevicePush(checktarget);
-//            console.log(observeTargetTmp);
+            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
 //            console.log(specDeviceTmp);
-            
-//            applyPermittedLoc();
             
             ajaxGetDeviceSpec(specDeviceTmp);
             disableSubmit();
@@ -206,143 +184,15 @@ function checkboxDeviceInit() {
     });
 }
 
-function applyPermittedLoc(){
-    if(isVip) {
-        if(activeFunctionTmp == 'gap'){
-            permission = {'IND':[''],'IDN':[''],};
-        }
-        else{
-            $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
-            permission = {};
-            return;
-        }
-    }
+function checkboxLocationInit(locSet) {
     
-    var needTofilt = (activeFunctionTmp == 'distBranch' || activeFunctionTmp == 'gap');
-    
-    //reset disable 
-    $('input[name="loc"]:not(input[name="loc"][iso="world"])').removeAttr('disabled');
-
-    //get chosen productID
-    var productID = [];
-    $('input[name="devicesList"][datatype="model"]:checkbox:checked'
-      +',input[name="devicesList"][datatype="devices"]:checkbox:checked').each(function(){
-        if(!isInArray(productID,$(this).attr('data-productid'))){
-            productID.push($(this).attr('data-productid'));
-        }
-    });
-
-    //lock some loc
-    //only normal user need to do this
-    if(productID.length != 0){
-        var showableISO = [];
-        for(var iso in permission){
-            for(var i in productID){
-                var id = productID[i];
-                
-                //found this ID in this country
-                if(isInArray(permission[iso],id) || isInArray(permission[iso],"")){
-                    if(needTofilt 
-                      && ((activeFunctionTmp == 'distBranch' && !isInArray(countryNeedToShowDistBranch,iso))
-                         || (activeFunctionTmp == 'gap' && !isInArray(countryGapModeSupported,iso)))){
-                        break;
-                    }
-                    
-                    showableISO.push(iso);
-                    break;
-                }
-            }
-        }
-//        console.log(showableISO);
-        
-        //means is no limit
-        //no need to lock any country
-        if(isInArray(showableISO,'')) return;
-
-        //disable some item
-        $('input[datatype="country"]').each(function(){
-            //country shoud be disable
-            if(!isInArray(showableISO,$(this).attr('iso'))){
-                //unclick the item already clicked
-                if($(this).is(":checked"))
-                    $(this).trigger('click');
-
-                $(this).attr("disabled", "disabled");
-            }
-        });
-        
-        //disable 2nd level
-        $('input[datatype="terrority"]').each(function(){
-            var child = $(this).parent().next('ul');
-            
-            if (child.length > 0) {
-                //init flag of empty set with 'false'
-                var alldisable = true;   
-                $("li input", child).each(function () {
-                    if(!$(this).is(':disabled')){
-//                        console.log($(this).val());
-                        alldisable = false;
-
-                        return false;
-                    }
-                });
-            }
-//            console.log($(this).attr('id')+":"+alldisable);
-            if(alldisable)
-                $(this).attr("disabled", "disabled");
-        });
-    }
-    
-    //check the level checkbox
-    $('input[datatype="terrority"]').each(function(){
-        var child = $(this).parent().next('ul');
-
-        if (child.length > 0) {
-            //init flag of empty set with 'false'
-            var allchecked = !($("li input:enabled", child).length == 0);   
-            $("li input:enabled", child).each(function () {
-//                console.log($(this).val() + '/ checked:' + $(this).is(':checked'));
-                if(!$(this).is(':checked')){
-//                    console.log($(this).val());
-                    allchecked = false;
-
-                    return false;
-                }
-            });
-        }
-//        console.log($(this).attr('id')+":"+allchecked);
-        $(this).prop('checked',allchecked);
-    });
-    
-    //final: record
-    observeLocTmp.length = 0;
-    observeLocFullNameTmp.length = 0;
-    checkLocPush();
-}
-
-function checkboxLocationInit() {
+    $("#locationFilter input").off();
+    $("#locationFilter").empty();
     var worldList = [];
-    //console.log(allLoc);
+  
+    var allUl = jQuery('<ul/>').appendTo($("#locationFilter"));
 
-    var ul = jQuery('<ul/>').appendTo($("#locationFilter"));
-
-    var li = jQuery('<li/>').attr("id", "check_location_li").appendTo($(ul));
-    jQuery('<input/>', {
-        id: 'filter_location_' + "world",
-        type: 'checkbox',
-        value: "world",
-        name: "loc",
-        iso: "world",
-        disabled: true,
-    }).appendTo($(li));
-    jQuery('<label/>', {
-        text: "World",
-        for: 'filter_location_' + "world",
-    }).appendTo(li);
-
-    var allUl = jQuery('<ul/>').appendTo($(ul));
-
-    for (var terrorityName in allLoc) {
+    for (var terrorityName in locSet) {
         //work around
         if(terrorityName == "CHINA")
             continue;
@@ -386,7 +236,7 @@ function checkboxLocationInit() {
     
         var terrorityUl = jQuery('<ul/>').appendTo($(allUl)).hide();
     
-        for(var countryName in allLoc[terrorityName]){
+        for(var countryName in locSet[terrorityName]){
             var li = jQuery('<li/>').attr("class", "filter_country").appendTo($(terrorityUl));
 
             //continents
@@ -395,7 +245,7 @@ function checkboxLocationInit() {
                     type: 'checkbox',
                     value: countryName,
                     datatype: "country",
-                    iso: allLoc[terrorityName][countryName],
+                    iso: locSet[terrorityName][countryName],
                     name: "loc",
 //                    inActivation: allLoc[terrorityName][countryName][1],
 //                    inLifezone: allLoc[terrorityName][countryName][2],
@@ -432,10 +282,9 @@ function checkboxLocationInit() {
             observeLocTmp.length = 0;
             observeLocFullNameTmp.length = 0;
             checkLocPush();
-//            console.log(JSON.stringify(observeLocTmp));
-//            console.log('1111111111');
+            console.log(observeLocTmp);
+            console.log(observeLocFullNameTmp);
             if(activeFunctionTmp == FUNC_DISTBRANCH){
-//                console.log('00000000000');
                 var needToShowDistBranch = false;
                 for(var i in observeLocTmp){
                     if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
@@ -463,83 +312,8 @@ function checkboxLocationInit() {
                     }
                 }
             }
-            //
-//            applyPermittedDevice();
         });
     });
-}
-
-function applyPermittedDevice(){
-    if(isVip) return;
-    
-    //reset disable 
-    $('input[name="devicesList"]').removeAttr('disabled');
-
-    //get chosen productID
-    var loc = [];
-    $('input[name="loc"][datatype="country"]:checkbox:checked').each(function(){
-        if(!isInArray(loc,$(this).attr('iso'))){
-            loc.push($(this).attr('iso'));
-        }
-    });
-    
-//    console.log(loc);
-    
-    if(loc.length != 0){
-        var showableProduct = [];
-        for(var iso in permission){
-//            console.log(iso);
-            //found this iso in permission
-            if(isInArray(loc,iso)){
-//                $.inArray(iso,loc) !=-1){
-                for(var i in permission[iso]){
-                    if(!isInArray(showableProduct,permission[iso][i])){
-//                        $.inArray(permission[iso][i],showableProduct) == -1){
-                        showableProduct.push(permission[iso][i]);
-                    }
-                }
-            }
-        }
-        
-        if(permission['']){
-            for(var i in permission['']){
-                if(!isInArray(showableProduct,permission[''][i])){
-                    showableProduct.push(permission[''][i]);
-                }
-            }
-        }
-//        console.log(showableProduct);
-        
-        //unchecked the item and disable some item
-        
-        //''in array means all device is allowed
-        if(!isInArray(showableProduct,'')){
-//            $.inArray("",showableProduct) == -1){
-            $('input[name="devicesList"]').each(function(){
-                if(!isInArray(showableProduct,$(this).attr('data-productid'))){
-//                    $.inArray($(this).attr('data-productid'), showableProduct) == -1){
-                    if($(this).is(":checked")){
-                        $(this).prop('checked', false);
-                    }
-
-                    $(this).attr("disabled", "disabled");
-                }
-            });
-        }
-    }
-    
-    //final, record the result
-    observeTargetTmp.length = 0;
-    specDeviceTmp.length = 0;
-    observeTargetDeviceOnlyTmp.length = 0;
-    var checktarget = $("#check_device_li");
-    checkDevicePush(checktarget);
-//            console.log(observeTargetTmp);
-    updateSpecFilter(checktarget);
-//            console.log(specDeviceTmp);
-
-    ajaxGetDeviceSpec(specDeviceTmp);
-
 }
 
 function checkboxSpecInit(checkOption) {
@@ -1001,18 +775,18 @@ function destroyDistBranchCheckBox(){
 }
 
 function checkDevicePush(el) {
-    if ($("input", el).prop("checked")) {
-        observeTargetTmp.push({
-            model: $("input", el).attr("data-modelName"),
-            devices: $("input", el).val(),
-            product: $("input", el).attr("data-productName"),
-            datatype: $("input", el).attr("datatype"),
-        });
-    } else {
-        el.next("ul").children("li").each(function () {
-            checkDevicePush($(this));
-        })
-    }
+    el.children("li").each(function(){
+        if($(this).children("input").is(":checked")){
+            observeTargetTmp.push({
+                model: $("input", this).attr("data-modelName"),
+                devices: $("input", this).val(),
+                product: $("input", this).attr("data-productName"),
+                datatype: $("input", this).attr("datatype"),
+            });
+        }else{
+            checkDevicePush($(this).next("ul"));
+        }
+    });
 }
 
 function checkLocPush() {

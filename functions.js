@@ -426,7 +426,7 @@ function replaceAll(str, find, replace) {
 function filterDataNull() {
     allDevicesList = null;
     //delete allDevicesList;
-    allLoc = null;
+//    allLoc = null;
     //delete allLoc;
     allProduct = null;
     //delete allProduct;

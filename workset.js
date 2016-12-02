@@ -54,8 +54,48 @@ function init_() {
             checkboxDeviceInit();
 //                    console.log(allDevicesList);
 
-            allLoc = jQuery.extend({}, json.allLoc);
-            checkboxLocationInit();
+            allLoc = jQuery.extend(true,{}, json.allLoc);
+            console.log(allLoc);
+            
+            //check is Gap mode need to hide
+            gapLoc = jQuery.extend(true,{}, json.allLoc);
+            for(var terrority in gapLoc){
+                for(var country in gapLoc[terrority]){
+                    if(!isInArray(countryGapModeSupported,gapLoc[terrority][country][0])){
+                        delete gapLoc[terrority][country];
+                    }
+                }
+                
+                if(Object.keys(gapLoc[terrority]).length == 0)
+                    delete gapLoc[terrority];
+            }
+            if(Object.keys(gapLoc).length == 0)
+                isNeedToHideGap = true;
+
+            //check is distBranch mode need to hide
+            distBranchLoc = jQuery.extend(true,{}, json.allLoc);
+            for(var terrority in distBranchLoc){
+                for(var country in distBranchLoc[terrority]){
+                    if(!isInArray(countryNeedToShowDistBranch,distBranchLoc[terrority][country][0])){
+                        delete distBranchLoc[terrority][country];
+                    }
+                }
+                
+                if(Object.keys(distBranchLoc[terrority]).length == 0)
+                    delete distBranchLoc[terrority];
+            }
+            if(Object.keys(distBranchLoc).length == 0)
+                isNeedToHideDistBranch = true;
+
+            //if is needed, hide it
+            if(isNeedToHideGap)
+                $('#dataset option[value="gap"]').remove();
+
+            if(isNeedToHideDistBranch)
+                $('#dataset option[value="distBranch"]').remove();
+            
+            
+            checkboxLocationInit(allLoc);
             branchDistInit();
 
             filterDataNull();

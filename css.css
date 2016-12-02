@@ -8,7 +8,7 @@
         width: 100%;
         margin: 0px;
         font-family: Segoe UI;
-/*        margin: 8px;*/
+        /*        margin: 8px;*/
         font-size: 13px;
     }
     
@@ -50,19 +50,20 @@
     }
     
     #selector {
-/*
+        /*
         width: 15%;
         margin-left: 0.1%;
         margin-right: 1.4%;
 */
-/*        display: inline-block;*/
+        /*        display: inline-block;*/
         vertical-align: top;
     }
     
     #rightSideArea {
-/*        display: inline-block;*/
+        padding-left: 20px;
+        /*        display: inline-block;*/
         vertical-align: top;
-/*        width: 80%;*/
+        /*        width: 80%;*/
     }
     
     #dateDropdown input[type="button"],
@@ -238,12 +239,17 @@
         margin-bottom: 5px;
         padding-top: 8px;
     }
-
+    
+    .filter_section_lastone {
+        padding-bottom: 10px;
+        border-bottom: solid #c4c4c4 1pt;
+    }
+    
     #moreFilterContainer .filter_section {
         margin: 5px 5px 10px 5px;
-/*        margin: 5px;*/
-/*        margin-bottom: 5px;*/
-/*        padding-top: 8px;*/
+        /*        margin: 5px;*/
+        /*        margin-bottom: 5px;*/
+        /*        padding-top: 8px;*/
     }
     
     .btn_unpressed {
@@ -293,9 +299,9 @@
         margin-bottom: 3px;
     }
     
-    .control_panel_btn_area select + .ui-selectmenu-button ,
+    .control_panel_btn_area select + .ui-selectmenu-button,
     .centerCenterTitle select + .ui-selectmenu-button,
-    .centerRightTitle select + .ui-selectmenu-button{
+    .centerRightTitle select + .ui-selectmenu-button {
         vertical-align: middle;
     }
     
@@ -365,7 +371,7 @@
     #branchDistFilter,
     div.specFilter {
         max-height: 250px;
-/*        overflow: auto;*/
+        /*        overflow: auto;*/
     }
     
     #selector li {
@@ -376,8 +382,8 @@
     #selector ul {
         -webkit-margin-before: 0px;
         -webkit-margin-after: 0px;
-        -webkit-padding-start: 8px;
-        padding-left: 8px;
+        -webkit-padding-start: 12px;
+        padding-left: 15px;
         margin-left: 0px;
         margin-right: 0px;
     }
@@ -387,7 +393,8 @@
         padding-left: 16px;
     }
     
-    #dateDropdown,#overviewDateDropdown {
+    #dateDropdown,
+    #overviewDateDropdown {
         display: none;
         position: absolute;
         background-color: #eeeeee;
@@ -435,13 +442,13 @@
     #dateDropdown button.submit,
     #overviewDateDropdown button.submit,
     #dateDropdown button.cancel,
-    #overviewDateDropdown button.cancel{
+    #overviewDateDropdown button.cancel {
         display: inline-block;
         margin: 5% 0% 3% 2%;
     }
     
     #serviceDropdown button.submit,
-    #serviceDropdown button.cancel{
+    #serviceDropdown button.cancel {
         display: inline-block;
         margin: 5% 0% 3% 2%;
     }
@@ -466,7 +473,7 @@
         background: url('./img/savebookmark.png') center no-repeat;
         border: 0px;
     }
-
+    
     button#info {
         height: 32px;
         width: 32px;
@@ -511,7 +518,7 @@
         border: solid #e7e7e7 2pt;
     }
     
-    .collapsible {
+    .filter_section {
         border-top: solid #c4c4c4 1pt;
     }
     
@@ -534,6 +541,12 @@
         display: block;
         float: right;
         background: url(img/arrow_down.png) center center no-repeat;
+        padding: 10px;
+    }
+    
+    #section_more span {
+        display: block;
+        float: right;
         padding: 10px;
     }
     
@@ -607,8 +620,7 @@
         margin-top: 0px;
         margin-bottom: 0px;
     }
-    
-/*
+    /*
     div#updatetime {
         margin-top: 16px;
         text-align:right;
@@ -661,7 +673,7 @@
         height: 100%;
         position: relative;
         max-height: 275px;
-/*        overflow: auto;*/
+        /*        overflow: auto;*/
         border-bottom: #CCC;
         border-bottom-width: 0.5px;
         border-bottom-style: solid;
@@ -783,64 +795,65 @@
     .trendFunctionBtn {
         vertical-align: top;
     }
-
     /* customize scroll bar*/
-    .customScrollBar::-webkit-scrollbar-track{
+    
+    .customScrollBar::-webkit-scrollbar-track {
         border-radius: 10px;
         background-color: #F5F5F5;
     }
-
-    .customScrollBar::-webkit-scrollbar{
+    
+    .customScrollBar::-webkit-scrollbar {
         width: 12px;
         height: 10px;
         background-color: #F5F5F5;
     }
-
-    .customScrollBar::-webkit-scrollbar-thumb{
+    
+    .customScrollBar::-webkit-scrollbar-thumb {
         border-radius: 10px;
         background-color: #DDD;
     }
-
+    
     .customScrollBar {
         overflow: hidden;
     }
+    
     .customScrollBar:hover {
         overflow-x: auto;
         overflow-y: auto;
     }
-
+    
     #functionalBtnContainer .ui-widget {
         margin-right: 5px;
     }
-
-    div#locset{
+    
+    div#locset {
         width: auto;
         display: table;
         margin: 0px auto;
     }
-
-    #locset .locset{
+    
+    #locset .locset {
         height: 37px;
     }
-
-    .locset .ui-button-text{  
-        padding: .3em; 
+    
+    .locset .ui-button-text {
+        padding: .3em;
     }
-
-    #section_branch_dist{
+    
+    #section_branch_dist {
         display: none;
     }
-
-    button#gap{
+    
+    button#gap {
         display: none;
     }
-
-    .sliderDiv{
+    
+    .sliderDiv {
         width: 30%;
         display: inline-block;
         margin-left: 10px;
     }
-
+    
     .sliderDiv label {
         position: absolute;
         width: 20px;
@@ -848,55 +861,58 @@
         text-align: center;
         margin-top: 20px;
     }
-
-    .needTohideAtFirst{
+    
+    .needTohideAtFirst {
         display: none;
     }
-    .overviewCenter{
+    
+    .overviewCenter {
         display: inline-block;
         vertical-align: top;
     }
-
-    #overviewCenterLeft,#overviewCenterCenter{
-/*        margin: 10px 10px 0px 10px;*/
+    
+    #overviewCenterLeft,
+    #overviewCenterCenter {
+        /*        margin: 10px 10px 0px 10px;*/
         height: 100%;
     }
-    #overviewCenterLeft{
+    
+    #overviewCenterLeft {
         position: relative;
-/*        width:20%;*/
-    }
-    #overviewCenterCenter{
-/*        width:20%;*/
-        height: 95%;
-    }
-
-    #overviewCenterRight{
-/*        margin: 10px 10px 0px 10px;*/
-        height: 95%;
-        width:100%;
+        /*        width:20%;*/
     }
     
-    #overviewTop{
+    #overviewCenterCenter {
+        /*        width:20%;*/
+        height: 95%;
+    }
+    
+    #overviewCenterRight {
+        /*        margin: 10px 10px 0px 10px;*/
+        height: 95%;
+        width: 100%;
+    }
+    
+    #overviewTop {
         margin-top: 10px;
         height: 5%;
         padding: 0 8px 5px 8px;
     }
-
-    #overviewCenter{
+    
+    #overviewCenter {
         height: 95%;
-/*        margin: 0 5% 0 5%;*/
+        /*        margin: 0 5% 0 5%;*/
     }
-
-    #todayLogin{
+    
+    #todayLogin {
         height: 45%;
-/*        margin-bottom: 16px;*/
+        /*        margin-bottom: 16px;*/
     }
-
-    #topTenLogin{
+    
+    #topTenLogin {
         height: 45%;
     }
-
-/*
+    /*
     #overviewTop:before {
         content: "";
         position: absolute;
@@ -907,8 +923,7 @@
         border-bottom:2px solid #ddd;
     }
 */
-
-/*
+    /*
     #overviewCenterLeft:before{
         content: "";
         position: absolute;
@@ -917,72 +932,75 @@
         border-right: 2px solid #ddd;
     }
 */
-
-    #homepage{
-        margin-left:10px;
+    
+    #homepage {
+        margin-left: 10px;
         height: 100%;
     }
-
-    .overviewTitle{
+    
+    .overviewTitle {
         font-weight: bold;
     }
-
-    .centerCenterContent{
-        
+    
+    .centerCenterContent {
         max-height: 85%;
     }
-
-    #divider{
-        height:5%;
+    
+    #divider {
+        height: 5%;
     }
-
-    .card-padding{
-        padding:8px;
+    
+    .card-padding {
+        padding: 8px;
     }
-
-    .heatTip{
-        position:absolute;
-        left:0;
-        top:0;
-        background:rgba(0,0,0,.8);
-        color:#fff;
-        font-size:14px;
-        padding:5px;
-        line-height:18px;
+    
+    .heatTip {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: rgba(0, 0, 0, .8);
+        color: #fff;
+        font-size: 14px;
+        padding: 5px;
+        line-height: 18px;
         z-index: 20;
     }
-
-    .navbar-nav > li > a, .navbar-brand {
-        padding-top:4px !important; 
-        padding-bottom:0 !important;
+    
+    .navbar-nav > li > a,
+    .navbar-brand {
+        padding-top: 4px !important;
+        padding-bottom: 0 !important;
         height: 32px;
     }
+    
     .navbar {
-        min-height:32px !important;
+        min-height: 32px !important;
         margin-bottom: 10px;
-    }    
-
-    .cursorDefault:hover{
+    }
+    
+    .cursorDefault:hover {
         cursor: default;
     }
-
-    #lifezoneWeekDay,#lifezonePartOfDay{
+    
+    #lifezoneWeekDay,
+    #lifezonePartOfDay {
         display: inline-block;
     }
-
-    #lifezoneWeekDayBtnset,#lifezonePartOfDayBtnset{
+    
+    #lifezoneWeekDayBtnset,
+    #lifezonePartOfDayBtnset {
         display: inline-block;
     }
-
+    
     button.lifezoneWeekDayBtnset {
         width: 50px;
     }
-
-    div #overviewDatebtn{
+    
+    div #overviewDatebtn {
         display: inline-block;
     }
-
-    div#moreFilterContainer{
+    
+    div#moreFilterContainer {
         position: absolute;
         display: none;
         z-index: 10;
@@ -990,8 +1008,29 @@
         margin-bottom: 20px;
         background: white;
     }
-
-    div.hr{
+    
+    div.hr {
         border-top: solid #c4c4c4 1pt;
         margin: 5px;
+    }
+    
+    .filterSelector {
+        width: 100%;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+    
+    .filterSelector label {
+        display: block;
+        width: 60px;
+        vertical-align: bottom;
+        margin-bottom: 3px;
+    }
+    
+    #selector_target {
+        width: 100%;
+    }
+    
+    .ui-selectmenu-button span.ui-selectmenu-text {
+        text-align: center;
     }
