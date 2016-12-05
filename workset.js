@@ -37,7 +37,8 @@ function init_() {
         success: function (json) {
 //            console.log(json);
             if(!isVip && !json.isPass){
-                window.location.href = '404.html';
+                noPermissionShow();
+                //window.location.href = '404.html';
             }
             
             isVip = json.isVIP;
@@ -291,3 +292,37 @@ function clearFilterResult() {
     document.getElementById("filterBarResults").innerHTML = "";
 }
 
+function noPermissionShow(){
+    $('body').empty();
+    
+    var container = jQuery('<div/>').appendTo('body');
+    var img = jQuery('<img/>',{
+           src: 'img/Lock.png',
+        }).css({
+            'display':'block',
+            'margin':'auto',
+            'width':'15%',
+        }).appendTo(container);
+    
+    var text = jQuery('<p/>',{
+        'class':'text-info',
+    })
+    .css({
+        'font-size':'18px',
+        'text-align': 'center',
+        'font-weight': 'bold',
+    })
+    .text('Permission Deny')
+    .appendTo(container);
+    
+    container.css({
+        'margin-top':'10%'
+//        'position': 'absolute',
+//        'top': '50%',
+//        'left': '50%',
+//        'width': ''+container.outerWidth()+'px',
+//        'height': ''+container.outerHeight()+'px',
+//        'margin-top':'' + (-1*(container.outerHeight()/2)) + 'px',
+//        'margin-left':'' + (-1*(container.outerWidth()/2)) + 'px',
+    })
+}
