@@ -55,7 +55,7 @@ function init_() {
 //                    console.log(allDevicesList);
 
             allLoc = jQuery.extend(true,{}, json.allLoc);
-            console.log(allLoc);
+//            console.log(allLoc);
             
             //check is Gap mode need to hide
             gapLoc = jQuery.extend(true,{}, json.allLoc);

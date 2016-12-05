@@ -113,23 +113,23 @@
     }
     //-----------------------------------fake data test-----------------------------------
 //    if($account == 'JONAS_TSAI'){
-        $permissionResult = array(
+//        $permissionResult = array(
 //            'IND' => array('NT','AT','AZ'),
 //            'IDN' => array('AZ','AT'),
 //            'TWN' => array('NT','AX'),
 //            'VNM' => array('AZ','AX'),
 //            'BGD' => array('','AX','AZ')
 //            'IND' => array('NK','QQ','gg','AT','AZ','tt','ee','ww'),
-            'IDN' => array('AZ','AT'),
-            'TWN' => array('NK','AX'),
-            'JPN' => array('NP','AX')
-        ) ;
-        $permissionProductId = array('NK','NP','AT','AZ','AX');
-        $permissionLoc = array(/*'IN',*/'ID','TW','JP');
-        $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
-        $permissionLocStr = "'".implode("','",$permissionLoc)."'";
-        $isPass = true;
-        $isVIP = false;
+//            'IDN' => array('AZ','AT'),
+//            'TWN' => array('NK','AX'),
+//            'JPN' => array('NP','AX')
+//        ) ;
+//        $permissionProductId = array('NK','NP','AT','AZ','AX');
+//        $permissionLoc = array(/*'IN',*/'ID','TW','JP');
+//        $permissionProductIdStr = "'".implode("','",$permissionProductId)."'";
+//        $permissionLocStr = "'".implode("','",$permissionLoc)."'";
+//        $isPass = true;
+//        $isVIP = false;
 //    }
     //-----------------------------------fake data test-----------------------------------
 

@@ -36,11 +36,9 @@ function createFunctionalBtn(){
             class: "trendFunctionBtn",
         })
         .text('EXPORT')
+//        .click(exportFile(getActiveTrend(), true))
         .click(function () {
-            if(getFunction() == FUNC_GAP)
-                return gapReportExportDialogShow();
-            else
-                return exportFile(getActiveTrend(), true);
+            return exportFile(getActiveTrend(), true);
         })
         .button()
     )
@@ -632,11 +630,13 @@ function exportFile(ReportTitle, ShowLabel) {
         CSV += row + '\r\n';
     }
 
+    
+    var isGap = (getFunction() == FUNC_GAP);
     for (var i = 0; i < arrData.length; i++) {
         var row = "";
 
         for (var index in arrData[i]) {
-            row += '"' + arrData[i][index] + '",';
+            row += '"' + arrData[i][index]+ (isGap ? '%': '') + '",';
         }
         row.slice(0, row.length - 1);
         //add a line break after each row
