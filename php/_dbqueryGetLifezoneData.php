@@ -14,13 +14,13 @@ $db = new DB();
 //$cpu = '["all"]';
 //$rearCamera = '["all"]';
 //$frontCamera = '["all"]';
-//$iso ='["TWN"]';
 //$data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//$distBranch = '[]';
+//$iso = '["TWN"]';
+//$distBranch = '[{"dist":"ARSH","branch":"KARNATAKA"},{"dist":"ARSH","branch":"MUMBAI"},{"dist":"ARSH","branch":"RAJASTHAN"},{"dist":"ASIN-IN-C","branch":"MUMBAI"},{"dist":"ASIN-IN-C1","branch":"DELHI"},{"dist":"ASIN-IN-C1","branch":"KARNATAKA"},{"dist":"ASIN-IN-C1","branch":"MUMBAI"},{"dist":"ASIN-IN-C1","branch":"TAMIL_NADU"},{"dist":"ASIN-IN-C1","branch":"UP_UTTARANCHAL"}]';
 //$onlineDist = '[]';
-//$week = '1';
-//$time = '1';
-//
+//$lifeZoneTime = '{"week":1,"time":1}';
+//$permission = '{}';
+
 $color = $_POST['color'];
 $cpu = $_POST['cpu'];
 $rearCamera = $_POST['rearCamera'];

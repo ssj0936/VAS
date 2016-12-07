@@ -4,6 +4,10 @@ function buttonInit() {
     //control panel button init
     $("#databtn button,#filterResult button,button.date").button();
     
+//    $('li#account').click(function(){
+//        showAlert(getFunction());
+//    });
+    
     //dataset selector init
     $( "#dataset" ).selectmenu({
         width: '102%',
@@ -16,9 +20,8 @@ function buttonInit() {
             switch(dataSet){
                     case "activation":
                         //show date button
-                        $('#dateFilter').show('medium');
+                        $('#dateContainer').show('medium');
                         //control panel switch
-//                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('.control_panel_right').hide();
                         $('#activationControlPanel').show("medium");
@@ -30,13 +33,11 @@ function buttonInit() {
                             destroyDistBranchCheckBox();
                         }
                         checkboxLocationInit(allLoc);
-//                        applyPermittedLoc();
                         break;
                     case "lifezone":
                         //hide date button
-                        $('#dateFilter').hide();
+                        $('#dateContainer').hide();
                         //control panel switch
-//                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('.control_panel_right').hide();
                         $('#lifezoneControlPanel').show("medium");
@@ -48,12 +49,11 @@ function buttonInit() {
                             destroyDistBranchCheckBox();
                         }
                         checkboxLocationInit(allLoc);
-//                        applyPermittedLoc();
                         
                         break;
                     case "qc":
                         //hide date button
-                        $('#dateFilter').hide();
+                        $('#dateContainer').hide();
                         //control panel switch
                         clearControlPanel();
                         $('.controlPanel').hide();
@@ -70,9 +70,8 @@ function buttonInit() {
 
                     case "activationTable":
                         //show date button
-                        $('#dateFilter').show('medium');
+                        $('#dateContainer').show('medium');
                         //control panel switch
-//                        clearControlPanel();
                         $('.controlPanel').hide();
                         $('.control_panel_right').hide();
                     
@@ -83,14 +82,14 @@ function buttonInit() {
                             destroyDistBranchCheckBox();
                         }
                         checkboxLocationInit(allLoc);
-//                        applyPermittedLoc();
                         break;
                     
                 case "distBranch":
                         //show date button
-                        $('#dateFilter').show('medium');
+                        $('#dateContainer').show('medium');
                         //control panel switch
                         clearControlPanel();
+                        $('.controlPanel').hide();
                         $('.control_panel_right').hide();
                         $('#activationControlPanel').show("medium");
                         
@@ -112,19 +111,19 @@ function buttonInit() {
                                 ajaxLoadBranchDist();
                             }
                         }else{
-                            if(isDistBranchFilterShowing)
+                            if(isDistBranchFilterShowing){
                                 //data delete
                                 observeDistBranch.length = 0;
                                 //UI remove
                                 destroyDistBranchCheckBox();
+                            }
                         }
                         checkboxLocationInit(distBranchLoc);
-//                        applyPermittedLoc();
                         break;
                     
                 case "gap":
                         //show date button
-                        $('#dateFilter').show('medium');
+                        $('#dateContainer').show('medium');
                         //control panel switch
                         clearControlPanel();
                         $('.controlPanel').hide();
@@ -137,7 +136,6 @@ function buttonInit() {
                             destroyDistBranchCheckBox();
                         }
                         checkboxLocationInit(gapLoc);
-//                        applyPermittedLoc();
                         break;
                     
             }
@@ -199,8 +197,8 @@ function buttonInit() {
 
 function clearControlPanel(){
     $('.controlPanel').find('button').removeClass('active');
-    lifezoneButtonsetReset();
-    actiationControlPanelReset();
+    lifezoneButtonsetRefresh();
+    actiationControlPanelRefresh();
 }
 
 function rightControlPanelInit(){
@@ -259,11 +257,16 @@ function lifezoneControlPanelInit(){
     $('div#lifezoneWeekDayBtnset').buttonset( "disable" );
     $('div#lifezonePartOfDayBtnset').buttonset( "disable" );
     
-    lifezoneButtonsetReset();
+    lifezoneButtonsetRefresh();
     
 }
 
-function lifezoneButtonsetReset(){
+function lifezoneButtonsetValueReset(){
+    lifeZoneTime.time = 1;
+    lifeZoneTime.week = 1;
+}
+
+function lifezoneButtonsetRefresh(){
     $('div#lifezoneWeekDayBtnset button').removeClass('active');
     $('div#lifezonePartOfDayBtnset button').removeClass('active');
     
@@ -350,7 +353,7 @@ function actiationControlPanelInit(){
     setFunction(FUNC_ACTIVATION);
 }
 
-function actiationControlPanelReset(){
+function actiationControlPanelRefresh(){
     $("#mode button").removeClass("active");
     
     var modeList = [MODE_MARKER,/*MODE_COMPARISION*/,MODE_REGION,/*MODE_GAP*/];
@@ -882,7 +885,7 @@ function submitBtnSetting() {
                     break;
             }
             //text in date button
-            var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("(" + $('button.btn_pressed').children('span').text() + ")");
+            var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("<br>(" + $('button.btn_pressed').children('span').text() + ")");
             $('button.date').button('option', 'label', (isModeActive(MODE_COMPARISION)) ? "Date" : (firstMap.fromFormatStr + "~<br>" + firstMap.toFormatStr + buttonStr));
             
             clearFilterResult();
@@ -904,9 +907,9 @@ function submitGap(){
     loading("Data loading...");
     observeBranchName = ['all'];
     
-    console.log(firstMap.currentRegionIso);
-    console.log(observeLoc);
-    console.log(isMapModified);
+//    console.log(firstMap.currentRegionIso);
+//    console.log(observeLoc);
+//    console.log(isMapModified);
     
     //button class reset
     $("#timeSection button").each(function () {

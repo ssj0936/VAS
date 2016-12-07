@@ -631,12 +631,12 @@ function exportFile(ReportTitle, ShowLabel) {
     }
 
     
-    var isGap = (getFunction() == FUNC_GAP);
+//    var isGap = (getFunction() == FUNC_GAP);
     for (var i = 0; i < arrData.length; i++) {
         var row = "";
 
         for (var index in arrData[i]) {
-            row += '"' + arrData[i][index]+ (isGap ? '%': '') + '",';
+            row += '"' + arrData[i][index] + '",';
         }
         row.slice(0, row.length - 1);
         //add a line break after each row

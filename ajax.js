@@ -260,6 +260,7 @@ function ajaxGetMarker() {
 }
 
 function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, activeMode, dataset) {
+//    console.log(dataset);
     $.ajax({
         type: 'GET',
         url: 'php/_dbqueryAddBookmark.php',
@@ -271,7 +272,7 @@ function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyO
             stringifyObserveLoc: stringifyObserveLoc,
             stringifyObserveSpec: stringifyObserveSpec,
             activeMode: activeMode,
-            dataset: ((dataset == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((dataset == FUNC_DISTBRANCH) ? FUNC_ACTIVATION : dataset),
         },
         dataType: 'json',
         success: function (response) {
@@ -782,6 +783,11 @@ function ajaxSaveLog(){
 }
 
 function ajaxGetGapData(callback){
+//    console.log(JSON.stringify(observeSpec.color));
+//    console.log(JSON.stringify(observeSpec.cpu));
+//    console.log(JSON.stringify(observeSpec.rear_camera));
+//    console.log(JSON.stringify(observeSpec.front_camera));
+//    
 //    console.log(JSON.stringify(observeLoc));
 //    console.log(JSON.stringify(observeTarget));
 //    console.log(firstMap.fromFormatStr);
@@ -848,6 +854,18 @@ function ajaxGetGapExport(groupBy){
 }
 
 function ajaxGetHeatMap(){
+//    console.log(JSON.stringify(observeSpec.color));
+//    console.log(JSON.stringify(observeSpec.cpu));
+//    console.log(JSON.stringify(observeSpec.rear_camera));
+//    console.log(JSON.stringify(observeSpec.front_camera));
+//    
+//    console.log(JSON.stringify(observeLoc));
+//    console.log(JSON.stringify(observeDistBranch));
+//    console.log(JSON.stringify(observeDistName));
+//    console.log(JSON.stringify(lifeZoneTime));
+//    console.log(JSON.stringify(observeTarget));
+//    console.log(JSON.stringify(permission));
+    
     loading("Data loading...");
     $.ajax({
         url: "php/_dbqueryGetLifezoneData.php",

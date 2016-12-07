@@ -15,6 +15,7 @@ function saveBookmarkBtnSetting() {
                 titleStr += observeTarget[i].model + ", ";
             }
             titleStr += ']';
+            titleStr += ('['+getFunction()+']');
             $('#bookmark_title').val(titleStr);
 
             var descStr = '[';
@@ -82,7 +83,7 @@ function addBookmark() {
     var dataset = getFunction();
     // console.log("stringifyObserveTarget:"+stringifyObserveTarget);
     // console.log("stringifyObserveLoc:"+stringifyObserveLoc);
-    //     console.log("stringifyObserveSpec:"+stringifyObserveSpec);
+         console.log("stringifyObserveSpec:"+stringifyObserveSpec);
     // console.log("firstMapTime:"+firstMapTime);
     // console.log("comparisonMapTime:"+comparisonMapTime);
     //console.log("activeMode:"+activeMode);
@@ -119,7 +120,6 @@ function bookmarkSubmit(index) {
 
     resetIsClickFromFilterResult();
 
-
     closeBookmarkList();
     loading("Data loading...");
     var targetIndex;
@@ -148,12 +148,59 @@ function bookmarkSubmit(index) {
     // console.log(firstMapTime);
     // console.log("comparisonMapTime:");
     // console.log(comparisonMapTime);
-    //console.log("activeMode:"+activeMode);
+//    console.log("activeMode:"+activeMode);
+//    console.log("dataset:"+dataset);
 
     //------------------------------
     //dateMenuHide();
 
-    //filter data collection
+    //if change dataset
+    //need to clean old setting
+    if(getFunction() != null && dataset != null && getFunction() != dataset){
+        console.log('bookmark Function:'+dataset);
+        switch(getFunction()){
+            //switch from activation
+            case FUNC_DISTBRANCH:
+            case FUNC_ACTIVATION:
+                console.log('switch from FUNC_ACTIVATION');
+                //un-pressed every mode btn
+                $("#mode button.active").each(function(){
+                    console.log($(this).attr('id'));
+                    unactiveModeBtn($(this));
+                    $(this).removeClass('active');
+                });
+                disableModeAndOverlay();
+                //close overlay
+                closeDealer();
+                closeService();
+                break;
+            //switch from lifezone
+            case FUNC_LIFEZONE:
+                console.log('switch from FUNC_LIFEZONE');
+                removeHeatMap();
+                disableLifezoneControl();
+                firstMap.addSnapshot();
+                break;
+            case FUNC_ACTIVATION_TABLE:
+                console.log('switch from FUNC_ACTIVATION_TABLE');
+                $('#tableContainer').empty();
+                break;
+
+            case FUNC_GAP:
+                console.log('switch from FUNC_GAP');
+                //change table button text
+                $('#table').button('option','label','Table');
+
+                firstMap.removePolygonMap();
+                cleanBranch();
+                break;
+
+        }
+        console.log('diff');
+    }
+    
+    
+    //filter data collection--------------------------------------
     if(firstMap.fromFormatStr == undefined || firstMap.toFormatStr== undefined ){
         var from = $("#from").datepicker("getDate");
         var to = $("#to").datepicker("getDate");
@@ -176,18 +223,168 @@ function bookmarkSubmit(index) {
     filterRecordClean();
     filterRecord();
     
-    //dataset setting
-    $("#dataset button").removeClass("active");
-    $("#" + dataset).addClass("active");
-    setFunction(dataset);
+//    var needToShowDistBranch = false;
+//    for(var i in observeLocTmp){
+//        if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+//            needToShowDistBranch = true;
+//            break;
+//        }
+//    }
+//
+//    //create dist branch filter
+//    if(needToShowDistBranch && observeLocTmp.length == 1){
+//        if(!isDistBranchFilterShowing){
+//            isDistBranchFilterShowing = true;
+//            //filter show up
+//            $('#section_branch_dist').stop(true,true).fadeIn('medium');
+//            $('#section_branch_dist').collapsible('open');
+//
+//            ajaxLoadBranchDist();
+//        }
+//    }else{
+//        if(isDistBranchFilterShowing)
+//            //data delete
+//            observeDistBranch.length = 0;
+//            //UI remove
+//            destroyDistBranchCheckBox();
+//    }
     
-    if(isGapButtonCanShow && !isDistBranchSelected){
-        $('button#gap').show();
-    }else{
-        $('button#gap').hide();
+    
+    //-------------------------------------------------------
+    setFunction(dataset);
+    switch(getFunction()){
+            //default set to region mode
+        case FUNC_ACTIVATION:
+        //case FUNC_DISTBRANCH:
+            //show date button
+            $('#dateContainer').show('medium');
+            //control panel switch
+            $('.controlPanel').hide();
+            $('.control_panel_right').hide();
+            $('#activationControlPanel').show("medium");
+            
+            if(isDistBranchFilterShowing){
+                //data delete
+                observeDistBranch.length = 0;
+                //UI remove
+                destroyDistBranchCheckBox();
+            }
+            
+            if(getFunction() == FUNC_ACTIVATION)
+                checkboxLocationInit(allLoc);
+            else
+                checkboxLocationInit(distBranchLoc);
+            
+            $('#tableContainer').hide();
+            $('#workset').show('medium');
+            enableModeAndOverlay();
+            
+            modeReset();
+            setModeOn(MODE_REGION);
+            needToLoadTwoModeSameTime = false;
+            
+            if (!$("button#region").hasClass("active"))
+                modeBtnPress($("button#region"));
+
+            firstMap.zoomToSelectedLocation();
+            submitRegion();
+                
+            break;
+            
+        case FUNC_ACTIVATION_TABLE:
+            //show date button
+            $('#dateContainer').show('medium');
+            //control panel switch
+            $('.controlPanel').hide();
+            $('.control_panel_right').hide();
+            
+            if(isDistBranchFilterShowing){
+                //data delete
+                observeDistBranch.length = 0;
+                //UI remove
+                destroyDistBranchCheckBox();
+            }
+            
+            checkboxLocationInit(allLoc);
+            
+            //clear the content
+            $(tableContainer).empty();
+
+            //hide map
+            $('#workset').hide();
+            $('#tableContainer').show('medium');
+
+            showTable();
+            break;
+            
+        case FUNC_GAP:
+            //show date button
+            $('#dateContainer').show('medium');
+            //control panel switch
+            clearControlPanel();
+            $('.controlPanel').hide();
+            $('.control_panel_right').show('medium');
+            
+            if(isDistBranchFilterShowing){
+                //data delete
+                observeDistBranch.length = 0;
+                //UI remove
+                destroyDistBranchCheckBox();
+            }
+            
+            checkboxLocationInit(gapLoc);
+//            
+//            if(!isGapButtonCanShow){
+//                showAlert('GAP mode only supported in single selected country');
+//                return;
+//            }
+
+            $('#tableContainer').hide();
+            $('#workset').show('medium');
+            submitGap();
+            firstMap.zoomToSelectedLocation();
+            break;
+            
+        //default set to week day:1/part of day:1
+        case FUNC_LIFEZONE:
+            //hide date button
+            $('#dateContainer').hide();
+            //control panel switch
+            $('.controlPanel').hide();
+            $('.control_panel_right').hide();
+            $('#lifezoneControlPanel').show("medium");
+            
+            if(isDistBranchFilterShowing){
+                //data delete
+                observeDistBranch.length = 0;
+                //UI remove
+                destroyDistBranchCheckBox();
+            }
+            
+            checkboxLocationInit(allLoc);
+            
+            lifezoneButtonsetValueReset();
+            lifezoneButtonsetRefresh();
+            
+            enableLifezoneControl();
+
+            $('#tableContainer').hide();
+            $('#workset').show('medium');
+            firstMap.zoomToSelectedLocation();
+            submitHeatMap();
+            break;
+            
     }
+    clearFilterResult();
+    showFilterResult();
+    
+    
     //--------filter----------------------------------------
 
+    $('#dataset').val(dataset)
+        .selectmenu("refresh");
+    activeFunctionTmp = dataset;
+    
     cleanFilterCheck();
     //device filter target check
     for (var i = 0; i < observeTarget.length; i++) {
@@ -209,76 +406,11 @@ function bookmarkSubmit(index) {
             observeLocFullName.push($(this).val());
         });
     }
-    
-    var needToShowDistBranch = false;
-    for(var i in observeLocTmp){
-        if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
-            needToShowDistBranch = true;
-            break;
-        }
-    }
-
-    //create dist branch filter
-    if(needToShowDistBranch && observeLocTmp.length == 1){
-        if(!isDistBranchFilterShowing){
-            isDistBranchFilterShowing = true;
-            //filter show up
-            $('#section_branch_dist').stop(true,true).fadeIn('medium');
-            $('#section_branch_dist').collapsible('open');
-
-            ajaxLoadBranchDist();
-        }
-    }else{
-        if(isDistBranchFilterShowing)
-            //data delete
-            observeDistBranch.length = 0;
-            //UI remove
-            destroyDistBranchCheckBox();
-    }
-    
     //spec filter
     specDeviceTmp.length = 0;
     var checktarget = $("#check_device_li");
     updateSpecFilter(checktarget);
     ajaxGetDeviceSpec(specDeviceTmp, observeSpec);
-    //-------------------------------------------------------
-
-    modeReset();
-    setModeOn(activeMode);
-
-//    $("#from").datepicker("setDate", new Date(firstMap.fromFormatStr));
-//    $("#to").datepicker("setDate", new Date(firstMap.toFormatStr));
-
-    if (isModeActive(MODE_COMPARISION)) {
-        if (!$("button#comparison").hasClass("active"))
-            modeBtnPress($("button#comparison"));
-
-//        comparisonMap.fromFormatStr = comparisonMapTime.from;
-//        comparisonMap.toFormatStr = comparisonMapTime.to;
-//        $("#from_compare").datepicker("setDate", new Date(comparisonMap.fromFormatStr));
-//        $("#to_compare").datepicker("setDate", new Date(comparisonMap.toFormatStr));
-
-        setCompareCheckbox(true);
-
-        //map zoom in
-        submitComparision();
-        firstMap.zoomToSelectedLocation();
-        comparisonMap.zoomToSelectedLocation();
-    } else if (isModeActive(MODE_MARKER)) {
-        if (!$("button#marker").hasClass("active"))
-            modeBtnPress($("button#marker"));
-
-        firstMap.zoomToSelectedLocation();
-        submitMarker();
-    } else if (isModeActive(MODE_REGION)) {
-        if (!$("button#region").hasClass("active"))
-            modeBtnPress($("button#region"));
-
-        firstMap.zoomToSelectedLocation();
-        submitRegion();
-    }
-    clearFilterResult();
-    showFilterResult();
 }
 
 function closeBookmarkList() {

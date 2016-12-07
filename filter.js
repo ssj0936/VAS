@@ -174,7 +174,7 @@ function checkboxDeviceInit() {
             observeTargetDeviceOnlyTmp.length = 0;
             var checktarget = $("#productUl");
             checkDevicePush(checktarget);
-            console.log(observeTargetTmp);
+//            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
 //            console.log(specDeviceTmp);
             
@@ -282,8 +282,8 @@ function checkboxLocationInit(locSet) {
             observeLocTmp.length = 0;
             observeLocFullNameTmp.length = 0;
             checkLocPush();
-            console.log(observeLocTmp);
-            console.log(observeLocFullNameTmp);
+//            console.log(observeLocTmp);
+//            console.log(observeLocFullNameTmp);
             if(activeFunctionTmp == FUNC_DISTBRANCH){
                 var needToShowDistBranch = false;
                 for(var i in observeLocTmp){
