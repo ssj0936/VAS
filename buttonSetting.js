@@ -672,12 +672,12 @@ function submitBtnSetting() {
             //if change dataset
             //need to clean old setting
             if(getFunction() != null && activeFunctionTmp != null && getFunction() != activeFunctionTmp){
-                console.log('activeFunctionTmp:'+activeFunctionTmp);
+                console.log('switch to '+activeFunctionTmp);
                 switch(getFunction()){
                     //switch from activation
                     case FUNC_DISTBRANCH:
                     case FUNC_ACTIVATION:
-                        console.log('switch from FUNC_ACTIVATION');
+                        console.log('switch from '+FUNC_ACTIVATION);
                         //un-pressed every mode btn
                         $("#mode button.active").each(function(){
                             console.log($(this).attr('id'));
@@ -691,7 +691,7 @@ function submitBtnSetting() {
                         break;
                     //switch from lifezone
                     case FUNC_LIFEZONE:
-                        console.log('switch from FUNC_LIFEZONE');
+                        console.log('switch from '+FUNC_LIFEZONE);
                         removeHeatMap();
                         disableLifezoneControl();
 //                            enableModeAndOverlay();
@@ -699,12 +699,12 @@ function submitBtnSetting() {
                         firstMap.addSnapshot();
                         break;
                     case FUNC_ACTIVATION_TABLE:
-                        console.log('switch from FUNC_ACTIVATION_TABLE');
+                        console.log('switch from '+FUNC_ACTIVATION_TABLE);
                         $('#tableContainer').empty();
                         break;
                         
                     case FUNC_GAP:
-                        console.log('switch from FUNC_GAP');
+                        console.log('switch from '+FUNC_GAP);
                         //change table button text
                         $('#table').button('option','label','Table');
 

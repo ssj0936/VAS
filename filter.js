@@ -247,8 +247,6 @@ function checkboxLocationInit(locSet) {
                     datatype: "country",
                     iso: locSet[terrorityName][countryName],
                     name: "loc",
-//                    inActivation: allLoc[terrorityName][countryName][1],
-//                    inLifezone: allLoc[terrorityName][countryName][2],
                 })
                 .css('display', 'inline-block')
                 .appendTo($(li));
@@ -259,7 +257,54 @@ function checkboxLocationInit(locSet) {
             }).appendTo(li);
         }
     }
+    
+    //check the item already check
+    if(observeLocTmp.length != 0){
+        for (var i = 0; i < observeLocTmp.length; i++) {
+            $("input[iso='" + observeLocTmp[i] + "']").each(function () {
+                var $this = $(this);
+                $this.prop('checked', true);
+                checkChild($this, ($this.prop("checked") ? true : false));
+                checkParent($this);
+            });
+        }
+        //preventing observeLocTmp contain country not in Range while switching function from Activation to Gap(or Dist/Branch)
+        //ex. ['TWN','IDN','IND'] -> ['IDN','IND'] need to remove country not in GAP list
+        
+        //so need to re-check
+        observeLocTmp.length = 0;
+        observeLocFullNameTmp.length = 0;
+        checkLocPush();
+        if(activeFunctionTmp == FUNC_DISTBRANCH){
+            var needToShowDistBranch = false;
+            for(var i in observeLocTmp){
+                if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+                    needToShowDistBranch = true;
+                    break;
+                }
+            }
 
+            //create dist branch filter
+            if(needToShowDistBranch && observeLocTmp.length == 1){
+                if(!isDistBranchFilterShowing){
+                    isDistBranchFilterShowing = true;
+                    //filter show up
+                    $('#section_branch_dist').stop(true,true).fadeIn('medium');
+                    $('#section_branch_dist').collapsible('open');
+
+                    ajaxLoadBranchDist();
+                }
+            }else{
+                if(isDistBranchFilterShowing){
+                    //data delete
+                    observeDistBranch.length = 0;
+                    //UI remove
+                    destroyDistBranchCheckBox();
+                }
+            }
+        }
+    }
+    
     //listener setting
     $("#locationFilter input").each(function (index) {
         $(this).on("click", function () {

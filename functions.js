@@ -55,6 +55,11 @@ function setUpdateTime(time) {
     $("#updatetime").html("<b>Last update</b>: " + time);
 }
 
+function getUpdateTime() {
+    var func = ((getFunction()==FUNC_LIFEZONE)?FUNC_LIFEZONE:FUNC_ACTIVATION);
+    return updateTime[func];
+}
+
 function mapHasShowsUp() {
     return document.getElementById('workset').style.display != "none";
 }

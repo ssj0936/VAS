@@ -140,29 +140,19 @@ function bookmarkSubmit(index) {
     var activeMode = bookmarkObj.activeMode;
     var dataset = bookmarkObj.dataset;
 
-    // console.log("devicesJson:");
-    // console.log(devicesJson);
-    // console.log("locJson:");
-    // console.log(locJson);
-    // console.log("firstMapTime:");
-    // console.log(firstMapTime);
-    // console.log("comparisonMapTime:");
-    // console.log(comparisonMapTime);
-//    console.log("activeMode:"+activeMode);
-//    console.log("dataset:"+dataset);
-
+    var functionSwitchFrom = getFunction();
+    var functionSwitchTo = dataset;
     //------------------------------
-    //dateMenuHide();
 
-    //if change dataset
+    //if change function
     //need to clean old setting
-    if(getFunction() != null && dataset != null && getFunction() != dataset){
-        console.log('bookmark Function:'+dataset);
-        switch(getFunction()){
+    if(functionSwitchFrom != null && functionSwitchTo != null && functionSwitchFrom != functionSwitchTo){
+        console.log('bookmark Function switchTo:'+functionSwitchTo);
+        console.log('bookmark Function switchFrom:'+functionSwitchFrom);
+        switch(functionSwitchFrom){
             //switch from activation
             case FUNC_DISTBRANCH:
             case FUNC_ACTIVATION:
-                console.log('switch from FUNC_ACTIVATION');
                 //un-pressed every mode btn
                 $("#mode button.active").each(function(){
                     console.log($(this).attr('id'));
@@ -170,24 +160,22 @@ function bookmarkSubmit(index) {
                     $(this).removeClass('active');
                 });
                 disableModeAndOverlay();
+                
                 //close overlay
                 closeDealer();
                 closeService();
                 break;
             //switch from lifezone
             case FUNC_LIFEZONE:
-                console.log('switch from FUNC_LIFEZONE');
                 removeHeatMap();
                 disableLifezoneControl();
                 firstMap.addSnapshot();
                 break;
             case FUNC_ACTIVATION_TABLE:
-                console.log('switch from FUNC_ACTIVATION_TABLE');
                 $('#tableContainer').empty();
                 break;
 
             case FUNC_GAP:
-                console.log('switch from FUNC_GAP');
                 //change table button text
                 $('#table').button('option','label','Table');
 
@@ -199,12 +187,22 @@ function bookmarkSubmit(index) {
         console.log('diff');
     }
     
+    //clear dist/branch anyway
+    if(functionSwitchFrom == FUNC_DISTBRANCH && isDistBranchFilterShowing){
+        //data delete
+        observeDistBranch.length = 0;
+        //UI remove
+        destroyDistBranchCheckBox();
+    }
+    
+    //record new current Function
+    setFunction(functionSwitchTo);
+    activeFunctionTmp = functionSwitchTo;
     
     //filter data collection--------------------------------------
     if(firstMap.fromFormatStr == undefined || firstMap.toFormatStr== undefined ){
         var from = $("#from").datepicker("getDate");
         var to = $("#to").datepicker("getDate");
-        //console.log(from);
 
         firstMap.fromFormatStr = (from.getFullYear() + "-" + (from.getMonth() + 1) + "-" + from.getDate());
         firstMap.toFormatStr = (to.getFullYear() + "-" + (to.getMonth() + 1) + "-" + to.getDate());
@@ -251,9 +249,9 @@ function bookmarkSubmit(index) {
     
     
     //-------------------------------------------------------
-    setFunction(dataset);
-    switch(getFunction()){
-            //default set to region mode
+    
+    switch(functionSwitchTo){
+        //default set to region mode
         case FUNC_ACTIVATION:
         //case FUNC_DISTBRANCH:
             //show date button
@@ -263,17 +261,10 @@ function bookmarkSubmit(index) {
             $('.control_panel_right').hide();
             $('#activationControlPanel').show("medium");
             
-            if(isDistBranchFilterShowing){
-                //data delete
-                observeDistBranch.length = 0;
-                //UI remove
-                destroyDistBranchCheckBox();
-            }
-            
-            if(getFunction() == FUNC_ACTIVATION)
+            if(functionSwitchTo == FUNC_ACTIVATION)
                 checkboxLocationInit(allLoc);
-            else
-                checkboxLocationInit(distBranchLoc);
+//            else
+//                checkboxLocationInit(distBranchLoc);
             
             $('#tableContainer').hide();
             $('#workset').show('medium');
@@ -298,13 +289,6 @@ function bookmarkSubmit(index) {
             $('.controlPanel').hide();
             $('.control_panel_right').hide();
             
-            if(isDistBranchFilterShowing){
-                //data delete
-                observeDistBranch.length = 0;
-                //UI remove
-                destroyDistBranchCheckBox();
-            }
-            
             checkboxLocationInit(allLoc);
             
             //clear the content
@@ -324,14 +308,7 @@ function bookmarkSubmit(index) {
             clearControlPanel();
             $('.controlPanel').hide();
             $('.control_panel_right').show('medium');
-            
-            if(isDistBranchFilterShowing){
-                //data delete
-                observeDistBranch.length = 0;
-                //UI remove
-                destroyDistBranchCheckBox();
-            }
-            
+            console.log("func:"+FUNC_GAP);
             checkboxLocationInit(gapLoc);
 //            
 //            if(!isGapButtonCanShow){
@@ -354,13 +331,6 @@ function bookmarkSubmit(index) {
             $('.control_panel_right').hide();
             $('#lifezoneControlPanel').show("medium");
             
-            if(isDistBranchFilterShowing){
-                //data delete
-                observeDistBranch.length = 0;
-                //UI remove
-                destroyDistBranchCheckBox();
-            }
-            
             checkboxLocationInit(allLoc);
             
             lifezoneButtonsetValueReset();
@@ -381,9 +351,8 @@ function bookmarkSubmit(index) {
     
     //--------filter----------------------------------------
 
-    $('#dataset').val(dataset)
+    $('#dataset').val(functionSwitchTo)
         .selectmenu("refresh");
-    activeFunctionTmp = dataset;
     
     cleanFilterCheck();
     //device filter target check

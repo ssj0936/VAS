@@ -201,6 +201,8 @@ function MapObject(mapname) {
                     }
                 }
 
+//                console.log("allBranchObject:"+allBranchObject);
+//                console.log("getFunction():"+getFunction());
                 if (allBranchObject.length > 0 && getFunction() != FUNC_GAP) {
                     // if not in gap mode and some branch has been selected, use another stroke
                     if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {

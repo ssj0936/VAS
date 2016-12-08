@@ -3,23 +3,6 @@
 function init_() {
     loading("initializing...")
 
-    //datePicker
-    $("#from").datepicker().on("change", function (e) {
-        $("#to").datepicker("option", "minDate", $(this).val());
-        datePickerOnChange();
-    });
-    $("#from").datepicker('setDate', new Date());
-    $("#to").datepicker().on("change", function (e) {
-        $("#from").datepicker("option", "maxDate", $(this).val());
-        datePickerOnChange();
-    });
-    $("#to").datepicker('setDate', new Date());
-
-    $("#from_compare").datepicker();
-    $("#from_compare").datepicker('setDate', new Date());
-    $("#to_compare").datepicker();
-    $("#to_compare").datepicker('setDate', new Date());
-
     //account isVIP init
     isVip = isVIP();
 //    console.log('account:'+account);
@@ -35,7 +18,7 @@ function init_() {
             isVIP: isVip,
         },
         success: function (json) {
-//            console.log(json);
+            console.log(json);
             if(!isVip && !json.isPass){
                 noPermissionShow();
                 //window.location.href = '404.html';
@@ -104,6 +87,9 @@ function init_() {
             updateTime.activation = json.activationUpdateTime;
             updateTime.lifezone = json.lifezoneUpdateTime;
 
+            datepickerSetting();
+            defaultDateSetting();
+            
             //init is activation dataset
             setUpdateTime(updateTime.activation);
 
@@ -143,7 +129,6 @@ function init_() {
     dealerBtnSetting();
     helpBtnSetting();
     //custom init
-    defaultDateSetting();
     updateReleaseNote();
     
     //map_container
@@ -151,12 +136,35 @@ function init_() {
     //checkLocationInit();
 }
 
+function datepickerSetting(){
+    //datePicker
+    $("#from").datepicker().on("change", function (e) {
+        $("#to").datepicker("option", "minDate", $(this).val());
+        datePickerOnChange();
+    });
+    $("#from").datepicker('setDate', new Date());
+    $("#to").datepicker().on("change", function (e) {
+        $("#from").datepicker("option", "maxDate", $(this).val());
+        datePickerOnChange();
+    });
+    console.log(getUpdateTime());
+    $("#to").datepicker('setDate', new Date());
+    
+    $("#to").datepicker("option", "maxDate", new Date(getUpdateTime()));
+    $("#from").datepicker("option", "maxDate", new Date(getUpdateTime()));
+
+    $("#from_compare").datepicker();
+    $("#from_compare").datepicker('setDate', new Date());
+    $("#to_compare").datepicker();
+    $("#to_compare").datepicker('setDate', new Date());
+}
+
 //default setting to Last30Days
 function defaultDateSetting() {
-    var day = new Date();
+    var day = new Date(getUpdateTime());
     day.setDate(day.getDate() - 30);
     $("#from").datepicker("setDate", day);
-    $("#to").datepicker("setDate", new Date());
+    $("#to").datepicker("setDate", new Date(getUpdateTime()));
     pressToggle(document.getElementById("btnLastThirty"));
 }
 

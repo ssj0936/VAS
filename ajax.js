@@ -36,8 +36,14 @@ function ajaxGetDateBound() {
 function ajaxFetchMapValue(hasComparison, isComparison) {
     var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
-    //console.log(JSON.stringify(observeSpec.color));
+//    console.log(JSON.stringify(observeLoc));
+//    console.log(JSON.stringify(observeDistBranch));
+//    console.log(JSON.stringify(observeDistName));
 //    console.log(JSON.stringify(observeTarget));
+//    console.log(mapObj.fromFormatStr);
+//    console.log(mapObj.toFormatStr);
+//    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
+//    
 //    console.log(JSON.stringify(observeSpec.color));
 //    console.log(JSON.stringify(observeSpec.cpu));
 //    console.log(JSON.stringify(observeSpec.rear_camera));
@@ -701,6 +707,7 @@ function ajaxGetBranchObject(callback){
                 branchName : JSON.stringify(observeBranchName)
             },
             success: function(json){
+                console.log(json);
                 allBranchObject = json.union;
                 delete json.union;
                 allHighlighBranch = json;
