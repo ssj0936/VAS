@@ -1124,7 +1124,7 @@ function showTable() {
         ajaxFetchTableValue(false);
     } else {
         console.log("diff region");
-        ajaxExtractMap(false, ajaxFetchTableValue, [false]);
+        ajaxFetchTableValue(true);
     }
 }
 

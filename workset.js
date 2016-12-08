@@ -18,7 +18,7 @@ function init_() {
             isVIP: isVip,
         },
         success: function (json) {
-            console.log(json);
+//            console.log(json);
             if(!isVip && !json.isPass){
                 noPermissionShow();
                 //window.location.href = '404.html';
@@ -147,7 +147,6 @@ function datepickerSetting(){
         $("#from").datepicker("option", "maxDate", $(this).val());
         datePickerOnChange();
     });
-    console.log(getUpdateTime());
     $("#to").datepicker('setDate', new Date());
     
     $("#to").datepicker("option", "maxDate", new Date(getUpdateTime()));

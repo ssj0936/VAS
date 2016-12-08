@@ -1853,49 +1853,75 @@ function updateColorInfo() {
 
 }
 
-function createTable() {
-    $('#table_wrapper').remove();
+function createTable(isDiff,json,mapObj) {
+    
+    var mapSrc = isDiff ? mapObj :firstMap;
+    
+    console.log("createTable start");
+    $("#tableContainer").empty();
 
-    // create table container
-    var tableContainer = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Date</th>';
+    var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>'+ '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
+    $("#tableContainer").append(tableContenr);
 
-    for (var i in trendObj.datasets) {
-        var label = trendObj.datasets[i].label;
-        tableContainer += '<th>' + label + '</th>';
-    }
+    var finalTableArray = [];
+    for (var i = 0; i < json.length; ++i) {
+        var countryID = json[i].countryID;
+        json[i]['displayName'] = '';
+        json[i]['iso'] = '';
+        var find = mapSrc.jsonData.features.filter(function (obj) {
+            return (obj.properties.OBJECTID == countryID)
+        });
+        if (find != false) {
+            json[i].iso = find[0].properties.ISO;
 
-    tableContainer += '</tr>' + '</thead>' + '</table>';
-    $("#popupChartContainer").append(tableContainer);
-
-    //create data
-    var data = [];
-    for (var i = 0; i < trendObj.labels.length; ++i) {
-        var oneDayData = [];
-        oneDayData.push(trendObj.labels[i]);
-        for (var j = 0; j < trendObj.datasets.length; ++j) {
-            oneDayData.push(trendObj.datasets[j].data[i]);
+            json[i].displayName = find[0].properties.NAME_2;
+            if (!isInArray(forcingName2List, find[0].properties.ISO) && (observeLoc.length > 1 || isInArray(forcingName1List, find[0].properties.ISO))) {
+                json[i].displayName = find[0].properties.NAME_1;
+            }
+        }else{
+            console.log('false');
         }
-        data.push(oneDayData);
-    }
+        //post process
+        json[i]['cnt'] = numToString(json[i]['cnt']);
 
+        if(json[i].displayName != ''){
+            finalTableArray.push({
+                displayName:json[i].displayName,
+                iso:json[i].iso,
+                cnt:json[i].cnt,
+                model:json[i].models,
+            });
+        }
+    }
+//            console.log(json);
     var table = $('table#table').DataTable({
-        data: data,
+        data: finalTableArray,
+        columns: [
+            {
+                data: 'iso'
+            },
+            {
+                data: 'displayName'
+            },
+            {
+                data: 'model'
+            },
+            {
+                data: 'cnt'
+            },
+            ],
         pageLength: -1,
         dom: 'Bfrtip',
         buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+                /*'copy', 'csv', */'excel', 'pdf', 'print'
+            ]
     });
 
-    //table CSS
     $('#table_wrapper').css({
-        "position": 'absolute',
-        "padding-left": "5%",
-        "padding-right": "5%",
-        "top": '25%',
+        "padding": "10px",
     });
 
-    setActiveTrend(TREND_TABLE);
+    console.log("createTable end");
 }
 
 function showGapTrend(mapObj,branchName){

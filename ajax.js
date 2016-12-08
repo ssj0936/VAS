@@ -183,7 +183,7 @@ function ajaxExtractMap(hasComparison, callback, args) {
             })
         );
     });
-
+//    console.log(firstMap.jsonData);
     $.when.apply($, jxhr).done(function () {
         if (hasComparison) {
             comparisonMap.jsonData = {
@@ -458,8 +458,9 @@ function ajaxGetDeviceSpec(devices, checkOption) {
     }
 }
 
-function ajaxFetchTableValue(isComparison) {
-    var mapObj = (isComparison) ? comparisonMap : firstMap;
+function ajaxFetchTableValue(isDiff) {
+    
+//    var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
     var URLs = "php/_dbqueryGetTableContent.php";
     return $.ajax({
@@ -473,8 +474,8 @@ function ajaxFetchTableValue(isComparison) {
             distBranch: JSON.stringify(observeDistBranch),
             onlineDist: JSON.stringify(observeDistName),
             data: JSON.stringify(observeTarget),
-            from: mapObj.fromFormatStr,
-            to: mapObj.toFormatStr,
+            from: firstMap.fromFormatStr,
+            to: firstMap.toFormatStr,
             dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             permission: JSON.stringify(permission),
         },
@@ -482,75 +483,48 @@ function ajaxFetchTableValue(isComparison) {
         dataType: 'json',
 
         success: function (json) {
-//            console.log(json);
-//            console.log(mapObj.jsonData.features);
-            console.log("ajaxFetchTableValue start");
-            $("#tableContainer").empty();
+            var mapObj={};
+            if(isDiff){
+                console.log("isDiff");
+                mapObj.jsonData = {
+                    "type": "FeatureCollection",
+                    "features": [],
+                };
 
-//            popupChartShow(false);
-            var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>'+ '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
-            $("#tableContainer").append(tableContenr);
-
-            var finalTableArray = [];
-            for (var i = 0; i < json.length; ++i) {
-                var countryID = json[i].countryID;
-                json[i]['displayName'] = '';
-                json[i]['iso'] = '';
-                var find = mapObj.jsonData.features.filter(function (obj) {
-                    return (obj.properties.OBJECTID == countryID)
-                });
-                if (find != false) {
-                    json[i].iso = find[0].properties.ISO;
-
-                    json[i].displayName = find[0].properties.NAME_2;
-                    if (!isInArray(forcingName2List, find[0].properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, find[0].properties.ISO))) {
-                        json[i].displayName = find[0].properties.NAME_1;
-                    }
-                }else{
-                    console.log('false');
-                }
-                //post process
-                json[i]['cnt'] = numToString(json[i]['cnt']);
-                
-                if(json[i].displayName != ''){
-                    finalTableArray.push({
-                        displayName:json[i].displayName,
-                        iso:json[i].iso,
-                        cnt:json[i].cnt,
-                        model:json[i].models,
+                var urls = [];
+                if (observeLoc.length == 1) {
+                    $.each(observeLoc, function (index, loc) {
+                        urls.push("php/geojson/topo/l2/" + loc + ".json");
+                    });
+                } else if(observeLoc.length > 1){
+                    $.each(observeLoc, function (index, loc) {
+                        urls.push("php/geojson/topo/l1/" + loc + ".json");
                     });
                 }
+
+                var jxhr = [];
+                $.each(urls, function (i, url) {
+                    jxhr.push(
+                        $.getJSON(url, function (json) {
+                            for (var key in json.objects) {
+                                console.log(key+" loading...");
+                                $.each(topojson.feature(json, json.objects[key]).features, function (index, regionjson) {
+                                    mapObj.jsonData.features.push({properties:regionjson.properties,});
+                                });
+                            }
+                        })
+                    );
+                });
+                
+                $.when.apply($, jxhr).done(function () {
+                    createTable(isDiff,json,mapObj);
+                    loadingDismiss();
+                });
+            }else{
+                createTable(isDiff,json);
+                loadingDismiss();
             }
-//            console.log(json);
-            var table = $('table#table').DataTable({
-                data: finalTableArray,
-                columns: [
-                    {
-                        data: 'iso'
-                    },
-                    {
-                        data: 'displayName'
-                    },
-                    {
-                        data: 'model'
-                    },
-                    {
-                        data: 'cnt'
-                    },
-                    ],
-                pageLength: -1,
-                dom: 'Bfrtip',
-                buttons: [
-                        /*'copy', 'csv', */'excel', 'pdf', 'print'
-                    ]
-            });
-
-            $('#table_wrapper').css({
-                "padding": "10px",
-            });
-
-            console.log("ajaxFetchTableValue end");
-            loadingDismiss();
+            
         },
 
         error: function (xhr, ajaxOptions, thrownError) {
