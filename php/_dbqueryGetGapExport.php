@@ -6,9 +6,6 @@
     require_once("function.php");
     $result = array();
     $db = new DB();
-
-//    $tableColumnList = array('branchName','tamShareByBranch','tamOfBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','tamOfTerritory','activationSumTerritory','districtName','tamOfDistrict','activationOfDistrict');
-    $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','activationSumTerritory','districtName','activationOfDistrict');
     $tableStyle = 'border:1px solid black';
 
 //    $color = '["all"]';
@@ -47,12 +44,12 @@
 //    $dataset = 'activation';
 //    $from = "2016-11-1";
 //    $to = "2016-12-1";  
-//    $iso ='["IND"]';
+//    $iso ='["VNM"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 //    $distBranch = '[]';
-//    $groupBy = 'model';
-//    $singleBranch = 'Nagpur_Raipur';
+//    $groupBy = 'branch';
+//    $singleBranch = null;
 
     $color = $_POST['color'];
     $cpu = $_POST['cpu'];
@@ -99,13 +96,16 @@
         //RearCamera
         $isRearCameraAll=isAll($rearCameraObj);
         $rearCamera_in=getSQLInStr($rearCameraObj);
-    
-		if(count($isoObj)==1){
-			$db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL2']);
-		}else{
-			$db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL1']);
-		}
         
+        //to know which level this country need to used
+        $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
+        $getLevelQuery = "SELECT loc_level FROM $branchLocLevel WHERE iso='$isoObj[0]'";
+        $db->query($getLevelQuery);
+        $row = $db->fetch_array();
+        $level = intval($row['loc_level']);
+        
+        
+        $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL'.$level]);
         $str_in='';
 		$sqlDeviceIn = getAllTargetDeviceSql($dataObj);
         
@@ -184,9 +184,12 @@
                 break;
                 
             case 'IDN':
-                $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"
-                        ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","Province","Activation q'ty<br>by Province"
-                        ,"Regency","Activation q'ty<br>by Regency");
+            case 'VNM':
+                if($isoObj[0] == 'VNM')
+                    $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","District","Activation q'ty<br>by District");
+                else
+                    $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"               ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","Province","Activation q'ty<br>by Province","Regency","Activation q'ty<br>by Regency");
+                
                 $fromTableStr="SELECT device,map_id,count"
                     ." FROM "
                     .($isColorAll ? "" : "$colorMappingTable A2,")
@@ -231,13 +234,9 @@
                         ." GROUP BY branchName, map_id,name2";
                 }
                 break;
-                
         }
         //1.get all data first
 		//--------------------------------------------------------------------------------
-		
-        
-//		echo $queryStr."<br><br><br>";
 		
 		$db->query($queryStr);
         $first = true;
@@ -250,160 +249,275 @@
 //        print_r($result);
         //create table
         $file = file('geojson/branchTerritoryDistTam/'.$isoObj[0].'_branchTerritoryDistTam.csv');
-        $data = array();
-        foreach($file as $line){
-            $str = $line;
-            $line = str_replace("\r", '', $line);
-            $line = str_replace("\n", '', $line);
-            $split = explode(',', $line);
-
-            $index = count($data);
-            $data[$index]['branchName'] = trim($split[0]);
-            $data[$index]['tamShareByBranch'] = trim($split[1]);
-//            $data[$index]['tamOfBranch'] = trim($split[2]);
-            $data[$index]['territoryName'] = trim($split[3]);
-//            $data[$index]['tamOfTerritory'] = trim($split[4]);
-            $data[$index]['districtName'] = trim($split[5]);
-//            $data[$index]['tamOfDistrict'] = trim($split[6]);
-        }
-
-        $totalRows = 0;
-        $finalData = array();
-        foreach($result as $model => $datas){
-            //create data column first
-            $finalData[$model] = array();
-            foreach($data as $index =>$array){
-                $finalData[$model][$index]['branchName'] = $data[$index]['branchName'];
-                $finalData[$model][$index]['tamShareByBranch'] = $data[$index]['tamShareByBranch'];
-//                $finalData[$model][$index]['tamOfBranch'] = $data[$index]['tamOfBranch'];
-                $finalData[$model][$index]['territoryName'] = $data[$index]['territoryName'];
-//                $finalData[$model][$index]['tamOfTerritory'] = $data[$index]['tamOfTerritory'];
-                $finalData[$model][$index]['districtName'] = $data[$index]['districtName'];
-//                $finalData[$model][$index]['tamOfDistrict'] = $data[$index]['tamOfDistrict'];
-//                $finalData[$model][$index]['activationOfDistrict'] = rand();
-                $finalData[$model][$index]['activationOfDistrict'] = 0;
-            }
-
-            //fill in activation
-            foreach($datas as $branch => $dataArray){
-                foreach($dataArray as $district => $cnt){
-                    $found = false;
-                    $_district = $district;
-                    $_district = strtolower($_district);
-                    $_district = str_replace(array("'",'"','-',','," ","(",")"),"",$_district);
-                    for($i=0;$i<count($finalData[$model]);++$i){
-                        
-                        $string = strtolower($finalData[$model][$i]['districtName']);
-                        $string = str_replace(array("'",'"','-',','," ","(",")"),"",$string);
-                        if($string == $_district){
-                            $finalData[$model][$i]['activationOfDistrict'] = $cnt;
-                            $found = true;
-                            break;
-                        }
-                    }
-//                    if(!$found) echo "$branch/$district!!!!!!!!<br>";
-                }
-            }
-
-            //activation sum(group by branch/territory)
-            $activationSum = array();
-            $currentBranch = '';
-            $currentBranchSum = 0;
-            $currentTerritory = '';
-            $currentTerritorySum = 0;
-            $activationAll = 0;
-            for($i=0;$i<count($finalData[$model]);++$i){
-                $totalRows++;
-                $branch = $finalData[$model][$i]['branchName'];
-                $territory = $finalData[$model][$i]['territoryName'];
-                $activation = $finalData[$model][$i]['activationOfDistrict'];
-
-                if($currentBranch!=$branch || $currentTerritory!=$territory){
-                    if($currentTerritory!=''){
-                        $activationSum[$currentBranch][$currentTerritory] = $currentTerritorySum;
-                        $currentTerritorySum = 0;
-                    }
-
-                    $currentTerritory = $territory;
-                }
-
-                if($currentBranch!=$branch){
-                    if($currentBranch!=''){
-                        $activationSum[$currentBranch]['cnt'] = $currentBranchSum;
-                        $currentBranchSum = 0;
-                    }
-
-                    $currentBranch = $branch;
-                }
-
-                $currentBranchSum+=$activation;
-                $currentTerritorySum+=$activation;
-                $activationAll+=$activation;
-                
-                if($i==count($finalData[$model])-1){
-                    if($currentTerritory!=''){
-                        $activationSum[$currentBranch][$currentTerritory] = $currentTerritorySum;
-                        $currentTerritorySum = 0;
-                    }
-                    if($currentBranch!=''){
-                        $activationSum[$currentBranch]['cnt'] = $currentBranchSum;
-                        $currentBranchSum = 0;
-                    }
-                }
-            }
-//            print_r($activationSum);
-
-            for($i=0;$i<count($finalData[$model]);++$i){
-                $finalData[$model][$i]['activationSumBranch'] = $activationSum[$finalData[$model][$i]['branchName']]['cnt'];
-                $finalData[$model][$i]['activationSumTerritory'] = $activationSum[$finalData[$model][$i]['branchName']][$finalData[$model][$i]['territoryName']];
-                $finalData[$model][$i]['activationShareBranch'] = percentage($activationSum[$finalData[$model][$i]['branchName']]['cnt'],$activationAll);
-                $finalData[$model][$i]['gapBranch'] = percentage(($finalData[$model][$i]['activationShareBranch'] / $finalData[$model][$i]['tamShareByBranch'])-1,1);
-            }
-
-            //for region Gap export
-            if($singleBranch != null){
-                $needToDelete = array();
-                for($i=0;$i<count($finalData[$model]);++$i){
-                    if(!isSame($finalData[$model][$i]['branchName'],$singleBranch)){
-                        $needToDelete[] = $i;
-                        $totalRows -- ;
-                    }
-                }
-                //delete other branch data except the chosen one
-                $finalData[$model] = array_diff_key($finalData[$model], array_flip($needToDelete));
-                //re arrange array key
-                $finalData[$model] = array_values($finalData[$model]);
-            }
-            
-            //init
-            $rowSpan = array();
-            foreach($tableColumnList as $indexName){
-                $rowSpan[$indexName]['currentName']='';
-                $rowSpan[$indexName]['rowspanIndex']=0;
-            }
-            //row span
-            for($i=0;$i<count($finalData[$model])+1;++$i){
-                $needToRowSpan = false;
-                foreach($tableColumnList as $indexName){
-                    $name = isset($finalData[$model][$i]) ? $finalData[$model][$i][$indexName] : null;
-                    if($rowSpan[$indexName]['currentName'] != $name || $i==count($finalData[$model]) || $needToRowSpan){
-
-                        if($rowSpan[$indexName]['currentName']!=''){
-                            $rowspanCnt = $i-$rowSpan[$indexName]['rowspanIndex'];
-                            $finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName] 
-                                = "<td rowspan='$rowspanCnt' style ='$tableStyle'>".$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]."</td>";
-                        }
-                        $rowSpan[$indexName]['rowspanIndex'] = $i;
-                        $rowSpan[$indexName]['currentName'] = ''.$name;
-                        $needToRowSpan = true;
-                    }
-                    else{
-                        $finalData[$model][$i][$indexName] = '';
-                    }
-                }
-            }
-        }
         
+        if($level == 1){
+            $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','districtName','activationOfDistrict');
+            
+            $data = array();
+            foreach($file as $line){
+                $str = $line;
+                $line = str_replace("\r", '', $line);
+                $line = str_replace("\n", '', $line);
+                $split = explode(',', $line);
+
+                $index = count($data);
+                $data[$index]['branchName'] = trim($split[0]);
+                $data[$index]['tamShareByBranch'] = trim($split[1]);
+                $data[$index]['districtName'] = trim($split[2]);
+            }
+
+            $totalRows = 0;
+            $finalData = array();
+            foreach($result as $model => $datas){
+                //create data column first
+                $finalData[$model] = array();
+                foreach($data as $index =>$array){
+                    $finalData[$model][$index]['branchName'] = $data[$index]['branchName'];
+                    $finalData[$model][$index]['tamShareByBranch'] = $data[$index]['tamShareByBranch'];
+                    $finalData[$model][$index]['districtName'] = $data[$index]['districtName'];
+                    $finalData[$model][$index]['activationOfDistrict'] = 0;
+                }
+
+                //fill in activation
+                foreach($datas as $branch => $dataArray){
+                    foreach($dataArray as $district => $cnt){
+                        $found = false;
+                        $_district = $district;
+                        $_district = strtolower($_district);
+                        $_district = str_replace(array("'",'"','-',','," ","(",")"),"",$_district);
+                        for($i=0;$i<count($finalData[$model]);++$i){
+
+                            $string = strtolower($finalData[$model][$i]['districtName']);
+                            $string = str_replace(array("'",'"','-',','," ","(",")"),"",$string);
+                            if($string == $_district){
+                                $finalData[$model][$i]['activationOfDistrict'] = $cnt;
+                                $found = true;
+                                break;
+                            }
+                        }
+                        if(!$found) echo "$branch/$district!!!!!!!!<br>";
+                    }
+                }
+
+                //activation sum(group by branch/territory)
+                $activationSum = array();
+                $currentBranch = '';
+                $currentBranchSum = 0;
+                $activationAll = 0;
+                for($i=0;$i<count($finalData[$model]);++$i){
+                    $totalRows++;
+                    $branch = $finalData[$model][$i]['branchName'];
+                    $territory = $finalData[$model][$i]['districtName'];
+                    $activation = $finalData[$model][$i]['activationOfDistrict'];
+
+                    if($currentBranch!=$branch){
+                        if($currentBranch!=''){
+                            $activationSum[$currentBranch]['cnt'] = $currentBranchSum;
+                            $currentBranchSum = 0;
+                        }
+
+                        $currentBranch = $branch;
+                    }
+
+                    $currentBranchSum+=$activation;
+                    $activationAll+=$activation;
+
+                    if($i==count($finalData[$model])-1){
+                        if($currentBranch!=''){
+                            $activationSum[$currentBranch]['cnt'] = $currentBranchSum;
+                            $currentBranchSum = 0;
+                        }
+                    }
+                }
+    //            print_r($activationSum);
+
+                for($i=0;$i<count($finalData[$model]);++$i){
+                    $finalData[$model][$i]['activationSumBranch'] = $activationSum[$finalData[$model][$i]['branchName']]['cnt'];
+                    $finalData[$model][$i]['activationShareBranch'] = percentage($activationSum[$finalData[$model][$i]['branchName']]['cnt'],$activationAll);
+                    $finalData[$model][$i]['gapBranch'] = percentage(($finalData[$model][$i]['activationShareBranch'] / $finalData[$model][$i]['tamShareByBranch'])-1,1);
+                }
+                    
+                //init
+                $rowSpan = array();
+                foreach($tableColumnList as $indexName){
+                    $rowSpan[$indexName]['currentName']='';
+                    $rowSpan[$indexName]['rowspanIndex']=0;
+                }
+                //row span
+                for($i=0;$i<count($finalData[$model])+1;++$i){
+                    $needToRowSpan = false;
+                    foreach($tableColumnList as $indexName){
+                        $name = isset($finalData[$model][$i]) ? $finalData[$model][$i][$indexName] : null;
+                        if($rowSpan[$indexName]['currentName'] != $name || $i==count($finalData[$model]) || $needToRowSpan){
+
+                            if($rowSpan[$indexName]['currentName']!=''){
+                                $rowspanCnt = $i-$rowSpan[$indexName]['rowspanIndex'];
+                                $finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName] 
+                                    = "<td rowspan='$rowspanCnt' style ='$tableStyle'>".$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]."</td>";
+                            }
+                            $rowSpan[$indexName]['rowspanIndex'] = $i;
+                            $rowSpan[$indexName]['currentName'] = ''.$name;
+                            $needToRowSpan = true;
+                        }
+                        else{
+                            $finalData[$model][$i][$indexName] = '';
+                        }
+                    }
+                }
+            }
+        }
+        //L2
+        else{
+            $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','activationSumTerritory','districtName','activationOfDistrict');
+            
+            $data = array();
+            foreach($file as $line){
+                $str = $line;
+                $line = str_replace("\r", '', $line);
+                $line = str_replace("\n", '', $line);
+                $split = explode(',', $line);
+
+                $index = count($data);
+                $data[$index]['branchName'] = trim($split[0]);
+                $data[$index]['tamShareByBranch'] = trim($split[1]);
+                $data[$index]['territoryName'] = trim($split[3]);
+                $data[$index]['districtName'] = trim($split[5]);
+            }
+
+            $totalRows = 0;
+            $finalData = array();
+            foreach($result as $model => $datas){
+                //create data column first
+                $finalData[$model] = array();
+                foreach($data as $index =>$array){
+                    $finalData[$model][$index]['branchName'] = $data[$index]['branchName'];
+                    $finalData[$model][$index]['tamShareByBranch'] = $data[$index]['tamShareByBranch'];
+                    $finalData[$model][$index]['territoryName'] = $data[$index]['territoryName'];
+                    $finalData[$model][$index]['districtName'] = $data[$index]['districtName'];
+    //                $finalData[$model][$index]['activationOfDistrict'] = rand();
+                    $finalData[$model][$index]['activationOfDistrict'] = 0;
+                }
+
+                //fill in activation
+                foreach($datas as $branch => $dataArray){
+                    foreach($dataArray as $district => $cnt){
+                        $found = false;
+                        $_district = $district;
+                        $_district = strtolower($_district);
+                        $_district = str_replace(array("'",'"','-',','," ","(",")"),"",$_district);
+                        for($i=0;$i<count($finalData[$model]);++$i){
+
+                            $string = strtolower($finalData[$model][$i]['districtName']);
+                            $string = str_replace(array("'",'"','-',','," ","(",")"),"",$string);
+                            if($string == $_district){
+                                $finalData[$model][$i]['activationOfDistrict'] = $cnt;
+                                $found = true;
+                                break;
+                            }
+                        }
+    //                    if(!$found) echo "$branch/$district!!!!!!!!<br>";
+                    }
+                }
+
+                //activation sum(group by branch/territory)
+                $activationSum = array();
+                $currentBranch = '';
+                $currentBranchSum = 0;
+                $currentTerritory = '';
+                $currentTerritorySum = 0;
+                $activationAll = 0;
+                for($i=0;$i<count($finalData[$model]);++$i){
+                    $totalRows++;
+                    $branch = $finalData[$model][$i]['branchName'];
+                    $territory = $finalData[$model][$i]['territoryName'];
+                    $activation = $finalData[$model][$i]['activationOfDistrict'];
+
+                    if($currentBranch!=$branch || $currentTerritory!=$territory){
+                        if($currentTerritory!=''){
+                            $activationSum[$currentBranch][$currentTerritory] = $currentTerritorySum;
+                            $currentTerritorySum = 0;
+                        }
+
+                        $currentTerritory = $territory;
+                    }
+
+                    if($currentBranch!=$branch){
+                        if($currentBranch!=''){
+                            $activationSum[$currentBranch]['cnt'] = $currentBranchSum;
+                            $currentBranchSum = 0;
+                        }
+
+                        $currentBranch = $branch;
+                    }
+
+                    $currentBranchSum+=$activation;
+                    $currentTerritorySum+=$activation;
+                    $activationAll+=$activation;
+
+                    if($i==count($finalData[$model])-1){
+                        if($currentTerritory!=''){
+                            $activationSum[$currentBranch][$currentTerritory] = $currentTerritorySum;
+                            $currentTerritorySum = 0;
+                        }
+                        if($currentBranch!=''){
+                            $activationSum[$currentBranch]['cnt'] = $currentBranchSum;
+                            $currentBranchSum = 0;
+                        }
+                    }
+                }
+    //            print_r($activationSum);
+
+                for($i=0;$i<count($finalData[$model]);++$i){
+                    $finalData[$model][$i]['activationSumBranch'] = $activationSum[$finalData[$model][$i]['branchName']]['cnt'];
+                    $finalData[$model][$i]['activationSumTerritory'] = $activationSum[$finalData[$model][$i]['branchName']][$finalData[$model][$i]['territoryName']];
+                    $finalData[$model][$i]['activationShareBranch'] = percentage($activationSum[$finalData[$model][$i]['branchName']]['cnt'],$activationAll);
+                    $finalData[$model][$i]['gapBranch'] = percentage(($finalData[$model][$i]['activationShareBranch'] / $finalData[$model][$i]['tamShareByBranch'])-1,1);
+                }
+
+                //for region Gap export
+                if($singleBranch != null){
+                    $needToDelete = array();
+                    for($i=0;$i<count($finalData[$model]);++$i){
+                        if(!isSame($finalData[$model][$i]['branchName'],$singleBranch)){
+                            $needToDelete[] = $i;
+                            $totalRows -- ;
+                        }
+                    }
+                    //delete other branch data except the chosen one
+                    $finalData[$model] = array_diff_key($finalData[$model], array_flip($needToDelete));
+                    //re arrange array key
+                    $finalData[$model] = array_values($finalData[$model]);
+                }
+
+                //init
+                $rowSpan = array();
+                foreach($tableColumnList as $indexName){
+                    $rowSpan[$indexName]['currentName']='';
+                    $rowSpan[$indexName]['rowspanIndex']=0;
+                }
+                //row span
+                for($i=0;$i<count($finalData[$model])+1;++$i){
+                    $needToRowSpan = false;
+                    foreach($tableColumnList as $indexName){
+                        $name = isset($finalData[$model][$i]) ? $finalData[$model][$i][$indexName] : null;
+                        if($rowSpan[$indexName]['currentName'] != $name || $i==count($finalData[$model]) || $needToRowSpan){
+
+                            if($rowSpan[$indexName]['currentName']!=''){
+                                $rowspanCnt = $i-$rowSpan[$indexName]['rowspanIndex'];
+                                $finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName] 
+                                    = "<td rowspan='$rowspanCnt' style ='$tableStyle'>".$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]."</td>";
+                            }
+                            $rowSpan[$indexName]['rowspanIndex'] = $i;
+                            $rowSpan[$indexName]['currentName'] = ''.$name;
+                            $needToRowSpan = true;
+                        }
+                        else{
+                            $finalData[$model][$i][$indexName] = '';
+                        }
+                    }
+                }
+            }
+        }
         //group by branch:
         //need to get selected Model
         $allModelStr = '';
@@ -421,7 +535,7 @@
         $tableStr .= "<table>";
         //title column
         $tableStr .= "<tr>";
-        
+
         foreach($tableColumnNameListModel as $indexName){
             $tableStr .= "<th style ='$tableStyle'>".$indexName."</th>";
         }
@@ -435,7 +549,7 @@
                     $tableStr .="<td rowspan='$totalRows' style ='$tableStyle'>".$from.' ~ '.$to."</td>";
                     $first = false;
                 }
-                
+
                 if($i==0){
                     //model display
                     $tableStr .= "<td rowspan='".count($finalData[$model])."' style ='$tableStyle'>".(($groupBy=='model')? $model : $allModelStr)."</td>";
