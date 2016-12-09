@@ -440,101 +440,101 @@ function activeModeBtn($this) {
 }
 
 function timePeriodBtnSetting() {
-    document.getElementById("btnToday").onclick = function () {
-        onDatepickerMaxMinReset();
-        var today = new Date();
-
-        $("#from").datepicker("setDate", today);
-
-        today.setDate(today.getDate() + 1);
-        $("#to").datepicker("setDate", today);
-
-        onChangeTrigger();
-        pressToggle(this);
-    }
-
-    document.getElementById("btnYesterday").onclick = function () {
-        onDatepickerMaxMinReset();
-        var day = new Date();
-        day.setDate(day.getDate() - 1);
-
-        $("#from").datepicker("setDate", day);
-        $("#to").datepicker("setDate", new Date());
-        onChangeTrigger();
-        pressToggle(this);
-    }
+//    document.getElementById("btnToday").onclick = function () {
+//        onDatepickerMaxMinReset();
+//        var today = new Date();
+//
+//        $("#from").datepicker("setDate", today);
+//
+//        today.setDate(today.getDate() + 1);
+//        $("#to").datepicker("setDate", today);
+//
+//        onChangeTrigger();
+//        pressToggle(this);
+//    }
+//
+//    document.getElementById("btnYesterday").onclick = function () {
+//        onDatepickerMaxMinReset();
+//        var day = new Date();
+//        day.setDate(day.getDate() - 1);
+//
+//        $("#from").datepicker("setDate", day);
+//        $("#to").datepicker("setDate", new Date());
+//        onChangeTrigger();
+//        pressToggle(this);
+//    }
 
     document.getElementById("btnLastSeven").onclick = function () {
         onDatepickerMaxMinReset();
-        var day = new Date();
+        var day = new Date(getUpdateTime());
         day.setDate(day.getDate() - 7);
         $("#from").datepicker("setDate", day);
-        $("#to").datepicker("setDate", new Date());
+        $("#to").datepicker("setDate", new Date(getUpdateTime()));
         onChangeTrigger();
         pressToggle(this);
     }
 
     document.getElementById("btnLastThirty").onclick = function () {
         onDatepickerMaxMinReset();
-        var day = new Date();
+        var day = new Date(getUpdateTime());
         day.setDate(day.getDate() - 30);
         $("#from").datepicker("setDate", day);
-        $("#to").datepicker("setDate", new Date());
+        $("#to").datepicker("setDate", new Date(getUpdateTime()));
         onChangeTrigger();
         pressToggle(this);
     }
 
-    document.getElementById("btnThisMonth").onclick = function () {
-        onDatepickerMaxMinReset();
-        var day = new Date();
-
-        var mm = day.getMonth() + 1;
-        var yyyy = day.getFullYear();
-
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-
-        var fromDate = new Date(yyyy + '-' + mm + '-01');
-        var toDate = new Date(yyyy + '-' + mm + '-01');
-        toDate.setMonth(toDate.getMonth() + 1);
-        toDate.setDate(toDate.getDate() - 1);
-
-        $("#from").datepicker("setDate", fromDate);
-        $("#to").datepicker("setDate", toDate);
-        onChangeTrigger();
-        pressToggle(this);
-    }
-
-    document.getElementById("btnLastMonth").onclick = function () {
-        onDatepickerMaxMinReset();
-        var day = new Date();
-
-        var mm = day.getMonth() + 1;
-        var yyyy = day.getFullYear();
-
-        //back shift one month
-        if (mm < 1) {
-            mm = 12;
-            --yyyy;
-        } else {
-            --mm;
-        }
-
-        if (mm < 10) {
-            mm = '0' + mm;
-        }
-
-        var fromDate = new Date(yyyy + '-' + mm + '-01');
-        var toDate = new Date(yyyy + '-' + mm + '-01');
-        toDate.setMonth(toDate.getMonth() + 1);
-        toDate.setDate(toDate.getDate() - 1);
-
-        $("#from").datepicker("setDate", fromDate);
-        $("#to").datepicker("setDate", toDate);
-        onChangeTrigger();
-        pressToggle(this);
-    }
+//    document.getElementById("btnThisMonth").onclick = function () {
+//        onDatepickerMaxMinReset();
+//        var day = new Date();
+//
+//        var mm = day.getMonth() + 1;
+//        var yyyy = day.getFullYear();
+//
+//        if (mm < 10) {
+//            mm = '0' + mm;
+//        }
+//
+//        var fromDate = new Date(yyyy + '-' + mm + '-01');
+//        var toDate = new Date(yyyy + '-' + mm + '-01');
+//        toDate.setMonth(toDate.getMonth() + 1);
+//        toDate.setDate(toDate.getDate() - 1);
+//
+//        $("#from").datepicker("setDate", fromDate);
+//        $("#to").datepicker("setDate", toDate);
+//        onChangeTrigger();
+//        pressToggle(this);
+//    }
+//
+//    document.getElementById("btnLastMonth").onclick = function () {
+//        onDatepickerMaxMinReset();
+//        var day = new Date();
+//
+//        var mm = day.getMonth() + 1;
+//        var yyyy = day.getFullYear();
+//
+//        //back shift one month
+//        if (mm < 1) {
+//            mm = 12;
+//            --yyyy;
+//        } else {
+//            --mm;
+//        }
+//
+//        if (mm < 10) {
+//            mm = '0' + mm;
+//        }
+//
+//        var fromDate = new Date(yyyy + '-' + mm + '-01');
+//        var toDate = new Date(yyyy + '-' + mm + '-01');
+//        toDate.setMonth(toDate.getMonth() + 1);
+//        toDate.setDate(toDate.getDate() - 1);
+//
+//        $("#from").datepicker("setDate", fromDate);
+//        $("#to").datepicker("setDate", toDate);
+//        onChangeTrigger();
+//        pressToggle(this);
+//    }
 }
 
 function btnAllTimeSetting() {
