@@ -37,33 +37,33 @@
 //    $singleBranch = null;
 //
 
-//    $color = '["all"]';
-//    $cpu = '["all"]';
-//    $rearCamera = '["all"]';
-//    $frontCamera = '["all"]';
-//    $dataset = 'activation';
-//    $from = "2016-11-1";
-//    $to = "2016-12-1";  
-//    $iso ='["VNM"]';
-//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
-//    $distBranch = '[]';
-//    $groupBy = 'branch';
-//    $singleBranch = null;
+    $color = '["all"]';
+    $cpu = '["all"]';
+    $rearCamera = '["all"]';
+    $frontCamera = '["all"]';
+    $dataset = 'activation';
+    $from = "2016-11-1";
+    $to = "2016-12-1";  
+    $iso ='["VNM"]';
+    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+    $distBranch = '[]';
+    $groupBy = 'branch';
+    $singleBranch = null;
 
-    $color = $_POST['color'];
-    $cpu = $_POST['cpu'];
-    $rearCamera = $_POST['rearCamera'];
-    $frontCamera = $_POST['frontCamera'];
-    $dataset = $_POST['dataset'];
-    $from = $_POST['from'];
-    $to = $_POST['to'];
-    $data = $_POST['data'];
-    $iso = $_POST['iso'];
-    $distBranch = $_POST['distBranch'];
-    $groupBy = $_POST['groupBy'];
-    $singleBranch = $_POST['branch'];
-    $permission = $_POST['permission'];
+//    $color = $_POST['color'];
+//    $cpu = $_POST['cpu'];
+//    $rearCamera = $_POST['rearCamera'];
+//    $frontCamera = $_POST['frontCamera'];
+//    $dataset = $_POST['dataset'];
+//    $from = $_POST['from'];
+//    $to = $_POST['to'];
+//    $data = $_POST['data'];
+//    $iso = $_POST['iso'];
+//    $distBranch = $_POST['distBranch'];
+//    $groupBy = $_POST['groupBy'];
+//    $singleBranch = $_POST['branch'];
+//    $permission = $_POST['permission'];
 
     if($data!="[]"){
         $isoObj = json_decode($iso);
@@ -99,7 +99,7 @@
         
         //to know which level this country need to used
         $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
-        $getLevelQuery = "SELECT loc_level FROM $branchLocLevel WHERE iso='$isoObj[0]'";
+        $getLevelQuery = "SELECT loc_level FROM $branchLocLevelTable WHERE iso='$isoObj[0]'";
         $db->query($getLevelQuery);
         $row = $db->fetch_array();
         $level = intval($row['loc_level']);

@@ -160,6 +160,7 @@ function bookmarkSubmit(index) {
                     $(this).removeClass('active');
                 });
                 disableModeAndOverlay();
+                firstMap.currentRegionIso = [];
                 
                 //close overlay
                 closeDealer();
@@ -178,7 +179,7 @@ function bookmarkSubmit(index) {
             case FUNC_GAP:
                 //change table button text
                 $('#table').button('option','label','Table');
-
+                firstMap.currentRegionIso = [];
                 firstMap.removePolygonMap();
                 cleanBranch();
                 break;

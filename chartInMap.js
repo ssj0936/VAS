@@ -1936,7 +1936,7 @@ function showGapTrend(mapObj,branchName){
 
 function gapExportToExcel(text){
     var blob = new Blob([text], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8,%EF%BB%BF"
     });
     var strFile = '[' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + ']' + "_GapReport.xls";
     saveAs(blob, strFile);

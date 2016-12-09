@@ -331,7 +331,7 @@ function numToString(number) {
 }
 
 function isL1(mapObj) {
-    return (mapObj.currentRegionIso.length >= 2);
+    return (mapObj.currentRegionIso.length >= 2 || (getFunction() == FUNC_GAP && countryNeedToShowGAPInL1.has(mapObj.currentRegionIso[0])));
 }
 
 function disableScroll() {

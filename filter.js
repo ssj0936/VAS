@@ -1,6 +1,7 @@
 "use strict";
-var countryGapModeSupported = ['IND','IDN'];
+var countryGapModeSupported = ['IND','IDN','VNM'];
 var countryNeedToShowDistBranch = ['IND'];
+var countryNeedToShowGAPInL1 = new Set(['VNM']);
 
 //2016-11-23 update: only apply to enable item
 function checkChild(el, check) {

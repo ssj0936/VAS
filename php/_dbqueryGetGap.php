@@ -17,7 +17,7 @@
 //    $dataset = 'activation';
 //    $from = "2016-11-1";
 //    $to = "2016-12-1";  
-//    $iso ='["IDN"]';
+//    $iso ='["VNM"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //$permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 
@@ -63,9 +63,17 @@
         //RearCamera
         $isRearCameraAll=isAll($rearCameraObj);
         $rearCamera_in=getSQLInStr($rearCameraObj);
-    
-        $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL2']);
-		
+
+        $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
+        $sqlLevel = getBranchLocLevelSql($isoObj[0]);
+        
+        $db->query($sqlLevel);
+        $row = $db->fetch_array();
+        $level = intval($row['loc_level']);
+        $present = $row['tam_spec'];
+        $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL'.$level]);
+        
+
         $str_in='';
         
         $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
@@ -115,6 +123,7 @@
                     ." GROUP BY branch,model_name"
                     ." ORDER BY count DESC;";
                 break;
+            case 'VNM':
             case 'IDN':
                 $fromTableStr="SELECT count,device_model.model_name model_name,map_id"
                     ." FROM "
@@ -195,8 +204,12 @@
         $split = explode(',', $val);
         
         $branchName = strtoupper($split[0]);
-        $tam[$branchName] = intval($split[1]);
-        $totalTam += intval($split[1]);
+        if ($present == 'number') {
+            $tam[$branchName] = intval($split[1]);
+            $totalTam += intval($split[1]);
+        } else if ($present == 'percent') {
+            $tam[$branchName] = intval($split[1])/100;
+        }
     }
 //    print_r($tam);
 //    echo $totalTam."<br><br>";
@@ -219,7 +232,11 @@
 //            echo "$branchName / $modelname:";
             if(!isset($tam[$branchName])) continue;
             
-            $tam_ = ($results['total'][$modelname] == 0) ? -1 :(($modelCnt/$results['total'][$modelname])/($tam[$branchName]/$totalTam))-1;
+            if ($present == 'number') {
+                $tam_ = ($results['total'][$modelname] == 0) ? -1 :(($modelCnt/$results['total'][$modelname])/($tam[$branchName]/$totalTam))-1;
+            } else if ($present == 'percent') {
+                $tam_ = ($results['total'][$modelname] == 0) ? -1 :(($modelCnt/$results['total'][$modelname])/($tam[$branchName]))-1;
+            }
             $tamResult[$branchName][$modelname] = round($tam_,4);
             
 //            echo "($modelCnt / ".$results['total'][$modelname].")/(".$tam[$branchName]."/$totalTam))-1.<br>";

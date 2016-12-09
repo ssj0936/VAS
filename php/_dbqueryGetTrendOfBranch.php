@@ -22,21 +22,30 @@
     $data = $_POST['data'];
     $iso = $_POST['iso'];
     $permission = $_POST['permission'];
-//    
+
 //    $color = '["all"]';
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $data = '[{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
-//    $from = "2015-8-15";
-//    $to = "2016-9-14";    
-//    $iso ='["IND"]';
-//    $branch = 'PUNJAB';
-//    $iso ='["IDN"]';
-//    $branch = 'SOUTH_SUMATERA';
+//    $branch = 'SE';
+//    $from = "2016-11-1";
+//    $to = "2016-12-1";  
+//    $iso ='["VNM"]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+
     
     $isoObj = json_decode($iso);
+    
+    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
+    $sqlLevel = getBranchLocLevelSql($isoObj[0]);
+
+    $db->query($sqlLevel);
+    $row = $db->fetch_array();
+    $level = intval($row['loc_level']);
+    $present = $row['tam_spec'];
+    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL'.$level]);
 
     //get Tam Data
     $file = file('geojson/tam/'.$isoObj[0].'_branchTam.txt');
@@ -49,8 +58,12 @@
         $split = explode(',', $val);
 //        echo $split[0]."/".$split[1]."<br>";
         $branchName = strtoupper($split[0]);
-        $tam[$branchName] = intval($split[1]);
-        $totalTam += intval($split[1]);
+        if ($present == 'number') {
+            $tam[$branchName] = intval($split[1]);
+            $totalTam += intval($split[1]);
+        } else if ($present == 'percent') {
+            $tam[$branchName] = intval($split[1])/100;
+        }
     }
 
     $dataObj = json_decode($data);
@@ -78,8 +91,6 @@
     //RearCamera
     $isRearCameraAll=isAll($rearCameraObj);
     $rearCamera_in=getSQLInStr($rearCameraObj);
-
-    $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL2']);
     
     $str_in='';
         
@@ -128,7 +139,9 @@
                         ." GROUP BY date,branch"
                         ." ORDER BY date";
             break;
+            
         case 'IDN':
+        case 'VNM':
             //Group by branch
             $queryStr.="SELECT date,count,map_id"
                     ." FROM "
@@ -210,6 +223,7 @@
                     ." GROUP BY date, model_name, branch ORDER BY date,model_name";
             break;
         case 'IDN':
+        case 'VNM':
             //Group by Model
             $queryStr="SELECT model_name,date,SUM(count) AS count, branchName AS branch"
                     ." FROM "
@@ -283,6 +297,7 @@
                         ." GROUP BY date, device, branch ORDER BY date,device";
                 break;
             case 'IDN':
+            case 'VNM':
                 $queryStr="SELECT device,date,SUM(count) AS count,branchName AS branch"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
@@ -335,7 +350,7 @@
     $results['groupByBranchResults'] = $resultsGroupByBranch;
     $results['groupByModelResults'] = $resultsGroupByModel;
     $results['groupByDeviceResults'] = $resultsGroupByDevice;
-    $results['gapDevide'] = $tam[$branch]/$totalTam;
+    $results['gapDevide'] = (($present == 'number') ? ($tam[$branch]/$totalTam):($tam[$branch]));
     $results['start_time'] = $start_date;
     $results['end_time'] = $end_date;
     $json = json_encode($results);

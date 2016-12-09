@@ -608,7 +608,7 @@ function dateMenuShow() {
     dropdown.css({
         "left": '' + pos.left + 'px',
 //        "top": '' + (pos.top + dateBtn.height() + 2) + 'px',
-        "width": '250px',
+//        "width": '250px',
         "z-index": 9999,
     });
     dropdown.fadeIn(300);
@@ -684,6 +684,7 @@ function submitBtnSetting() {
                             unactiveModeBtn($(this));
                             $(this).removeClass('active');
                         });
+                        firstMap.currentRegionIso = [];
                         disableModeAndOverlay();
                         //close overlay
                         closeDealer();
@@ -707,7 +708,7 @@ function submitBtnSetting() {
                         console.log('switch from '+FUNC_GAP);
                         //change table button text
                         $('#table').button('option','label','Table');
-
+                        firstMap.currentRegionIso = [];
                         firstMap.removePolygonMap();
                         cleanBranch();
                         break;
@@ -1004,7 +1005,8 @@ function submitComparision() {
         loadingDismiss();
         enableResultBtn();
     } else {
-        if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && JSON.stringify(comparisonMap.currentRegionIso) == JSON.stringify(observeLoc)) {
+        if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) 
+            && JSON.stringify(comparisonMap.currentRegionIso) == JSON.stringify(observeLoc)) {
             console.log("same world region");
             if (observeTarget.length != 0) {
                 ajaxFetchMapValue(true, false);

@@ -68,6 +68,16 @@ function getAllTargetDeviceSql($dataObj){
     return $sqlDeviceIn;
 }
 
+function getBranchLocLevelSql($iso){
+    $branchLocLevelTable = $GLOBALS['branchLocLevelTable'];
+
+    $sqlLevel = "SELECT loc_level,tam_spec"
+            ." FROM $branchLocLevelTable A1 "
+            ." WHERE iso = '".$iso."'";
+
+    return $sqlLevel;
+}
+
 function getSQLInStr($dataArray){
 //    print_r($dataArray) ;
 //    echo "<br>";
