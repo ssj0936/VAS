@@ -583,6 +583,8 @@ function dateBtnSetting() {
             dateMenuHide();
         }
     });
+    
+    $('button#dateOK').click(dateMenuHide);
 
     $(document.body).click(function (e) {
         //console.log(e.target);
@@ -615,6 +617,7 @@ function dateMenuShow() {
 }
 
 function dateMenuHide() {
+    console.log('11111111');
     $('#dateDropdown').fadeOut(300);
 }
 
@@ -646,7 +649,7 @@ function setCompareCheckbox(setCheck) {
 }
 
 function submitBtnSetting() {
-    $(".submit").click(function () {
+    $("#submit").click(function () {
         if (isLoading()) return;
 
         //var selected = $("#locationFilter input[type='checkbox']:checked");
