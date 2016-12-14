@@ -7,35 +7,12 @@
     $result = array();
     $db = new DB();
     $tableStyle = 'border:1px solid black';
-
-//    $color = '["all"]';
-//    $cpu = '["all"]';
-//    $rearCamera = '["all"]';
-//    $frontCamera = '["all"]';
-//    $dataset = 'activation';
-//    $from = "2015-9-11";
-//    $to = "2016-10-11";    
-//    $iso ='["IND"]';
-//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $distBranch = '[]';
-//    $groupBy = 'model';
-//    $singleBranch = 'Nagpur_Raipur';
-//    $singleBranch = null;
-
-//    $color = '["all"]';
-//    $cpu = '["all"]';
-//    $rearCamera = '["all"]';
-//    $frontCamera = '["all"]';
-//    $dataset = 'activation';
-//    $from = "2015-9-11";
-//    $to = "2016-10-11";    
-//    $iso ='["IDN"]';
-//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $distBranch = '[]';
-//    $groupBy = 'branch';
-//    $singleBranch = 'SOUTH_SUMATERA';
-//    $singleBranch = null;
-//
+    $highLightStyle = 'color:red;border:1px solid black';
+    $rankTitleStyle = 'color:white;border:1px solid black';    
+    
+    $titleBg = 'bgcolor="yellow"';
+    $rankTitleBg = 'bgcolor="blue"';
+    $summaryBg = 'bgcolor="lightcyan"';
 
 //    $color = '["all"]';
 //    $cpu = '["all"]';
@@ -44,11 +21,11 @@
 //    $dataset = 'activation';
 //    $from = "2016-11-1";
 //    $to = "2016-12-1";  
-//    $iso ='["VNM"]';
+//    $iso ='["IND"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 //    $distBranch = '[]';
-//    $groupBy = 'branch';
+//    $groupBy = 'summary';
 //    $singleBranch = null;
 
     $color = $_POST['color'];
@@ -104,7 +81,6 @@
         $row = $db->fetch_array();
         $level = intval($row['loc_level']);
         
-        
         $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL'.$level]);
         $str_in='';
 		$sqlDeviceIn = getAllTargetDeviceSql($dataObj);
@@ -153,34 +129,18 @@
 //                echo $fromTableStr."<br>";
 
 
-                if($groupBy == 'model'){
-                    //2.get model name And sum group by model_name, branch, map_id
-                    $queryStr = "SELECT sum(count)count,branch,model_name,map_id"
-                        ." FROM ".$fromTableStrGroupByModel
-                        ." WHERE data.device = mapping.device_name"
-                        ." GROUP BY model_name, branch, map_id";
+                //2.get model name And sum group by model_name, branch, map_id
+                $queryStr = "SELECT sum(count)count,branch,map_id"
+                    ." FROM ".$fromTableStrGroupByModel
+                    ." WHERE data.device = mapping.device_name"
+                    ." GROUP BY branch, map_id";
 
-                    //3.get district name/branchName of 
-                    $queryStr = "SELECT count,branch branchSell,model_name,map_id,name2,branchName branchActivate"
-                        ." FROM ($queryStr)tmp,$regionTam regionTam"
-                        ." WHERE tmp.map_id = regionTam.mapid"
-                        ." AND branch = branchName"
-                        ." ORDER BY model_name, branchSell, map_id";
-                }
-                else if($groupBy == 'branch'){
-                    //2.get model name And sum group by model_name, branch, map_id
-                    $queryStr = "SELECT sum(count)count,branch,map_id"
-                        ." FROM ".$fromTableStrGroupByModel
-                        ." WHERE data.device = mapping.device_name"
-                        ." GROUP BY branch, map_id";
-
-                    //3.get district name/branchName of 
-                    $queryStr = "SELECT count,branch branchSell,map_id,name2,branchName branchActivate"
-                        ." FROM ($queryStr)tmp,$regionTam regionTam"
-                        ." WHERE tmp.map_id = regionTam.mapid"
-                        ." AND branch = branchName"
-                        ." ORDER BY branchSell, map_id";
-                }
+                //3.get district name/branchName of 
+                $queryStr = "SELECT count,branch branchSell,map_id,name2,branchName branchActivate"
+                    ." FROM ($queryStr)tmp,$regionTam regionTam"
+                    ." WHERE tmp.map_id = regionTam.mapid"
+                    ." AND branch = branchName"
+                    ." ORDER BY branchSell, map_id";
                 break;
                 
             case 'IDN':
@@ -215,24 +175,13 @@
 //                echo $fromTableStr."<br>";
 
 
-                if($groupBy == 'model'){
-                    //2.get model name And sum group by model_name, branch, map_id
-                    $queryStr = "SELECT sum(count)count,branchName as branchSell,model_name,map_id,name2"
-                        ." FROM $fromTableStrGroupByModel , $regionTam regionTam"
-                        ." WHERE data.device = mapping.device_name"
-                        ." AND data.map_id = regionTam.mapid"
-                        ." AND regionTam.iso = '$isoObj[0]'"
-                        ." GROUP BY model_name, branchName, map_id,name2";
-                }
-                else if($groupBy == 'branch'){
-                    //2.get model name And sum group by model_name, branch, map_id
+                //2.get model name And sum group by model_name, branch, map_id
                     $queryStr = "SELECT sum(count)count,branchName as branchSell,map_id,name2"
                         ." FROM $fromTableStrGroupByModel , $regionTam regionTam"
                         ." WHERE data.device = mapping.device_name"
                         ." AND data.map_id = regionTam.mapid"
                         ." AND regionTam.iso = '$isoObj[0]'"
                         ." GROUP BY branchName, map_id,name2";
-                }
                 break;
         }
         //1.get all data first
@@ -252,6 +201,11 @@
         
         if($level == 1){
             $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','districtName','activationOfDistrict');
+            $hilightColumnList = array('activationShareBranch','gapBranch');
+            if($groupBy!='summary')
+                $hilightColumnList[] = 'tamShareByBranch';
+            
+            $summaryHilightList = array('activationShareBranch','activationSumBranch','gapBranch');
             
             $data = array();
             foreach($file as $line){
@@ -347,13 +301,21 @@
                 for($i=0;$i<count($finalData[$model])+1;++$i){
                     $needToRowSpan = false;
                     foreach($tableColumnList as $indexName){
+                        $needToHightLight = in_array($indexName,$hilightColumnList);
+                        $bgNeedToHightLight = in_array($indexName,$summaryHilightList);
+
                         $name = isset($finalData[$model][$i]) ? $finalData[$model][$i][$indexName] : null;
+                        
                         if($rowSpan[$indexName]['currentName'] != $name || $i==count($finalData[$model]) || $needToRowSpan){
 
                             if($rowSpan[$indexName]['currentName']!=''){
                                 $rowspanCnt = $i-$rowSpan[$indexName]['rowspanIndex'];
                                 $finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName] 
-                                    = "<td rowspan='$rowspanCnt' style ='$tableStyle'>".$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]."</td>";
+                                    = "<td rowspan='$rowspanCnt' "
+                                    .(($bgNeedToHightLight)?$summaryBg:'')
+                                    ." style ='".(($needToHightLight)?$highLightStyle:$tableStyle)."'>"
+                                    .$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]
+                                    ."</td>";
                             }
                             $rowSpan[$indexName]['rowspanIndex'] = $i;
                             $rowSpan[$indexName]['currentName'] = ''.$name;
@@ -369,6 +331,10 @@
         //L2
         else{
             $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','territoryName','activationSumTerritory','districtName','activationOfDistrict');
+            $hilightColumnList = array('activationShareBranch','gapBranch');
+            if($groupBy!='summary')
+                $hilightColumnList[] = 'tamShareByBranch';
+            $summaryHilightList = array('activationShareBranch','activationSumBranch','gapBranch');
             
             $data = array();
             foreach($file as $line){
@@ -499,13 +465,20 @@
                 for($i=0;$i<count($finalData[$model])+1;++$i){
                     $needToRowSpan = false;
                     foreach($tableColumnList as $indexName){
+                        $needToHightLight = in_array($indexName,$hilightColumnList);
+                        $bgNeedToHightLight = in_array($indexName,$summaryHilightList);
+                        
                         $name = isset($finalData[$model][$i]) ? $finalData[$model][$i][$indexName] : null;
                         if($rowSpan[$indexName]['currentName'] != $name || $i==count($finalData[$model]) || $needToRowSpan){
 
                             if($rowSpan[$indexName]['currentName']!=''){
                                 $rowspanCnt = $i-$rowSpan[$indexName]['rowspanIndex'];
                                 $finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName] 
-                                    = "<td rowspan='$rowspanCnt' style ='$tableStyle'>".$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]."</td>";
+                                    = "<td rowspan='$rowspanCnt' "
+                                    .(($bgNeedToHightLight)?$summaryBg:'')
+                                    ." style ='".(($needToHightLight)?$highLightStyle:$tableStyle)."'>"
+                                    .$finalData[$model][$rowSpan[$indexName]['rowspanIndex']][$indexName]
+                                    ."</td>";
                             }
                             $rowSpan[$indexName]['rowspanIndex'] = $i;
                             $rowSpan[$indexName]['currentName'] = ''.$name;
@@ -521,14 +494,12 @@
         //group by branch:
         //need to get selected Model
         $allModelStr = '';
-        if($groupBy!='model'){
-            $query = getModel($str_in);
-            $db->query($query);
-            while($row = $db->fetch_array()){
-               $allModelStr .= $row['model_name'].", ";
-            }
-            $allModelStr = substr($allModelStr,0,-2);
+        $query = getModel($str_in);
+        $db->query($query);
+        while($row = $db->fetch_array()){
+           $allModelStr .= $row['model_name'].", ";
         }
+        $allModelStr = substr($allModelStr,0,-2);
 
         //creating table
         $tableStr = '';
@@ -537,7 +508,7 @@
         $tableStr .= "<tr>";
 
         foreach($tableColumnNameListModel as $indexName){
-            $tableStr .= "<th style ='$tableStyle'>".$indexName."</th>";
+            $tableStr .= "<th $titleBg style ='$highLightStyle'>".$indexName."</th>";
         }
         $tableStr .= "</tr>";
 
@@ -559,13 +530,73 @@
                 foreach($tableColumnList as $indexName){
                     $tableStr .= $finalData[$model][$i][$indexName];
                 }
+//                print_r($finalData[$model][$i]) ;
+//                echo "<br><br>";
                 $tableStr .= "</tr>";
             }
         }
         $tableStr .= "</table>";
+        
+        //---------------------------------------------Summary-------------------------------------------------------
+        $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"               ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","Ranking");
+        $tableColumnList =array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch');
+
+        $rowSapn = 0;
+        $summaryData = array();
+        foreach($finalData['all'] as $dataArray){
+            if($dataArray['branchName'] !=''){
+                ++$rowSapn;
+            }
+        }
+
+        //creating table
+        $summaryTableStr = '';
+        $summaryTableStr .= "<table>";
+        //title column
+        $summaryTableStr .= "<tr>";
+
+        foreach($tableColumnNameListModel as $indexName){
+            $summaryTableStr .= "<th $titleBg style ='$highLightStyle'>".$indexName."</th>";
+        }
+        $summaryTableStr .= "</tr>";
+
+        $first = true;
+        for($i=0;$i<count($finalData['all']);++$i){
+            if($finalData['all'][$i]['branchName'] =='') continue;
+
+            $summaryTableStr .= "<tr>";
+            if($first){
+                $summaryTableStr .="<td rowspan='$rowSapn' $summaryBg style ='$tableStyle'>".$from.' ~ '.$to."</td>";
+                $first = false;
+            }
+
+            if($i==0){
+                //model display
+                $summaryTableStr .= "<td rowspan='$rowSapn' $summaryBg style ='$tableStyle'>".$allModelStr."</td>";
+                //country display
+                $summaryTableStr .= "<td rowspan='$rowSapn' style ='$tableStyle'>".$isoObj[0]."</td>";
+            }
+            foreach($tableColumnList as $indexName){
+                $summaryTableStr .= str_replace('rowspan','',$finalData[$model][$i][$indexName]);
+            }
+            //rank
+            preg_match('/>(.+?)%</',$finalData[$model][$i]['gapBranch'],$find);
+            $summaryTableStr .= "<td style ='$tableStyle'>".rank($find[1])."</td>";
+
+            $summaryTableStr .= "</tr>";
+        }
+        $summaryTableStr .= "<tr><td> </td></tr>";
+        $summaryTableStr .= rankTable();
+
+        $summaryTableStr .= "</table>";
+
     }
-    echo $tableStr;
-    
+    if($groupBy == 'branch'){
+        echo $tableStr;
+    }else if($groupBy == 'summary'){
+        echo $summaryTableStr;
+    }
+
     function percentage($numerator , $denominator){
         return "".round(($numerator / $denominator) * 100,3)."%";
     }
@@ -578,5 +609,51 @@
         $b_ = str_replace(array("'",'"','-',','," ","(",")","\r","\n"),"",$b_);
         
         return $a_ == $b_;
+    }
+
+    function rank($inputPercent){
+        $dec = str_replace('%', '', $inputPercent) / 100;
+
+        if($dec > 0.2)
+            return 'A+';
+        else if($dec > 0)
+            return 'A';
+        else if($dec > -0.2)
+            return 'B';
+        else if($dec > -0.4)
+            return 'C';
+        else 
+            return 'D';
+    }
+
+    function rankTable(){
+        $rankTable = '';
+        $rankTable .= "<tr ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>
+            <td style='".$GLOBALS['tableStyle']."'>Comment</td>
+            <td style='".$GLOBALS['tableStyle']."'>Outstanding</td>
+            <td style='".$GLOBALS['tableStyle']."'>Good</td>
+            <td style='".$GLOBALS['tableStyle']."'>Acceptable</td>
+            <td style='".$GLOBALS['tableStyle']."'>Needs Improvement</td>
+            <td style='".$GLOBALS['tableStyle']."'>Disqualified</td>
+            </tr>";
+        
+        $rankTable .= "<tr>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Ranking</td>
+            <td style='".$GLOBALS['tableStyle']."'>A+</td>
+            <td style='".$GLOBALS['tableStyle']."'>A</td>
+            <td style='".$GLOBALS['tableStyle']."'>B</td>
+            <td style='".$GLOBALS['tableStyle']."'>C</td>
+            <td style='".$GLOBALS['tableStyle']."'>D</td>
+            </tr>";
+        
+        $rankTable .= "<tr>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>GAP%</td>
+            <td style='".$GLOBALS['tableStyle']."'> >20% </td>
+            <td style='".$GLOBALS['tableStyle']."'> 0% ~ 20% </td>
+            <td style='".$GLOBALS['tableStyle']."'> -20% ~ 0% </td>
+            <td style='".$GLOBALS['tableStyle']."'> -20% ~ -40% </td>
+            <td style='".$GLOBALS['tableStyle']."'> <-40% </td>
+            </tr>";
+        return $rankTable;
     }
 ?>

@@ -1882,7 +1882,7 @@ function createTable(isDiff,json,mapObj) {
             console.log('false');
         }
         //post process
-        json[i]['cnt'] = numToString(json[i]['cnt']);
+        json[i]['cnt'] = (json[i]['cnt']);
 
         if(json[i].displayName != ''){
             finalTableArray.push({
@@ -1959,11 +1959,11 @@ function gapReportExportDialogShow(){
             duration: 100
         },
         buttons: {
-            'Group By Model': function () {
-                ajaxGetGapExport('model');
+            'Summary by Branch': function () {
+                ajaxGetGapExport('summary');
                 $(this).dialog('close');
             },
-            'Group By Branch': function () {
+            'Detail by District/City level': function () {
                 ajaxGetGapExport('branch');
                 $(this).dialog('close');
             },
