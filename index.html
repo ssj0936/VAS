@@ -30,12 +30,6 @@
     <!--<script src="Chart.js-master/Chart.js"></script>-->
     <script src="lib/lineOption.js"></script>
 
-    <!--leaflet(cartoDB)-->
-    <!--
-        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
-        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
--->
-
     <!--Marker cluster-->
     <script src="PruneCluster-master/dist/PruneCluster.js"></script>
     <link rel="stylesheet" href="PruneCluster-master/dist/LeafletStyleSheet.css" />
@@ -84,27 +78,7 @@
     <!--DATA-->
     <script src="world_country_min.js"></script>
 
-    <!--FUNCTION-->
 
-    <script src="workset.js"></script>
-    <script src="overview.js"></script>
-
-    <script src="ajax.js"></script>
-    <script src="chartInMap.js"></script>
-    <script src="map.js"></script>
-
-    <script src="markerMap.js"></script>
-    <script src="comparisionMap.js"></script>
-    <script src="overlay.js"></script>
-    <script src="buttonSetting.js"></script>
-    <script src="variable.js"></script>
-    <script src="functions.js"></script>
-    <script src="lineOption.js"></script>
-
-    <script src="bookmarkBtn.js"></script>
-    <script src="filter.js"></script>
-    <script src="heatmap.js"></script>
-    <link rel="stylesheet" href="css.css" />
     <!--VAR-->
     <script>
         $(document).ready(function () {
@@ -130,6 +104,26 @@
 </head>
 
 <body>
+    <script>
+        var randVersion = Math.floor((Math.random() * 1000) + 1);
+        document.write('<script src="workset.js?' + randVersion + '"><\/script>'
+                       + '<script src="overview.js?' + randVersion + '"><\/script>'
+                       + '<script src="ajax.js?' + randVersion + '"><\/script>'
+                       + '<script src="chartInMap.js?' + randVersion + '"><\/script>'
+                       + '<script src="map.js?' + randVersion + '"><\/script>'
+                       + '<script src="markerMap.js?' + randVersion + '"><\/script>'
+                       + '<script src="comparisionMap.js?' + randVersion + '"><\/script>'
+                       + '<script src="overlay.js?' + randVersion + '"><\/script>'
+                       + '<script src="buttonSetting.js?' + randVersion + '"><\/script>'
+                       + '<script src="variable.js?' + randVersion + '"><\/script>'
+                       + '<script src="functions.js?' + randVersion + '"><\/script>'
+                       + '<script src="lineOption.js?' + randVersion + '"><\/script>'
+                       + '<script src="bookmarkBtn.js?' + randVersion + '"><\/script>'
+                       + '<script src="filter.js?' + randVersion + '"><\/script>'
+                       + '<script src="heatmap.js?' + randVersion + '"><\/script>'
+                       + '<link rel="stylesheet" href="css.css?' + randVersion + '" />');
+    </script>
+
     <div class='toast' style="display: none"></div>
     <!--use for all chart-->
     <div id="popupChartContainer"></div>
@@ -175,9 +169,9 @@
                     <div class="panel-body">
 
                         <div id="selector_target" class="selector">
-                           <div id="functionContainer" class="filterSelector">
-                               <label>Function:</label>
-                               <select id="dataset">
+                            <div id="functionContainer" class="filterSelector">
+                                <label>Function:</label>
+                                <select id="dataset">
                                     <option value="activation" selected="selected">Activation Map</option>
                                     <option value="activationTable">Activation Table</option>
                                     <option value="gap">GAP by branch</option>
@@ -185,10 +179,10 @@
                                     <option value="lifezone">LifeZone</option>
                                     <!--                            <option value="qc">QC</option>-->
                                 </select>
-                           </div>
-                           <div id="dateContainer" class="filterSelector">
-                               <label>Date:</label>
-                               <div id='databtn' style="display: inline-block;vertical-align: top; width:100%">
+                            </div>
+                            <div id="dateContainer" class="filterSelector">
+                                <label>Date:</label>
+                                <div id='databtn' style="display: inline-block;vertical-align: top; width:100%">
                                     <button class="date">Date</button>
                                     <div id="dateDropdown" class="selector">
                                         <div id="timeSection">
@@ -213,7 +207,7 @@
                                         </div>
                                     </div>
                                 </div>
-                           </div>
+                            </div>
                         </div>
                         <!--filter-->
                         <div class="filter_section" id="section_target">Device<span></span></div>
@@ -280,7 +274,7 @@
                 <div id="control_Panel">
                     <!--right side function button-->
                     <!--                    <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>-->
-                    
+
                     <div class="control_panel_right" style="float:right; display:none;">
                         <button id="export" class="rightPanelButton">Export</button>
                     </div>
@@ -319,7 +313,7 @@
                                 <button class="mode" id="marker">Marker</button>
                                 <!--                                <button class="mode" id="comparison">Comparison</button>-->
                                 <!--                                <button class="mode" id="table">Table</button>-->
-<!--                                <button class="mode" id="gap">Gap</button>-->
+                                <!--                                <button class="mode" id="gap">Gap</button>-->
                             </div>
 
 

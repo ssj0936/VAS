@@ -744,17 +744,13 @@ function createDauChartElement(c) {
 
     var container = jQuery('<div/>', {
         class: 'customScrollBar',
-    });
-    //    var container = document.createElement("div");
-    container.css({
+        id:'trendContainer',
+    }).css({
         'border': '10px solid rgba(255,255,255,0)',
         "overflow-y": "hidden",
-        //        "display": "inline-block",
         //hide first
         "opacity": "0",
-    }).attr('id', 'trendContainer');
-
-    container.append($(node));
+    }).append($(node));
 
     //width cal
     var labelCount = trendObj.labels.length;
@@ -767,6 +763,8 @@ function createDauChartElement(c) {
     $("#overviewCenterRight").append(container);
     var ctx = node.getContext("2d");
     linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+    
+    container.scrollLeft(parseInt(node.style.width)); 
 
     node.onclick = function(evt)
     {   

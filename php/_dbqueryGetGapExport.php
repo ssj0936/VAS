@@ -19,11 +19,11 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $from = "2016-11-1";
-//    $to = "2016-12-1";  
+//    $from = "2016-11-13";
+//    $to = "2016-12-13";  
 //    $iso ='["IND"]';
-//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+//    $data = '[{"model":"ZENFONE-P","devices":"ZENFONE-P","product":"ZENFONE-P","datatype":"product"},{"model":"ZC553KL","devices":"ZC553KL","product":"ZENFONE-D","datatype":"model"},{"model":"ZC520TL","devices":"ZC520TL","product":"ZENFONE-D","datatype":"model"},{"model":"ZB552KL","devices":"ZB552KL","product":"ZENFONE-D","datatype":"model"},{"model":"ZB500KL","devices":"ZB500KL","product":"ZENFONE-D","datatype":"model"},{"model":"ZB500KG","devices":"ZB500KG","product":"ZENFONE-D","datatype":"model"},{"model":"ZS570KL","devices":"ZS570KL","product":"ZENFONE","datatype":"model"},{"model":"ZS550KL","devices":"ZS550KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZC551KL","devices":"ZC551KL","product":"ZENFONE","datatype":"model"}]';
+//    $permission = '{}';
 //    $distBranch = '[]';
 //    $groupBy = 'summary';
 //    $singleBranch = null;
@@ -186,7 +186,7 @@
         }
         //1.get all data first
 		//--------------------------------------------------------------------------------
-		
+//		echo $queryStr;
 		$db->query($queryStr);
         $first = true;
         $start_date = null;
@@ -628,13 +628,13 @@
 
     function rankTable(){
         $rankTable = '';
-        $rankTable .= "<tr ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>
-            <td style='".$GLOBALS['tableStyle']."'>Comment</td>
-            <td style='".$GLOBALS['tableStyle']."'>Outstanding</td>
-            <td style='".$GLOBALS['tableStyle']."'>Good</td>
-            <td style='".$GLOBALS['tableStyle']."'>Acceptable</td>
-            <td style='".$GLOBALS['tableStyle']."'>Needs Improvement</td>
-            <td style='".$GLOBALS['tableStyle']."'>Disqualified</td>
+        $rankTable .= "<tr>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Comment</td>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Outstanding</td>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Good</td>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Acceptable</td>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Needs Improvement</td>
+            <td ".$GLOBALS['rankTitleBg']." style='".$GLOBALS['rankTitleStyle']."'>Disqualified</td>
             </tr>";
         
         $rankTable .= "<tr>
