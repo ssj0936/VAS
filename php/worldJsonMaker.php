@@ -43,6 +43,17 @@ for($j=0;$j<count($allLoc);++$j){
         //echo $iso." processing...<br>";
         // print_r($geometry->coordinates);
         $geometry = &$results->features[$i]->geometry;
+        $coordinates = &$results->features[$i]->geometry->coordinates;
+        
+        $bounds =array();
+        loopAllCoor($coordinates,$bounds);
+
+        $coordinates = array();
+        $coordinates[] = array($bounds['xMin'],$bounds['yMax']);
+        $coordinates[] = array($bounds['xMax'],$bounds['yMax']);
+        $coordinates[] = array($bounds['xMax'],$bounds['yMin']);
+        $coordinates[] = array($bounds['xMin'],$bounds['yMin']);
+        
         // echo "===================<br>";
         //lowerprecise($geometry->coordinates);
         // print_r($geometry->coordinates);
@@ -64,4 +75,30 @@ for($j=0;$j<count($allLoc);++$j){
 
 fwrite($handle,"]\n};\n");
 fclose($handle);
+
+
+
+function loopAllCoor($coordinateArr, &$bounds) {
+    //not coordinateArr
+    if (!is_numeric($coordinateArr[0])) {
+        foreach($coordinateArr as $arr){
+            loopAllCoor($arr, $bounds);
+        }
+    } else {
+        $longitude = $coordinateArr[0];
+        $latitude = $coordinateArr[1];
+
+        $bounds['xMin'] = !isset($bounds['xMin']) ? $longitude : 
+            ($bounds['xMin'] < $longitude ? $bounds['xMin'] : $longitude);
+        
+        $bounds['xMax'] = !isset($bounds['xMax']) ? $longitude : 
+            ($bounds['xMax'] > $longitude ? $bounds['xMax'] : $longitude);
+        
+        $bounds['yMin'] = !isset($bounds['yMin']) ? $latitude : 
+            ($bounds['yMin'] < $latitude ? $bounds['yMin'] : $latitude);
+        
+        $bounds['yMax'] = !isset($bounds['yMax']) ? $latitude : 
+            ($bounds['yMax'] > $latitude ? $bounds['yMax'] : $latitude);
+    }
+}
 ?>

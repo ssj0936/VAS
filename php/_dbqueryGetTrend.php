@@ -52,6 +52,19 @@
     $onlineDist = $_POST['onlineDist'];
     $permission = $_POST['permission'];
 
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $dataset = 'activation';
+//    $from = "2016-12-7";
+//    $to = "2016-12-9";    
+//    $iso ='["IDN"]';
+//    $data = '[{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"}]';
+//    $distBranch = '[]';
+//    $onlineDist = '[]';
+//    $permission = '{}';
+    
     if($data!="[]"){
         $isoObj = json_decode($iso);
         $dataObj = json_decode($data);
