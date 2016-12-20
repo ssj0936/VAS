@@ -9,6 +9,7 @@ $db = new DB();
 $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 //overview
 $dataset = $_GET['dataset'];
+//$dataset = 'activation';
 
     //1. today login user and count
     $date = date('Y-m-d', time());
@@ -83,6 +84,8 @@ $dataset = $_GET['dataset'];
       FROM $logTable
       WHERE dataset = '$dataset'
       group by filter_content";
+
+//echo $sql;
     $db->query($sql);
 
     $observationCountry = array();
@@ -100,52 +103,62 @@ $dataset = $_GET['dataset'];
         $count = $row['count'];
         $line = $row['filter_content'];
         $obj = json_decode($line);
-    //    print_r(json_decode($line));
+//        print_r(json_decode($line));
 
         //country
         $cnt = 0;
-        foreach($obj->observeLoc as $val){
-            $observationCountry['_All'] += $count;
-            if(isset($observationCountry[$val]))
-                $observationCountry[$val] += $count;
-            else
-                $observationCountry[$val] = $count;
+        if(isset($obj->observeLoc)){
+            foreach($obj->observeLoc as $val){
+                $observationCountry['_All'] += $count;
+                if(isset($observationCountry[$val]))
+                    $observationCountry[$val] += $count;
+                else
+                    $observationCountry[$val] = $count;
+            }
         }
 
         //Color
-        foreach($obj->observeSpec->color as $val){
-            $observationColor['_All'] += $count;
-            if(isset($observationColor[$val]))
-                $observationColor[$val] += $count;
-            else
-                $observationColor[$val] = $count;
+        if(isset($obj->observeSpec->color)){
+            foreach($obj->observeSpec->color as $val){
+                $observationColor['_All'] += $count;
+                if(isset($observationColor[$val]))
+                    $observationColor[$val] += $count;
+                else
+                    $observationColor[$val] = $count;
+            }
         }
 
         //Cpu
-        foreach($obj->observeSpec->cpu as $val){
-            $observationCpu['_All'] += $count;
-            if(isset($observationCpu[$val]))
-                $observationCpu[$val] += $count;
-            else
-                $observationCpu[$val] = $count;
+        if(isset($obj->observeSpec->cpu)){
+            foreach($obj->observeSpec->cpu as $val){
+                $observationCpu['_All'] += $count;
+                if(isset($observationCpu[$val]))
+                    $observationCpu[$val] += $count;
+                else
+                    $observationCpu[$val] = $count;
+            }
         }
 
         //rear_camera
-        foreach($obj->observeSpec->rear_camera as $val){
-            $observationRearCamera['_All'] += $count;
-            if(isset($observationRearCamera[$val]))
-                $observationRearCamera[$val] += $count;
-            else
-                $observationRearCamera[$val] = $count;
+        if(isset($obj->observeSpec->rear_camera)){
+            foreach($obj->observeSpec->rear_camera as $val){
+                $observationRearCamera['_All'] += $count;
+                if(isset($observationRearCamera[$val]))
+                    $observationRearCamera[$val] += $count;
+                else
+                    $observationRearCamera[$val] = $count;
+            }
         }
 
         //front_camera
-        foreach($obj->observeSpec->front_camera as $val){
-            $observationFrontCamera['_All'] += $count;
-            if(isset($observationFrontCamera[$val]))
-                $observationFrontCamera[$val] += $count;
-            else
-                $observationFrontCamera[$val] = $count;
+        if(isset($obj->observeSpec->front_camera)){
+            foreach($obj->observeSpec->front_camera as $val){
+                $observationFrontCamera['_All'] += $count;
+                if(isset($observationFrontCamera[$val]))
+                    $observationFrontCamera[$val] += $count;
+                else
+                    $observationFrontCamera[$val] = $count;
+            }
         }
     }
     arsort($observationCountry);
