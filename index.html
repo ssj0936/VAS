@@ -30,6 +30,12 @@
     <!--<script src="Chart.js-master/Chart.js"></script>-->
     <script src="lib/lineOption.js"></script>
 
+    <!--leaflet(cartoDB)-->
+    <!--
+        <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+        <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+-->
+
     <!--Marker cluster-->
     <script src="PruneCluster-master/dist/PruneCluster.js"></script>
     <link rel="stylesheet" href="PruneCluster-master/dist/LeafletStyleSheet.css" />
@@ -121,6 +127,8 @@
                        + '<script src="bookmarkBtn.js?' + randVersion + '"><\/script>'
                        + '<script src="filter.js?' + randVersion + '"><\/script>'
                        + '<script src="heatmap.js?' + randVersion + '"><\/script>'
+                       + '<script src="SQMap.js?' + randVersion + '"><\/script>'
+                       + '<script src="SQRegionMap.js?' + randVersion + '"><\/script>'
                        + '<link rel="stylesheet" href="css.css?' + randVersion + '" />');
     </script>
 
@@ -177,7 +185,7 @@
                                     <option value="gap">GAP by branch</option>
                                     <option value="distBranch">Branch vs. Disti</option>
                                     <option value="lifezone">LifeZone</option>
-                                    <!--                            <option value="qc">QC</option>-->
+                                    <option value="qc">CFR Map</option>
                                 </select>
                             </div>
                             <div id="dateContainer" class="filterSelector">
@@ -335,13 +343,13 @@
 
                             <div id="qcView" style="margin-top: 3px;">
                                 <label class="buttonSetLable">View</label>
-                                <button class="qcView" id="qcMucModule">MucModule</button>
-                                <button class="qcView" id="qcLmdPartGroup">LmdPartGroup</button>
+                                <button class="qcView" id="qcMucModule" data-value="muc">MucModule</button>
+                                <button class="qcView" id="qcLmdPartGroup" data-value="lmd">LmdPartGroup</button>
                             </div>
 
                             <label class="buttonSetLable">Category</label>
                             <select id="qcCategory">
-                                <option value="all" selected="selected">All</option>
+                                <option value="ALL" selected="selected">All</option>
                             </select>
                         </div>
 

@@ -265,6 +265,12 @@ function showFilterResult() {
                     $(tableContainer).empty();
                     showTable();
                 }
+                if (getFunction() == FUNC_QC) {
+                    if (isModeActive(MODE_QC_REGION))
+                        submitSQRegion();
+                    if (isModeActive(MODE_QC_MARKER))
+                        submitSQMarker();
+                }
 
                 $(this).off();
                 $(this).remove();

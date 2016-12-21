@@ -137,7 +137,6 @@ function buttonInit() {
                         }
                         checkboxLocationInit(gapLoc);
                         break;
-                    
             }
         }
      });
@@ -214,16 +213,38 @@ function qcControlPanelInit(){
     
     $( "#qcCategory" ).selectmenu({
         width: '100px',
+        change: function( event, data ) {
+            currentCategory = data.item.value;
+            rePaintCFR();
+        }
     });
     
     //qcMode
     $('#qcMode button').click(function(){
-        $(this).toggleClass('active');
+        if (isLoading()) return;
+
+        var pressedTarget = $(this);
+        //buttonset switch
+
+        if (pressedTarget.hasClass("active")) {
+            pressedTarget.removeClass("active");
+            unactiveModeBtn($(this));
+        } else {
+            pressedTarget.addClass("active");
+            activeModeBtn($(this));
+        }
     });
     
     //qcView
     $('#qcView button').click(function(){
+        if (isLoading()) return;
         radioButtonClick($('#qcView'),$(this));
+        if (isModeActive(MODE_QC_REGION)) {
+            submitSQRegion($(this).attr('data-value'));
+        }
+        if (isModeActive(MODE_QC_MARKER)) {
+            submitSQMarker($(this).attr('data-value'));
+        }
     });
 }
 
@@ -374,68 +395,82 @@ function radioButtonClick($buttonset,$this){
 
 function unactiveModeBtn($this) {
     switch ($this.attr("id")) {
-    case "region":
-        //console.log("region");
-        firstMap.removePolygonMap();
-        setModeOff(MODE_REGION);
-        firstMap.info.update();
-        if(firstMap.hasSnapshotBtn){
-            firstMap.removeSnapshot();
-        }
-        if (isModeActive(MODE_MARKER)) {
-            firstMap.hideLegend();
-        }
-        break;
-    case "marker":
-        //console.log("marker");
-        removeMarkerMap();
-        firstMap.showLegend();
-        setModeOff(MODE_MARKER);
-        //resetIsClickFromFilterResult();
-        break;
-    case "comparison":
-        //console.log("comparison");
-        setCompareCheckbox(false);
-        comparisionMapShrink();
-        setModeOff(MODE_COMPARISION);
-        //console.log("unactiveModeBtn_comparison");
-        break;
-    case "gap":
-        //change table button text
-        $('#table').button('option','label','Table');
-    
-        firstMap.removePolygonMap();
-        cleanBranch();
-        break;
+        case "region":
+            //console.log("region");
+            firstMap.removePolygonMap();
+            setModeOff(MODE_REGION);
+            firstMap.info.update();
+            if(firstMap.hasSnapshotBtn){
+                firstMap.removeSnapshot();
+            }
+            if (isModeActive(MODE_MARKER)) {
+                firstMap.hideLegend();
+            }
+            break;
+        case "marker":
+            //console.log("marker");
+            removeMarkerMap();
+            firstMap.showLegend();
+            setModeOff(MODE_MARKER);
+            //resetIsClickFromFilterResult();
+            break;
+        case "comparison":
+            //console.log("comparison");
+            setCompareCheckbox(false);
+            comparisionMapShrink();
+            setModeOff(MODE_COMPARISION);
+            //console.log("unactiveModeBtn_comparison");
+            break;
+        case "gap":
+            //change table button text
+            $('#table').button('option','label','Table');
+        
+            firstMap.removePolygonMap();
+            cleanBranch();
+            break;
+        case "qcRegion":
+            removeSQRegion();
+            setModeOff(MODE_QC_REGION);
+            break;
+        case "qcMarker":
+            removeSQMarker();
+            setModeOff(MODE_QC_MARKER);
+            break;
     }
 }
 
 function activeModeBtn($this) {
     switch ($this.attr("id")) {
-    case "region":
-        if(!firstMap.hasSnapshotBtn){
-            firstMap.addSnapshot();
-        }
-        setModeOn(MODE_REGION);
-        submitRegion();
-        break;
-    case "marker":
-        setModeOn(MODE_MARKER);
-        if (!isRegionMarkerSametime())
-            firstMap.hideLegend();
-        submitMarker();
-        break;
-    case "comparison":
-        setModeOn(MODE_COMPARISION);
-        if (comparisonMap.fromFormatStr == undefined && comparisonMap.toFormatStr == undefined) {
-            showAlert("please select comparison Data...");
-        } else {
-            submitComparision();
-        }
-        break;
-    case "gap":
-        submitGap();
-        break;
+        case "region":
+            if(!firstMap.hasSnapshotBtn){
+                firstMap.addSnapshot();
+            }
+            setModeOn(MODE_REGION);
+            submitRegion();
+            break;
+        case "marker":
+            setModeOn(MODE_MARKER);
+            if (!isRegionMarkerSametime())
+                firstMap.hideLegend();
+            submitMarker();
+            break;
+        case "comparison":
+            setModeOn(MODE_COMPARISION);
+            if (comparisonMap.fromFormatStr == undefined && comparisonMap.toFormatStr == undefined) {
+                showAlert("please select comparison Data...");
+            } else {
+                submitComparision();
+            }
+            break;
+        case "gap":
+            submitGap();
+            break;
+        case "qcRegion":
+            submitSQRegion();
+            break;
+        case "qcMarker":
+            submitSQMarker();
+            break;
     }
 }
 
@@ -715,7 +750,16 @@ function submitBtnSetting() {
                         firstMap.removePolygonMap();
                         cleanBranch();
                         break;
-                    
+                    case FUNC_QC:
+                        console.log('switch from '+FUNC_QC);
+                        //change table button text
+                        $('#table').button('option','label','Table');
+                        firstMap.currentRegionIso = [];
+                        firstMap.removePolygonMap();
+                        removeSQMarker();
+                        removeSQRegion();
+                        mapInit();
+                        break;
                 }
                 setFunction(activeFunctionTmp);
                 console.log('diff');
@@ -887,6 +931,28 @@ function submitBtnSetting() {
                     submitGap();
                     firstMap.zoomToSelectedLocation();
                     break;
+
+                case FUNC_QC:
+                    $('#tableContainer').hide();
+                    $('#workset').show('medium');
+                    if ($("#qcMode button.active").length == 0 || $("button#qcRegion").hasClass("active")) {
+                        setModeOn(MODE_QC_REGION);
+                        if (!$("button#qcRegion").hasClass("active"))
+                            modeBtnPress($("button#qcRegion"));
+
+                        submitSQRegion();
+                    }
+                    if ($("button#qcMarker").hasClass("active")) {
+                        if (!$("button#qcMarker").hasClass("active"))
+                            modeBtnPress($("button#qcMarker"));
+
+                        submitSQMarker();
+                    }
+                    $("button#qcMucModule").addClass("active");
+                    needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+                    console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+                    firstMap.zoomToSelectedLocation();
+                    break;
             }
             //text in date button
             var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("<br>(" + $('button.btn_pressed').children('span').text() + ")");
@@ -1035,6 +1101,32 @@ function submitHeatMap(){
     ajaxGetHeatMap();
 }
 
+function submitSQRegion(view){
+    setModeOn(MODE_QC_REGION);
+    if (observeTarget.length == 0) {
+        firstMap.info.update();
+        firstMap.cleanMap();
+        loadingDismiss();
+    } else {
+        //same world region, no need to re-fetch/*
+        if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !isMapModified) {
+            console.log("same world region");
+            if (observeTarget.length != 0) {
+                ajaxGetSQRegion(view);
+            } else {
+                loadingDismiss();
+            }
+        } else {
+            console.log("diff world region");
+            ajaxExtractMap(false, ajaxGetSQRegion, view);
+        }
+    }
+}
+
+function submitSQMarker(view){
+    setModeOn(MODE_QC_MARKER);
+    ajaxGetSQMarker(view);
+}
 function collapseBtnInit() {
     // left side filter toggle
     var selector = $(".filter_wrapper");

@@ -98,6 +98,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
                 mapObj.setInfo();
             }
             mapObj.info.update();
+            mapObj.setHighlightFeature();
 
             //free
             mapObj.countryMapping = null;
@@ -877,6 +878,75 @@ function ajaxGetHeatMap(){
             } else {
                 changeHeatData(json);
             }
+            loadingDismiss();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxGetHeatMap:" + xhr.status);
+            alert(thrownError);
+        }
+    });
+}
+
+function ajaxGetSQMarker(view){
+    let repairView;
+    if (view) {
+        repairView = view;
+    } else {
+        repairView = 'muc';
+    }
+    loading("Data loading...");
+    $.ajax({
+        url: "php/_dbqueryGetSQDevice.php",
+        type: "POST",
+        data: {
+            iso: JSON.stringify(observeLoc),
+            data: JSON.stringify(observeTarget),
+            view: repairView,
+            category: 1,
+            permission: JSON.stringify(permission),
+        },
+        dataType: 'json',
+
+        success: function (json) {
+            setSQMarker(json);
+            json = null;
+            loadingDismiss();
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxGetHeatMap:" + xhr.status);
+            alert(thrownError);
+        }
+    });
+}
+
+function ajaxGetSQRegion(view) {
+    let repairView;
+    if (view) {
+        repairView = view;
+    } else {
+        repairView = 'muc';
+    }
+    loading("Data loading...");
+    $.ajax({
+        url: "php/_dbqueryGetSQRegion.php",
+        type: "POST",
+        data: {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            iso: JSON.stringify(observeLoc),
+            data: JSON.stringify(observeTarget),
+            view: repairView,
+            category: 1,
+            permission: JSON.stringify(permission),
+        },
+        dataType: 'json',
+
+        success: function (json) {
+            console.log(json);
+            setSQRegion(json);
+            json = null;
             loadingDismiss();
         },
         error: function (xhr, ajaxOptions, thrownError) {

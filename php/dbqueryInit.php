@@ -135,6 +135,7 @@
 
     $allDevices = array();
     $allLoc = array();
+    $allCategory = array();
     
     if(!$isPass && !$isVIP){
     }
@@ -189,6 +190,25 @@
             $terrority = $row['Terrority'];
             $allLoc[$terrority][$countryName][] = $row['iso'];
         }
+
+        $query = "SELECT DISTINCT * FROM "
+                .$_DB['repair']['dbnameMucModuleCode']
+                ." WHERE numcode != 0
+                ORDER BY numcode";
+        $db->query($query);
+        while($row = $db->fetch_array()){
+            $allCategory['muc'][$row['numcode']] = str_replace(' ','',$row['muc_module']);
+        }
+
+        $query = "SELECT DISTINCT * FROM "
+                .$_DB['repair']['dbnameLmdModuleCode']
+                ." WHERE numcode != 0
+                ORDER BY numcode";
+        $db->query($query);
+        while($row = $db->fetch_array()){
+            $allCategory['lmd'][$row['numcode']] = str_replace(' ','',$row['lmd_part_group']);
+        }
+
     }
 
     $allEmpty = true;
@@ -215,6 +235,7 @@
     $result['isVIP']= $isVIP;
     $result['accountPermission']= $permissionResult ;
     $result['productToProductID']= $productToProductID ;
+    $result['category'] = $allCategory;
 
     $json = json_encode($result);
     echo $json;

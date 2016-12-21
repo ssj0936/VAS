@@ -94,11 +94,11 @@ function setModeOn(mode) {
         isMarkerOn = true;
     } else if (mode == MODE_COMPARISION) {
         isComparisonOn = true;
-    } /*else if (mode == MODE_GAP) {
-        isGapOn = true;
-    } else if (mode == MODE_LIFEZONE) {
-        isLifeZoneOn = true;
-    }*/
+    } else if (mode == MODE_QC_REGION) {
+        isQcRegionOn = true;
+    } else if (mode == MODE_QC_MARKER) {
+        isQcMarkerOn = true;
+    }
 }
 
 function setModeOff(mode) {
@@ -108,11 +108,11 @@ function setModeOff(mode) {
         isMarkerOn = false;
     } else if (mode == MODE_COMPARISION) {
         isComparisonOn = false;
-    } /*else if (mode == MODE_GAP) {
-        isGapOn = false;
-    } else if (mode == MODE_LIFEZONE) {
-        isLifeZoneOn = false;
-    }*/
+    } else if (mode == MODE_QC_REGION) {
+        isQcRegionOn = false;
+    } else if (mode == MODE_QC_MARKER) {
+        isQcMarkerOn = false;
+    }
 }
 
 function isModeActive(mode) {
@@ -122,11 +122,11 @@ function isModeActive(mode) {
         return isMarkerOn;
     } else if (mode == MODE_COMPARISION) {
         return isComparisonOn;
-    } /*else if (mode == MODE_GAP) {
-        return isGapOn;
-    } else if (mode == MODE_LIFEZONE) {
-        return isLifeZoneOn;
-    }*/
+    } else if (mode == MODE_QC_REGION) {
+        return isQcRegionOn;
+    } else if (mode == MODE_QC_MARKER) {
+        return isQcMarkerOn;
+    }
 }
 
 function isClickFromFilterResult() {
@@ -471,6 +471,24 @@ function cleanBranch() {
     allBranchObject.length = 0;
     allHighlighBranch = null;
     allBranchGap = null;
+}
+
+function initCFRCategory(list) {
+    let sel = $("#qcCategory");
+    sel.empty().append('<option value="ALL" selected="selected">All</option>')
+    for (let k = 0; k < list.length; k++)
+       sel.append("<option value='" + list[k]+ "'>" + list[k] + "</option>");
+    sel.selectmenu( "refresh" );
+    currentCategory = 'ALL';
+}
+
+function rePaintCFR() {
+    if (SQRegionTileLayer && isModeActive(MODE_QC_REGION)) {
+        rePaintSQRegion();
+    } 
+    if (SQMarkerTileLayer && isModeActive(MODE_QC_MARKER)) {
+        rePaintSQMarker();
+    }
 }
 
 function weekdayConvert(num){
