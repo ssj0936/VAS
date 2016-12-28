@@ -146,7 +146,7 @@ function paintFeature(ctx,tileIndex,params) {
             }
 
             //note: canvas arc only accept integer radius
-            let radius = parseInt(SQMarkerSetting[type].radius) * parseInt(feature.tags.status == 'set'?2:1);
+            let radius = parseInt(SQMarkerSetting[type].radius) * parseInt(feature.tags.status == 'set'?2:1) * radiusMultiple();
 
             ctx.fillStyle = feature.tags.status == 'set'?SQMarkerSetting[type].color_set:SQMarkerSetting[type].color_unset;
             ctx.beginPath();
@@ -219,6 +219,13 @@ function clickPoint(e) {
         }
         SQMarkerTileLayer.redraw();
     }
+}
+
+let test = 0;
+function radiusMultiple() {
+    let zoom = firstMap.map.getZoom();
+    return zoom < 13 ? 1 : 
+            2;
 }
 
 function rePaintSQMarker() {

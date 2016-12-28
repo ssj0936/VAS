@@ -27,7 +27,7 @@ function addHeatMap(json) {
         "maxOpacity": .85, 
         "minOpacity": .1,
         // scales the radius based on map zoom
-        "scaleRadius": false, 
+        "scaleRadius": true, 
         // if set to false the heatmap uses the global maximum for colorization
         // if activated: uses the data maximum within the current map boundaries 
         //   (there will always be a red spot with useLocalExtremas true)

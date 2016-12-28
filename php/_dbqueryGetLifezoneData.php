@@ -80,6 +80,7 @@ if(count($dataObj) != 0){
     }
     $str_in = substr($str_in,0,-1);
 
+    $deviceTable = $_DB['lifezone']['deviceTable'];
     $queryStr='';
     for($i=0;$i<count($isoObj);++$i){
         
@@ -99,17 +100,17 @@ if(count($dataObj) != 0){
                     ."$deviceTable device_model"
 
                     ." WHERE "
-                    ." A1.device = device_model.device_name"
+                    ." A1.mpp_numcode = device_model.mpp_numcode"
                     ." AND week = '".$lifeZoneTimeObj['week']."'"
                     ." AND time = '".$lifeZoneTimeObj['time']."'"
-                    .($isAll?"":" AND A1.device IN(".$str_in.")")
-                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
-                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
-                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
+                    .($isAll?"":" AND device_model.productdevice IN(".$str_in.")")
+                    .($isColorAll ? "" : " AND device_model.pno = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
+                    .($isCpuAll ? "" : " AND device_model.pno = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
+                    .($isFrontCameraAll ? "" : " AND device_model.pno = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
+                    .($isRearCameraAll ? "" : " AND device_model.pno = A5.PART_NO AND A5.SPEC_DESC IN(".$rearCamera_in.")")
                     .($isDistBranch ? " AND $distBranchStr " : "")
                     .($isOnlineDist ? " AND $onlineDistStr " : "")
-                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
+                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")");
 
         if(strlen($queryStr)==0){
             $queryStr .= $tmpQueryStr;

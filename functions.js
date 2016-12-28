@@ -405,6 +405,7 @@ function getCookie(cname) {
 function checkSSOCookie() {
     //no need to check developer's permission
     if (window.location.href.indexOf('localhost') >= 0 || window.location.href.indexOf('127.0.0.1') >= 0) {
+        init_();
         return;
     } else if (window.location.href.indexOf('asus.com') >= 0) {
         if (getCookie('SSO') == "") {
@@ -412,6 +413,7 @@ function checkSSOCookie() {
         } else {
             var c = getCookie('SSO').split('&');
             account = c[3].substring((c[3].indexOf('=') + 1));
+            init_();
 //            var accessable = isInArray(accessableList, account);
 //            if (!accessable)
 //                window.location.href = '404.html';

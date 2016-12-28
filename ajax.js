@@ -1096,7 +1096,7 @@ function ajaxGetSQRegion(view) {
         dataType: 'json',
 
         success: function (json) {
-            console.log(json);
+//            console.log(json);
             setSQRegion(json);
             json = null;
             loadingDismiss();

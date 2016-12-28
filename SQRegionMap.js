@@ -6,7 +6,9 @@ let totalRecord;
 function removeSQRegion() {
     if (SQRegionTileLayer) {
         firstMap.map.removeLayer(SQRegionTileLayer);
-        firstMap.map.removeLayer(firstMap.highlight)
+    }
+    if (firstMap.highlight) {
+        firstMap.map.removeLayer(firstMap.highlight);
     }
     SQRegionIndex = null;
     SQRegionTileLayer = null;
