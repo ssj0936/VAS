@@ -1,5 +1,7 @@
 "use strict";
 var colorPattern = [50000, 5000, 500, 50];
+var parallelGrade = [0,20,40,60,80,100];
+var gapGrade = [-0.4, -0.2, 0, 0.2];
 
 function MapObject(mapname) {
     this.mapName = mapname;
@@ -25,7 +27,7 @@ function MapObject(mapname) {
     this.isEmpty = false;
     
     this.snapshotBtn;
-    this.hasSnapshotBtn = true;
+    this.hasSnapshotBtn = false;
     //marker
     this.pruneCluster = new PruneClusterForLeaflet();
 
@@ -60,7 +62,7 @@ function MapObject(mapname) {
 //                console.log(firstMap.map.getZoom());
                 //alert("QQ");
                 //helloPopup.setLatLng(map.getCenter()).openOn(map);
-            }).addTo( this.map ); // probably just `map`
+            }); // probably just `map`
         }
     };
 
@@ -126,17 +128,24 @@ function MapObject(mapname) {
                 });
             }
         }
-//        check
-//        for(var i = 0; i < this.countryMapping.length; ++i){
-//            var id = this.countryMapping[i].countryID;
-//            var cnt = this.countryMapping[i].cnt;
-//            var find = this.jsonData.features.filter(function (obj) {
-//                return obj.properties.OBJECTID == id;
-//            });
-//            
-//            if(find == false)
-//                console.log('countryID:' + id + '/' + cnt + " not found");
-//        }
+    };
+    
+    this.updateParallelMapProperties = function(){
+        for (var i = 0; i < this.jsonData.features.length; ++i) {
+            var iso = this.jsonData.features[i].properties.ISO_A3;
+
+            var data = this.countryMapping[iso];
+
+            if (!data) {
+                this.jsonData.features[i].properties.importRatio = '0%';
+                this.jsonData.features[i].properties.exportRatio = '0%';
+                this.jsonData.features[i].properties.models = [];
+            } else {
+                this.jsonData.features[i].properties.importRatio = data.total.importRatio;
+                this.jsonData.features[i].properties.exportRatio = data.total.exportRatio;
+                this.jsonData.features[i].properties.models = data.models;
+            }
+        }
     };
 
     this.mapDataLoad = function () {
@@ -176,45 +185,52 @@ function MapObject(mapname) {
             ctx.clearRect(0, 0, params.canvas.width, params.canvas.height);
 
             var features = tile.features;
-//            console.log(allHighlighBranch);
-
             for (var i = 0; i < features.length; i++) {
                 var feature = features[i],
                     type = feature.type;
 
-                //style option
-                ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
-                //if gap mode fill gap color
-                if (getFunction() == FUNC_GAP) {
-                    var fillBranch;
-                    $.each(allHighlighBranch,function (branch,object) {
-                        if($.inArray(feature.tags.OBJECTID,object) != -1) {
-                            fillBranch = branch;
-                            return false;
-                        }
-                    });
-//                    console.log(fillBranch);
-                    if (allBranchGap && fillBranch && allBranchGap[fillBranch]) {
-                        ctx.fillStyle = colorHexToRGBString(obj.getGapColor(allBranchGap[fillBranch].total) , 0.5);
-                    } else if (typeof fillbranch == 'undefined') {
-                        ctx.fillStyle = colorHexToRGBString(obj.getColor(0) , 0.5);
-                    }
-                }
+                //fillStyle setting
+                switch(getFunction()){
+                    case FUNC_GAP:
+                        var fillBranch;
+                        $.each(allHighlighBranch,function (branch,object) {
+                            if($.inArray(feature.tags.OBJECTID,object) != -1) {
+                                fillBranch = branch;
+                                return false;
+                            }
+                        });
 
-//                console.log("allBranchObject:"+allBranchObject);
-//                console.log("getFunction():"+getFunction());
-                if (allBranchObject.length > 0 && getFunction() != FUNC_GAP) {
-                    // if not in gap mode and some branch has been selected, use another stroke
-                    if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
-                        ctx.globalCompositeOperation = 'source-over';
-                        ctx.strokeStyle = "#66CC00";
-                        ctx.lineWidth = 2;
-                    } else {
-                        ctx.globalCompositeOperation = 'destination-over';
-                        ctx.strokeStyle = "white";
-                        ctx.lineWidth = 1;
-                    }
+                        if (allBranchGap && fillBranch && allBranchGap[fillBranch]) {
+                            ctx.fillStyle = colorHexToRGBString(obj.getGapColor(allBranchGap[fillBranch].total) , 0.5);
+                        } else if (typeof fillbranch == 'undefined') {
+                            ctx.fillStyle = colorHexToRGBString(obj.getColor(0) , 0.5);
+                        }
+                        break;
+                        
+                    case FUNC_DISTBRANCH:
+                        // if not in gap mode and some branch has been selected, use another stroke
+                        if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
+                            ctx.globalCompositeOperation = 'source-over';
+                            ctx.strokeStyle = "#66CC00";
+                            ctx.lineWidth = 2;
+                        } else {
+                            ctx.globalCompositeOperation = 'destination-over';
+                            ctx.strokeStyle = "white";
+                            ctx.lineWidth = 1;
+                        }
+                        break;
+                        
+                    case FUNC_PARALLEL:
+                        var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? feature.tags.importRatio : feature.tags.exportRatio ;
+                        
+                        ctx.fillStyle = colorHexToRGBString(obj.getParallelColor(parseFloat(targetRatio)) , 0.5);
+                        break;
+                        
+                    default:
+                        ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
+                        break;
                 }
+                
                 ctx.beginPath();
 
                 for (var j = 0; j < feature.geometry.length; j++) {
@@ -265,34 +281,46 @@ function MapObject(mapname) {
         if (observeTarget.length == 0 || this.countryMapping.length == 0) return;
         var obj = this;
         this.legend.onAdd = function (mymap) {
-            var patternIndex = obj.getColorPattern();
-
-            var div = L.DomUtil.create('div', 'legend_' + leveltype),
-                grades = [0, colorPattern[patternIndex] / 5 * 1, colorPattern[patternIndex] / 5 * 2, colorPattern[patternIndex] / 5 * 3, colorPattern[patternIndex] / 5 * 4, colorPattern[patternIndex]],
-                labels = [];
-
-            // loop through our density intervals and generate a label with a colored square for each interval
-            if (getFunction() != FUNC_GAP) {
-                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
-                for (var i = 0; i < grades.length - 1; i++) {
-                    div.innerHTML +=
-                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getColor((grades[i] + 1)) + '"></i> ' +
-                        numToString(grades[i]) + '&ndash;' + numToString(grades[i + 1]) + '</div>';
-                }
-                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getColor((colorPattern[patternIndex] + 1)) + '"></i> ' + numToString(colorPattern[patternIndex]) + "+" + "</div>";
-                return div;
-            } else {
-                // in gap mode, change legend style
-                grades = [-0.4, -0.2, 0, 0.2];
-                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getGapColor(-99) + '"></i>< -40%</div> ';
-                for (var i = 0; i < grades.length - 1; i++) {
-                    div.innerHTML +=
-                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getGapColor(grades[i]) + '"></i>' +
-                        numToString(grades[i]*100) + '% &ndash; ' + numToString(grades[i + 1]*100) + '%</div>';
-                }
-                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getGapColor(99) + '"></i>>= 20%</div>';
-                return div;
+            var div = L.DomUtil.create('div', 'legend_' + leveltype);
+            
+            switch(getFunction()){
+                case FUNC_GAP:
+                    var grades = gapGrade;
+                    div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getGapColor(-99) + '"></i>< -40%</div> ';
+                    for (var i = 0; i < grades.length - 1; i++) {
+                        div.innerHTML +=
+                            '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getGapColor(grades[i]) + '"></i>' +
+                            numToString(grades[i]*100) + '% &ndash; ' + numToString(grades[i + 1]*100) + '%</div>';
+                    }
+                    div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getGapColor(99) + '"></i>>= 20%</div>';
+                    break;
+                    
+                case FUNC_PARALLEL:
+                    var grades = parallelGrade;
+                    
+                    div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor(0) + '"></i> 0 %</div> ';
+                    for (var i = 0; i < grades.length - 1; i++) {
+                        div.innerHTML +=
+                            '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i] + 1)) + '"></i> ' +
+                            numToString(grades[i]) + ' % &ndash;' + numToString(grades[i + 1]) + ' % </div>';
+                    }
+                    div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length-1]+1)) + '"></i> ' + numToString(grades[grades.length-1]) + " %+" + "</div>";
+                    break;
+                    
+                default:
+                    var patternIndex = obj.getColorPattern();
+                    var grades = [0, colorPattern[patternIndex] / 5 * 1, colorPattern[patternIndex] / 5 * 2, colorPattern[patternIndex] / 5 * 3, colorPattern[patternIndex] / 5 * 4, colorPattern[patternIndex]];
+                    
+                    div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
+                    for (var i = 0; i < grades.length - 1; i++) {
+                        div.innerHTML +=
+                            '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getColor((grades[i] + 1)) + '"></i> ' +
+                            numToString(grades[i]) + '&ndash;' + numToString(grades[i + 1]) + '</div>';
+                    }
+                    div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getColor((colorPattern[patternIndex] + 1)) + '"></i> ' + numToString(colorPattern[patternIndex]) + "+" + "</div>";
+                    break;
             }
+            return div;
         };
         this.legend.addTo(this.map);
         //if not in gap mode, can highlight the label on legend
@@ -335,101 +363,166 @@ function MapObject(mapname) {
         };
         // method that we will use to update the control based on feature properties passed
         this.info.update = function (props) {
-            var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+ (getFunction() == FUNC_GAP?"GAP":"Activation count") + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
-            var btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
-            var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
-            var totalStr = "<table class = 'model_table'>";
-            if (getFunction() == FUNC_GAP) {
-                // gap info
-                currentPointingBranch = (props == undefined)?(currentPointingBranch):props;
-//                console.log(currentPointingBranch);
-                this._div.innerHTML = timeStr + this.updateGap(props)/* + ((props)?btnPieChartStr:'')*/;
-            } else {
-                if (props) {
-                    var displayName = props.NAME_2;
-                    if (!isInArray(forcingName2List, props.ISO) && (isL1(mapObj) || isInArray(forcingName1List, props.ISO))) {
-                        displayName = props.NAME_1;
+            switch (getFunction()){
+                case FUNC_GAP:
+                    var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>GAP</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+                    currentPointingBranch = (props == undefined) ? (currentPointingBranch) : props;
+                    
+                    var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>"
+                        ,totalStr = "<table class = 'model_table'>"
+                        ,infoContent = ''
+                        ,branch = props;
+                    
+                    if (branch) {
+                        var displayName = branch;
+                        
+                        //model display
+                        if (!$.isEmptyObject(allBranchGap[branch])) {
+                            var liStr = '';
+                            $.each(allBranchGap[branch], function (k, e) {
+                                if (k != 'total') { 
+                                    liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e*100) + "%</td></tr>";
+                                }
+                            });
+                            modelStr += liStr;
+                        }
+                        
+                        //total display
+                        totalStr += "<tr>";
+                        totalStr += "<td>" + displayName + " </td>";
+                        if(allBranchGap[branch]){
+                            totalStr += "<td class = 'model_table_count'> " + numToString(parseInt(allBranchGap[branch].total*100)) + "%</td>";
+                        }
+                        totalStr+="</tr>";
+                        
+                    } else {
+                        if (!$.isEmptyObject(allBranchGap)) {
+                            var liStr = '';
+                            $.each(allBranchGap, function (k, e) {
+                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e.total*100) + "%</td></tr>";
+                            });
+                            modelStr += liStr;
+                        }
                     }
-                    if (!$.isEmptyObject(props.models)) {
-                        var liStr = '';
-                        $.each(props.models, function (k, e) {
-                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
-                        });
-                        modelStr += liStr;
-                    }
-                } else {
-                    if (!$.isEmptyObject(mapObj.modelCnt)) {
-                        var liStr = '';
-                        $.each(mapObj.modelCnt, function (k, e) {
-                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
-                        });
-                        modelStr += liStr;
-                    }
-                }
-                modelStr += "</table></div>";
-                totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + numToString(parseInt(props.activationCnt)) + "</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(parseInt(mapObj.totalCnt)) + "</td></tr>");
-                totalStr += "</table>";
-                this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnPieChartStr);
-            }
+                    modelStr += "</table></div>";
+                    totalStr += "</table>";                    
 
+                    if (branch) {
+                        infoContent = ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
+                    }
+                    else {
+                        infoContent = ('<div class="infoDiv">' + modelStr + '</div>');
+                    }
+                    this._div.innerHTML = timeStr + infoContent;
+                    
+                    break;
+                    
+                case FUNC_PARALLEL:
+//                    console.log("isModeActive(MODE_PARALLEL_IMPORT):"+isModeActive(MODE_PARALLEL_IMPORT));
+                    var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio' ;
+                    var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+(isModeActive(MODE_PARALLEL_IMPORT) ? 'Import' : 'Export')+'</normalH4>');
+                    var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
+                    var totalStr = "<table class = 'model_table'>";
+                    
+                    //pointing on country region
+                    if (props) {
+//                        console.log(props);
+                        var displayName = props.ISO_A3;
+
+                        if (!$.isEmptyObject(props.models)) {
+                            var countryModelData = [];
+                            $.each(props.models, function (k, e) {
+                                var model = k;
+                                countryModelData.push({model:model,ratio:e[targetRatio]})
+                            });
+                            countryModelData.sort(function(a, b){return parseFloat(b.ratio) - parseFloat(a.ratio)});
+                            
+                            var liStr = '';
+                            
+                            for(var i in countryModelData){
+                                liStr += "<tr><td>" + countryModelData[i].model + " </td><td class = 'model_table_count'> " + countryModelData[i].ratio + "</td></tr>";
+                            }
+                            modelStr += liStr;
+                        }
+                        modelStr += "</table></div>";
+                        totalStr += ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + props[targetRatio] + "</td></tr>");
+                        totalStr += "</table>";    
+                        this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
+                    } 
+                    //pointing on no where
+                    else {
+                        var liStr = '';
+                        var allCountryData = [];
+                        for(var i in mapObj.jsonData.features){
+                            var data = mapObj.jsonData.features[i].properties;
+                            
+                            var iso = data.ISO_A3;
+                            allCountryData.push({iso:iso,ratio:data[targetRatio]})
+                        }
+                        allCountryData.sort(function(a, b){return parseFloat(b.ratio) - parseFloat(a.ratio)});
+                        for(var i in allCountryData){
+                            liStr += "<tr><td>" + allCountryData[i].iso + " </td><td class = 'model_table_count'> " + allCountryData[i].ratio + "</td></tr>";
+                        }
+                        
+//                        console.log(liStr);
+                        modelStr += liStr;
+                        
+                        this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + '</div>');
+                    }
+                    
+                    
+                    
+                    break;
+                    
+                default:
+                    var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>Activation count</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+                    var btnShowTrend = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
+                    var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
+                    var totalStr = "<table class = 'model_table'>";
+                    
+                    if (props) {
+                        var displayName = props.NAME_2;
+                        if (!isInArray(forcingName2List, props.ISO) && (isL1(mapObj) || isInArray(forcingName1List, props.ISO))) {
+                            displayName = props.NAME_1;
+                        }
+                        if (!$.isEmptyObject(props.models)) {
+                            var liStr = '';
+                            $.each(props.models, function (k, e) {
+                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
+                            });
+                            modelStr += liStr;
+                        }
+                    } else {
+                        if (!$.isEmptyObject(mapObj.modelCnt)) {
+                            var liStr = '';
+                            $.each(mapObj.modelCnt, function (k, e) {
+                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
+                            });
+                            modelStr += liStr;
+                        }
+                    }
+                    modelStr += "</table></div>";
+                    totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + numToString(parseInt(props.activationCnt)) + "</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(parseInt(mapObj.totalCnt)) + "</td></tr>");
+                    totalStr += "</table>";
+                    this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnShowTrend);
+                    
+                    break;
+            }
+            
+            //set max-height
             if ($(".legend_" + mapObj.mapName).length > 0) {
                 var maxHeight = $("#mapContainer").height() - ($(".legend_" + mapObj.mapName).outerHeight() + 150);
                 $('#showModelCount_' + mapObj.mapName).css('max-height', (maxHeight > 0) ? '' + maxHeight + 'px' : '0px');
-                //                console.log('maxHeight change:'+maxHeight);
             }
             //no need to display info all the time
-            if (!isModeActive(MODE_REGION) && !isModeActive(MODE_COMPARISION) && getFunction() != FUNC_GAP)
+            if (!(isModeActive(MODE_REGION) || isModeActive(MODE_COMPARISION) || getFunction() == FUNC_GAP || getFunction() == FUNC_PARALLEL))
                 $('#showModelCount_' + mapObj.mapName).hide();
 
             if (observeTarget.length == 0) {
-                //                console.log(observeTarget);
                 $('.infoDiv').hide();
             }
         };
-        this.info.updateGap = function (branch) {
-            var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
-            var totalStr = "<table class = 'model_table'>";
-            var infoContent = '';
-            if (branch) {
-                var displayName = branch;
-                if (!$.isEmptyObject(allBranchGap[branch])) {
-                    var liStr = '';
-                    $.each(allBranchGap[branch], function (k, e) {
-                        if (k != 'total') { 
-                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e*100) + "%</td></tr>";
-                        }
-                    });
-                    modelStr += liStr;
-                }
-            } else {
-                if (!$.isEmptyObject(allBranchGap)) {
-                    var liStr = '';
-                    $.each(allBranchGap, function (k, e) {
-                        liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e.total*100) + "%</td></tr>";
-                    });
-                    modelStr += liStr;
-                }
-            }
-            modelStr += "</table></div>";
-            
-            if(branch){
-                totalStr += "<tr>";
-                totalStr += "<td>" + displayName + " </td>";
-                if(allBranchGap[branch]){
-                    totalStr += "<td class = 'model_table_count'> " + numToString(parseInt(allBranchGap[branch].total*100)) + "%</td>";
-                }
-                totalStr+="</tr>";
-            }
-            totalStr += "</table>";
-            
-            if (branch) {
-                infoContent = ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
-            }
-            else {
-                infoContent = ('<div class="infoDiv">' + modelStr + '</div>');
-            }
-            return infoContent;
-        }
+        
         this.info.addTo(mapObj.map);
     };
 
@@ -441,43 +534,44 @@ function MapObject(mapname) {
         this.map.off('mousemove');
         this.map.off('click');
         this.map.off('zoomstart');
-        this.map.on('mousemove', function (e) {
-            if (dealerTileIndex || scTileIndex) {
-                var x = e.latlng.lng;
-                var y = e.latlng.lat;
-                var tileX = deg2num(y,x,mapObj.map.getZoom())[0];
-                var tileY = deg2num(y,x,mapObj.map.getZoom())[1];
 
-                var selectCanvas = canvasArray.filter(function(params) {
-                    return params.tilePoint.x == tileX && params.tilePoint.y == tileY
-                });
-
-                if (dealerTileIndex)
-                    var dealerTile = dealerTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
-                if (scTileIndex)
-                    var scTile = scTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
-
-
-                if((dealerTile || scTile) && selectCanvas[0]) {
-                        selectDealer = selectPoint(scTile,selectCanvas[0].canvas,scTileIndex,e);
-                        selectDealer = (selectDealer.length > 0)?selectDealer:selectPoint(dealerTile,selectCanvas[0].canvas,dealerTileIndex,e);
-
-                    if (selectDealer.length > 0){
-                        $(".leaflet-container").css("cursor", "pointer");
-                        isPointPopup = true;
-                        return;
-                    }
-                }
-                $(".leaflet-container").css("cursor", "");
-            }
-            isPointPopup = false;
-        });
+//      [20161222 ndealer and service function is disable for now]
+//        this.map.on('mousemove', function (e) {
+//            if (dealerTileIndex || scTileIndex) {
+//                var x = e.latlng.lng;
+//                var y = e.latlng.lat;
+//                var tileX = deg2num(y,x,mapObj.map.getZoom())[0];
+//                var tileY = deg2num(y,x,mapObj.map.getZoom())[1];
+//
+//                var selectCanvas = canvasArray.filter(function(params) {
+//                    return params.tilePoint.x == tileX && params.tilePoint.y == tileY
+//                });
+//
+//                if (dealerTileIndex)
+//                    var dealerTile = dealerTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
+//                if (scTileIndex)
+//                    var scTile = scTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
+//
+//
+//                if((dealerTile || scTile) && selectCanvas[0]) {
+//                        selectDealer = selectPoint(scTile,selectCanvas[0].canvas,scTileIndex,e);
+//                        selectDealer = (selectDealer.length > 0)?selectDealer:selectPoint(dealerTile,selectCanvas[0].canvas,dealerTileIndex,e);
+//
+//                    if (selectDealer.length > 0){
+//                        $(".leaflet-container").css("cursor", "pointer");
+//                        isPointPopup = true;
+//                        return;
+//                    }
+//                }
+//                $(".leaflet-container").css("cursor", "");
+//            }
+//            isPointPopup = false;
+//        });
         this.map.on('click',clickPoint);
 
         this.map.on('mousemove', function (e) {
             //no need to enable high light feature if observation target is not exist
             if (!isHighlightNeeded()) return;
-
             var x = e.latlng.lng;
             var y = e.latlng.lat;
 
@@ -498,18 +592,35 @@ function MapObject(mapname) {
             };
 
             if (!layerJson) {
-                if (preLayerJson != -1) {
-                    if (mapObj.highlight) {
-                        mapObj.map.removeLayer(mapObj.highlight)
-                    }
-                    preLayerJson = -1;
+                switch(getFunction()){
+                    case FUNC_PARALLEL:
+                        if (previousISO != 'nan') {
+                            previousISO = 'nan';
+                        }
+                        break;
+                    default:
+                        if (previousMapID != -1) {
+                            previousMapID = -1;
+                        }
+                        break;
+                }
+                if (mapObj.map.hasLayer(mapObj.highlight)) {
+                    mapObj.map.removeLayer(mapObj.highlight)
                     simplifyJson = null;
                     //clean info
-
                     mapObj.info.update();
-
                 }
-            } else if (layerJson.properties.OBJECTID != preLayerJson) {
+            } else {
+
+                if(getFunction()!= FUNC_ACTIVATION
+                   && getFunction()!= FUNC_GAP
+                   && getFunction()!= FUNC_DISTBRANCH
+                   && getFunction()!= FUNC_PARALLEL
+                   && getFunction()!= FUNC_QC) return;
+
+                if(!(getFunction() == FUNC_PARALLEL && layerJson.properties.ISO_A3 != previousISO)
+                   && !(getFunction() != FUNC_PARALLEL && layerJson.properties.OBJECTID != previousMapID)) return;
+                       
                 if (mapObj.highlight) {
                     mapObj.map.removeLayer(mapObj.highlight)
                 }
@@ -545,41 +656,55 @@ function MapObject(mapname) {
                     })
                     .on('click', function (e) {
                         //set popup
-                        if (!isPointPopup) {
-                            if(getFunction() == FUNC_GAP){
-                                if(currentPointingBranch == null) return;
+//                        if (!isPointPopup) {
+                            switch(getFunction()){
+                                case FUNC_GAP:
+                                    if(currentPointingBranch == null) return;
+
+                                    var displayName = currentPointingBranch;
+                                    var functionname = "showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')";
+                                    var buttonHTML = "<button class ='showChart' onclick ="+functionname+">Show trend</button>";
+                                    var popup = "<div class='pop'>" + displayName + buttonHTML+ "</div>";
+    
+                                    mapObj.map.openPopup(popup, e.latlng);
+
+                                    //zoom to location
+                                    mapObj.zoomToFeature(e);
+                                    break;
                                 
-                                var displayName = currentPointingBranch;
-                                var functionname = "showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')";
-//                                console.log("showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')");
-                                var buttonHTML = "<button class ='showChart' onclick ="+functionname+">Show trend</button>";
-                                var popup = "<div class='pop'>" + displayName + buttonHTML+ "</div>";
-//                                console.log(popup);
-                                mapObj.map.openPopup(popup, e.latlng);
+                                case FUNC_PARALLEL:
+                                    console.log(layerJson.properties);
+                                    var iso = layerJson.properties.ISO_A3;
+                                    var displayName = layerJson.properties.NAME;
 
-                                //zoom to location
-                                mapObj.zoomToFeature(e);
+                                    var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio' ;
+                                    
+                                    var displayNum = layerJson.properties[targetRatio];
+                                    var buttonHTML = "<button class ='showChart' " + "onclick =trendParallel.showChart('"+iso+"','"+displayName+"')>Show trend</button>";
+                                    var popup = "<div class='pop'>"+ targetRatio+' of '+ iso + " : " + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                                    mapObj.map.openPopup(popup, e.latlng);
+                                    mapObj.zoomToFeature(e);
+
+                                    break;
+                                    
+                                default:
+                                    var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
+                                    if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
+                                        layerJson.properties.NAME_1;
+                                    }
+                                    var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
+                                    var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
+                                    var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                                    mapObj.map.openPopup(popup, e.latlng);
+
+                                    //zoom to location
+                                    mapObj.zoomToFeature(e);
+                                    break;
                             }
-                            else{
-                                var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
-                                //                        console.log(displayName);
-                                if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                                    layerJson.properties.NAME_1;
-                                }
-
-//                                console.log(layerJson);
-//                                console.log(e);
-                                var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
-                                var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
-                                var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
-                                mapObj.map.openPopup(popup, e.latlng);
-
-                                //zoom to location
-                                mapObj.zoomToFeature(e);
-                            }
-                        } else {
-                            clickPoint(e);
-                        }
+                            
+//                        } else {
+//                            clickPoint(e);
+//                        }
                     })
                     .addTo(mapObj.map);
                 //$('.leaflet-overlay-pane svg').css( "pointer-events", "none" );
@@ -589,18 +714,19 @@ function MapObject(mapname) {
                 } else {
                     mapObj.info.update(layerJson.properties);
                 }
-                preLayerJson = layerJson.properties.OBJECTID;
+                previousMapID = layerJson.properties.OBJECTID;
+                previousISO = layerJson.properties.ISO_A3;
                 simplifyJson = null;
             }
         });
         this.map.on('zoomstart', function (e) {canvasArray = [];});
 
-        function clickPoint(e) {
-            if ((dealerTileIndex || scTileIndex) && selectDealer.length > 0) {
-                var popup = "<div class='pop'>Name:<br>" + selectDealer[0].tags.name +"</div>";
-                mapObj.map.openPopup(popup, e.latlng);
-            }
-        }
+//        function clickPoint(e) {
+//            if ((dealerTileIndex || scTileIndex) && selectDealer.length > 0) {
+//                var popup = "<div class='pop'>Name:<br>" + selectDealer[0].tags.name +"</div>";
+//                mapObj.map.openPopup(popup, e.latlng);
+//            }
+//        }
 
         function selectPoint(tile,canvas,index,event) {
             if (!tile) return [];
@@ -714,6 +840,16 @@ function MapObject(mapname) {
             '#FED976';
     };
 
+    this.getParallelColor = function(d){
+        return d > 100 ? '#800026' :
+            d > 80 ? '#BD0026' :
+            d > 60 ? '#E31A1C' :
+            d > 40 ? '#FD8D3C' :
+            d > 20 ? '#FEB24C' :
+            d == 0 ? '#FFFFFF' :
+            '#FED976';
+    }
+    
     this.getGapColor = function (d) {
         return d >= 0.2 ? '#FF0000' :
             d >= 0 ? '#FF8800' :
@@ -742,26 +878,23 @@ function MapObject(mapname) {
             //var datatype =  selected.attr("datatype");
 
             if (typeof targetIso !== 'undefined') {
-                //whole world
-                if (targetIso == "world") {
-                    this.map.fitWorld({
-                        reset: true
-                    }).zoomIn();
-                }
-                //country
-                else {
-                    var find = world_region.features.filter(function (obj) {
-                        return (obj.properties.ISO_A3 == targetIso)
-                    });
-                    if (find != false) {
-                        var n_boundary = boundaryInOneArray(find[0].geometry.coordinates);
-                        var leafletBounds = L.latLngBounds(n_boundary);
-                        this.map.fitBounds(leafletBounds);
-                    }
+                var find = world_region.features.filter(function (obj) {
+                    return (obj.properties.ISO_A3 == targetIso)
+                });
+                if (find != false) {
+                    var n_boundary = boundaryInOneArray(find[0].geometry.coordinates);
+                    var leafletBounds = L.latLngBounds(n_boundary);
+                    this.map.fitBounds(leafletBounds);
                 }
             }
         }
     };
+    
+    this.zoomFitTheWorld = function(){
+        this.map.fitWorld({
+            reset: true
+        }).zoomIn();
+    }
 
     this.getHighlightBranchLayer = function (hoverLayer) {
         var mapObj = this;

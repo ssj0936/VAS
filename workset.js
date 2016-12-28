@@ -245,31 +245,36 @@ function showFilterResult() {
 
                 needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
 
-                if (isModeActive(MODE_REGION)) {
-                    submitRegion();
+                if (getFunction() == FUNC_ACTIVATION){
+                    if (isModeActive(MODE_REGION)) {
+                        submitRegion();
+                    }
+                    if (isModeActive(MODE_MARKER)) {
+                        //loading("updating...");
+                        submitMarker();
+                    }
+                    if (isModeActive(MODE_COMPARISION)) {
+                        submitComparision();
+                    }
                 }
-                if (isModeActive(MODE_MARKER)) {
-                    //loading("updating...");
-                    submitMarker();
-                }
-                if (isModeActive(MODE_COMPARISION)) {
-                    submitComparision();
-                }
-                if (getFunction() == FUNC_GAP) {
+                else if (getFunction() == FUNC_GAP) {
                     submitGap();
                 }
-                if (getFunction() == FUNC_LIFEZONE) {
+                else if (getFunction() == FUNC_LIFEZONE) {
                     submitHeatMap();
                 }
-                if (getFunction() == FUNC_ACTIVATION_TABLE){
+                else if (getFunction() == FUNC_ACTIVATION_TABLE){
                     $(tableContainer).empty();
                     showTable();
                 }
-                if (getFunction() == FUNC_QC) {
+                else if (getFunction() == FUNC_QC) {
                     if (isModeActive(MODE_QC_REGION))
                         submitSQRegion();
                     if (isModeActive(MODE_QC_MARKER))
                         submitSQMarker();
+                }
+                else if (getFunction() == FUNC_PARALLEL){
+                    submitParallel();
                 }
 
                 $(this).off();

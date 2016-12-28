@@ -14,7 +14,7 @@ function isHighlightNeeded() {
     //no data need to observe
     if (observeTarget.length == 0)
         return false;
-    else if(getFunction() != FUNC_ACTIVATION && getFunction() != FUNC_DISTBRANCH && getFunction() != FUNC_GAP)
+    else if(! (getFunction() == FUNC_ACTIVATION || getFunction() == FUNC_DISTBRANCH || getFunction() == FUNC_GAP || getFunction() == FUNC_PARALLEL) )
         return false;
     else if(getFunction() == FUNC_ACTIVATION){
         if((!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER)) || (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER)))
@@ -98,6 +98,10 @@ function setModeOn(mode) {
         isQcRegionOn = true;
     } else if (mode == MODE_QC_MARKER) {
         isQcMarkerOn = true;
+    } else if (mode == MODE_PARALLEL_EXPORT) {
+        isParallelExportOn = true;
+    } else if (mode == MODE_PARALLEL_IMPORT) {
+        isParallelImportOn = true;
     }
 }
 
@@ -112,6 +116,10 @@ function setModeOff(mode) {
         isQcRegionOn = false;
     } else if (mode == MODE_QC_MARKER) {
         isQcMarkerOn = false;
+    } else if (mode == MODE_PARALLEL_EXPORT) {
+        isParallelExportOn = false;
+    } else if (mode == MODE_PARALLEL_IMPORT) {
+        isParallelImportOn = false;
     }
 }
 
@@ -126,6 +134,10 @@ function isModeActive(mode) {
         return isQcRegionOn;
     } else if (mode == MODE_QC_MARKER) {
         return isQcMarkerOn;
+    } else if (mode == MODE_PARALLEL_EXPORT) {
+        return isParallelExportOn;
+    } else if (mode == MODE_PARALLEL_IMPORT) {
+        return isParallelImportOn;
     }
 }
 
@@ -187,12 +199,18 @@ function loading(text) {
     $("body").css("cursor", "progress");
     //if($('.toast').css("display")=='none')
     $('.toast').html(text).fadeIn(400);
+    
+    if(isFunctionSelectorInit)
+        $( "#dataset" ).selectmenu( "option", "disabled", true );
 }
 
 function loadingDismiss() {
     $("body").css("cursor", "default");
     if ($('.toast').css("display") != 'none')
         $('.toast').fadeOut(400);
+    
+    if(isFunctionSelectorInit)
+        $( "#dataset" ).selectmenu( "option", "disabled", false );
 }
 
 function isLoading() {
@@ -362,11 +380,11 @@ jQuery.fn.extend({
 });
 
 function disableSubmit() {
-    $(".submit").attr("disabled", "disabled");
+    $("#submit").attr("disabled", "disabled");
 }
 
 function enableSubmit() {
-    $(".submit").removeAttr("disabled");
+    $("#submit").removeAttr("disabled");
 }
 
 function getCookie(cname) {

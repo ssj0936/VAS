@@ -103,7 +103,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             //free
             mapObj.countryMapping = null;
             //mapObj.jsonData=null;
-
+//            console.log(mapObj.jsonData);
             if (hasComparison) {
                 comparisonMap.currentRegionIso = observeLoc.slice();
                 ajaxFetchMapValue(false, !isComparison);
@@ -204,6 +204,157 @@ function ajaxExtractMap(hasComparison, callback, args) {
             callback.apply(this, args);
         }
         console.log("ajaxExtractMap End:" + getCurrentTime());
+    });
+}
+
+//fetch map value with regionJson existed
+function ajaxFetchParallelValue() {
+    var mapObj = firstMap;
+    var URLs = "php/_dbqueryGetParallelValue.php";
+//    console.log(JSON.stringify(observeSpec.color));
+    $.ajax({
+        url: URLs,
+        data: {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),            
+            data: JSON.stringify(observeTarget),
+            permission: JSON.stringify(permission),
+        },
+        type: "POST",
+        dataType: 'json',
+
+        success: function (json) {
+            //clone
+            console.log("firstMap---JSON");
+            if (json.length == 0) {
+                showToast("Empty Data During This Date Time Period");
+                mapObj.isEmpty = true;
+            } else {
+                mapObj.isEmpty = false;
+            }
+            
+            if (mapObj.countryMapping && mapObj.countryMapping.length != 0)
+                mapObj.countryMapping.length = 0;
+            mapObj.countryMapping = json;
+            
+            mapObj.updateParallelMapProperties();
+            mapObj.mapDataLoad();
+            
+            mapObj.updateLegend();
+            if (mapObj.info == null) {
+                mapObj.setInfo();
+            }
+            mapObj.info.update();
+            mapObj.setHighlightFeature();
+            
+            //free
+//            mapObj.countryMapping = null;
+
+            mapObj.zoomToSelectedLocation();
+            loadingDismiss();
+
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxFetchParallelValue:" + xhr.status);
+            alert(thrownError);
+        }
+    });
+}
+
+function ajaxExtractParallelMap(callback) {
+    console.log("ajaxExtractParallelMap Start:" + getCurrentTime());
+    
+    firstMap.cleanMap();
+    firstMap.currentRegionIso = observeLoc.slice();
+//    console.log(observeLoc);
+    
+    firstMap.jsonData = {
+        "type": "FeatureCollection",
+        "features": [],
+    };
+
+    var url = "php/geojson/topo/world.json";
+
+    var jxhr = [];
+    jxhr.push(
+        $.getJSON(url, function (json) {
+            for (var key in json.objects) {
+                $.each(topojson.feature(json, json.objects[key]).features, function (index, regionjson) {
+                    if(isInArray(observeLoc,regionjson.properties.ISO_A3)){
+                        regionjson.properties["boundBox"] = boundInit(regionjson.geometry);
+                        firstMap.jsonData.features.push(regionjson);
+                    }
+                });
+            }
+        })
+    );
+
+    $.when.apply($, jxhr).done(function () {
+        if (callback) {
+            callback.apply(this);
+        }
+        console.log("ajaxExtractParallelMap End:" + getCurrentTime());
+    });
+}
+
+function ajaxParallelChart(iso) {
+
+    var URLs = "php/_dbqueryGetParallelTrend.php";
+    $.ajax({
+        url: URLs,
+        data: {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),            
+            data: JSON.stringify(observeTarget),
+            iso: iso,
+            permission: JSON.stringify(permission),
+        },
+        type: "POST",
+        dataType: 'json',
+
+        success: function (json) {
+//            console.log(json);
+            trendParallel.updateParallelChart(json, iso);
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+        }
+    });
+}
+
+function ajaxParallelExport(exportFileType) {
+    var URLs = "php/_dbqueryGetParallelExport.php";
+    $.ajax({
+        url: URLs,
+        data: {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),            
+            data: JSON.stringify(observeTarget),
+            iso: JSON.stringify(observeLoc),
+            permission: JSON.stringify(permission),
+            exportFileType: exportFileType,
+        },
+        type: "POST",
+        dataType: 'text',
+
+        success: function (text) {
+            var filename = exportFileType+"_report";
+            tableExportToExcel(text,filename);
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert(xhr.status);
+            alert(thrownError);
+        }
     });
 }
 
@@ -829,7 +980,8 @@ function ajaxGetGapExport(groupBy){
         },
         function (text) {
 //            console.log(text);
-            gapExportToExcel(text);
+            var filename = '[' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + ']' + "_GapReport";
+            tableExportToExcel(text,filename);
         },
         'text'
     );

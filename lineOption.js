@@ -200,11 +200,40 @@ var newOptions = {
     datasetFill: true,
 
     showTooltips: true,
-    // String - Template string for single tooltips
-    tooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
-
+//    // String - Template string for single tooltips
+//    tooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
+//
+//    // String - Template string for multiple tooltips
+//    multiTooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
+    
+    tooltipTemplate: function(label) {
+        return '' + (label.datasetLabel) + ': ' + (label.value);
+    },
     // String - Template string for multiple tooltips
-    multiTooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
+    multiTooltipTemplate: function(label) {
+        return '' + (label.datasetLabel) + ': ' + (label.value);
+    },
+}
+
+var percentageOptions = {
+    scaleBeginAtZero: false,
+    animation: false,
+    populateSparseData: true,
+    overlayBars: false,
+    datasetFill: true,
+
+    showTooltips: true,
+    scaleLabel:function(label) { 
+        return '' + label.value + ' %';
+    },
+
+    tooltipTemplate: function(label) {
+        return '' + (label.datasetLabel) + ': ' + label.value + ' %';
+    },
+
+    multiTooltipTemplate: function(label) {
+        return '' + (label.datasetLabel) + ': ' + label.value + ' %';
+    },
 }
 
 var negOptions = {

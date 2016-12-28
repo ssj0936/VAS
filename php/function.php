@@ -7,7 +7,7 @@ function isAll($dataObj){
         return (count($dataObj)==1 && $dataObj[0]->datatype == "all");
     //for loc, spec ...etc
     else
-        return (count($dataObj)==1 && $dataObj[0]=="all");
+        return (count($dataObj)==1 && $dataObj[0]=="all") || $dataObj == null;
 }
 
 function arrayConvertToInstr($array){
@@ -47,6 +47,55 @@ function getAllTargetDeviceSql($dataObj){
     }
 
     $sqlDeviceIn = "SELECT device_name "
+            ."FROM $deviceTable A1, $productNameModelMapping A2 "
+            ."WHERE A1.model_name = A2.MODEL ";
+
+    if((count($deviceArray)!=0) || (count($modelArray)!=0) || (count($productArray)!=0)){
+        $orArray = array();
+        
+        if(count($deviceArray)!=0)
+            $orArray[] = "device_name in (".arrayConvertToInstr($deviceArray).")";
+        if(count($modelArray)!=0)
+            $orArray[] = "model_name in (".arrayConvertToInstr($modelArray).")";
+        if(count($productArray)!=0)
+            $orArray[] = "PRODUCT in (".arrayConvertToInstr($productArray).")";
+        $sqlDeviceIn .= 'AND';
+        $sqlDeviceIn .= '(';
+        $sqlDeviceIn .= implode(" OR ",$orArray);
+        $sqlDeviceIn .= ')';
+    }
+
+    return $sqlDeviceIn;
+}
+
+function getAllTargetModelSql($dataObj){
+    $deviceTable = $GLOBALS['deviceTable'];
+    $productNameModelMapping = $GLOBALS['productNameModelMapping'];
+    
+    $deviceArray=array();
+    $modelArray=array();
+    $productArray=array();
+
+    for($i=0;$i<count($dataObj);++$i){
+        $product = $dataObj[$i]->product;
+        $model = $dataObj[$i]->model;
+        $devices = $dataObj[$i]->devices;
+        $datatype = $dataObj[$i]->datatype;
+
+        switch($datatype){
+            case "devices":
+                $deviceArray[] = $devices;
+                break;
+            case "model":
+                $modelArray[] = $model;
+                break;
+            case "product":
+                $productArray[] = $product;
+                break;
+        }
+    }
+
+    $sqlDeviceIn = "SELECT distinct(model_name) "
             ."FROM $deviceTable A1, $productNameModelMapping A2 "
             ."WHERE A1.model_name = A2.MODEL ";
 
@@ -174,5 +223,30 @@ function permissionCheck($isFullPermission,$permissionObj,$iso){
             }
         }
     }
+}
+
+//return array($queryable,$isFullPermissionThisIso,$permissionProductIDStr)
+
+ //((country='ALB' and product_id in ('AX')) OR (product_id in ('AX')))
+function allPermissionCheck($permissionObj){
+    
+    $queryArr = array();
+    
+    foreach($permissionObj as $key => $val){
+        
+        //means 
+        if(in_array('',$val)){
+            $queryArr[] = "(country='$key')";
+        }
+        else{
+            if($key == '_empty_'){
+                $queryArr[] = "(product_id IN ('".implode("','", $val)."'))";
+            }else{
+                $queryArr[] = "(country='$key' AND product_id IN ('".implode("','", $val)."'))";
+            }
+        }
+    }
+    
+    return('('.implode(' OR ',$queryArr).')');
 }
 ?>

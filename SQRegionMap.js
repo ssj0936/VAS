@@ -268,18 +268,18 @@ function highlightFunc (e) {
     };
 
     if (!layerJson) {
-        if (preLayerJson != -1) {
+        if (previousMapID != -1) {
             if (mapObj.highlight) {
                 mapObj.map.removeLayer(mapObj.highlight)
             }
-            preLayerJson = -1;
+            previousMapID = -1;
             simplifyJson = null;
             //clean info
 
             mapObj.info.update();
 
         }
-    } else if (layerJson.properties.OBJECTID != preLayerJson) {
+    } else if (layerJson.properties.OBJECTID != previousMapID) {
         if (mapObj.highlight) {
             mapObj.map.removeLayer(mapObj.highlight)
         }
@@ -331,7 +331,7 @@ function highlightFunc (e) {
 
         mapObj.info.update(layerJson.properties);
 
-        preLayerJson = layerJson.properties.OBJECTID;
+        previousMapID = layerJson.properties.OBJECTID;
         simplifyJson = null;
     }
 }

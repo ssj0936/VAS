@@ -29,38 +29,31 @@ $str = 'var world_region={'."\n".
 fwrite($handle,$str);
 
 for($j=0;$j<count($allLoc);++$j){
-//foreach($allLoc as $key=>$value){
     
     $isFound=false;
     for($i=0;$i<count($results->features);++$i){
         $iso =  $results->features[$i]->properties->ISO_A3;
-
+        $name = $results->features[$i]->properties->NAME;
         if($allLoc[$j]!=$iso) {
-            //echo $iso." NOT FOUND...<br>";
             continue;
         }
         $isFound=true;
-        //echo $iso." processing...<br>";
-        // print_r($geometry->coordinates);
         $geometry = &$results->features[$i]->geometry;
         $coordinates = &$results->features[$i]->geometry->coordinates;
         
-        $bounds =array();
-        loopAllCoor($coordinates,$bounds);
-
-        $coordinates = array();
-        $coordinates[] = array($bounds['xMin'],$bounds['yMax']);
-        $coordinates[] = array($bounds['xMax'],$bounds['yMax']);
-        $coordinates[] = array($bounds['xMax'],$bounds['yMin']);
-        $coordinates[] = array($bounds['xMin'],$bounds['yMin']);
-        
-        // echo "===================<br>";
-        //lowerprecise($geometry->coordinates);
-        // print_r($geometry->coordinates);
-        // break;
+        lowerprecise($coordinates);
+        //minimize the boundary of country to 4 points
+//        $bounds =array();
+//        loopAllCoor($coordinates,$bounds);
+//
+//        $coordinates = array();
+//        $coordinates[] = array($bounds['xMin'],$bounds['yMax']);
+//        $coordinates[] = array($bounds['xMax'],$bounds['yMax']);
+//        $coordinates[] = array($bounds['xMax'],$bounds['yMin']);
+//        $coordinates[] = array($bounds['xMin'],$bounds['yMin']);
         
         $jsonStr = '{"type":"Feature","properties":{';
-        $jsonStr.='"ISO_A3":'.'"'.$iso.'"},';
+        $jsonStr.='"ISO_A3":"'.$iso.'","NAME":"'.$name.'"},';
         $jsonStr.='"geometry":'.json_encode($geometry).'}';
             
         if($j!=count($allLoc)-1){
@@ -99,6 +92,19 @@ function loopAllCoor($coordinateArr, &$bounds) {
         
         $bounds['yMax'] = !isset($bounds['yMax']) ? $latitude : 
             ($bounds['yMax'] > $latitude ? $bounds['yMax'] : $latitude);
+    }
+}
+
+function lowerprecise(&$array){
+    if(is_numeric($array[0])){
+        $array[0] = (float)number_format((float) $array[0], 3, '.', '');
+        $array[1] = (float)number_format((float) $array[1], 3, '.', '');
+        //print_r($array);
+    }
+    else{
+        foreach($array as &$value){
+            lowerprecise($value);
+        }
     }
 }
 ?>
