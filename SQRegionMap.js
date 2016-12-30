@@ -126,7 +126,7 @@ function setSQLegend(category) {
         div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + getColor(0) + '"></i> 0</div> ';
         for (let i = 0; i < grades.length - 1; i++) {
             div.innerHTML +=
-                '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + getColor((grades[i])) + '"></i> ' +
+                '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + getColor((grades[i]+0.0000000001)) + '"></i> ' +
                 numToString(grades[i].toFixed(1)) + '&ndash;' + numToString(grades[i + 1].toFixed(1)) + '</div>';
         }
         div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + getColor(grades[grades.length - 1]) + '"></i> ' + numToString(grades[grades.length - 1].toFixed(1)) + "+" + "</div>";
@@ -239,13 +239,17 @@ function unsetHighlightFeature() {
 }
 
 function getColor(d) {
-    return d >= totalRecord.quartile[currentCategory][3] ? '#800026' :
-        d > totalRecord.quartile[currentCategory][3] ? '#BD0026' :
-        d > totalRecord.quartile[currentCategory][2] ? '#E31A1C' :
-        d > totalRecord.quartile[currentCategory][1] ? '#FD8D3C' :
-        d > totalRecord.quartile[currentCategory][0] ? '#FEB24C' :
-        d == 0 ? '#FFFFFF' :
-        '#FED976';
+    if (d) {
+        return d >= totalRecord.quartile[currentCategory][3] ? '#800026' :
+            d > totalRecord.quartile[currentCategory][3] ? '#BD0026' :
+            d > totalRecord.quartile[currentCategory][2] ? '#E31A1C' :
+            d > totalRecord.quartile[currentCategory][1] ? '#FD8D3C' :
+            d > totalRecord.quartile[currentCategory][0] ? '#FEB24C' :
+            d == 0 ? '#FFFFFF' :
+            '#FED976';
+    } else {
+        return '#FFFFFF';
+    }
 }
 
 function highlightFunc (e) {
@@ -313,20 +317,22 @@ function highlightFunc (e) {
             })
             .on('click', function (e) {
                 //set popup
-                if (!isPointPopup) {
+                if (!isSCPosition()) {
                     var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
 
                     if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
                         displayName = layerJson.properties.NAME_1;
                     }
 
-                    var displayNum = numToString(layerJson.properties.totalCFR.toFixed(2));
+                    var displayNum = layerJson.properties.totalCFR ? numToString(layerJson.properties.totalCFR.toFixed(2)) : 0;
                     var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
-                    var popup = "<div class='pop'>" + displayName + ":" + displayNum + '% ' + ((layerJson.properties.totalCFR == 0) ? "" : buttonHTML) + "</div>";
+                    var popup = "<div class='pop'>" + displayName + ":" + displayNum + '% ' + ((displayNum == 0) ? "" : buttonHTML) + "</div>";
                     mapObj.map.openPopup(popup, e.latlng);
 
                     //zoom to location
                     mapObj.zoomToFeature(e);
+                } else {
+                    clickPoint(e);
                 }
             })
             .addTo(mapObj.map);

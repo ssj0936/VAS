@@ -5,11 +5,12 @@ let SQMarkerTileLayer;
 
 let selectSQ;
 let selectSiteId;
+let initZoom;
 
 //set color,radius for different type node
 let SQMarkerSetting = {
     'SC': {
-        'radius':4,
+        'radius':3,
         'color_unset':'BlueViolet',
         'color_set':'BlueViolet'
     },
@@ -199,6 +200,7 @@ function movePoint(e) {
                 return;
             }
         }
+        selectSQ = [];
         $(".leaflet-container").css("cursor", "");
     }
 }
@@ -221,13 +223,22 @@ function clickPoint(e) {
     }
 }
 
-let test = 0;
 function radiusMultiple() {
     let zoom = firstMap.map.getZoom();
-    return zoom < 13 ? 1 : 
+    return zoom < (initZoom + 6) ? 1 : 
             2;
 }
 
 function rePaintSQMarker() {
     SQMarkerTileLayer.redraw();
+}
+
+function isSCPosition() {
+    if(selectSQ && selectSQ.length>0)
+        return true;
+    return false;
+}
+
+function setInitialZoom(z) {
+    initZoom = z;
 }

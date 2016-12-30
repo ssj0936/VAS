@@ -974,6 +974,7 @@ function submitBtnSetting() {
                     needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
                     console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
                     firstMap.zoomToSelectedLocation();
+                    setInitialZoom(firstMap.map.getZoom());
                     break;
                     
                 case FUNC_PARALLEL:
