@@ -300,7 +300,7 @@ function ajaxExtractParallelMap(callback) {
     });
 }
 
-function ajaxParallelChart(iso) {
+function ajaxParallelChart(iso,exportFileType) {
 
     var URLs = "php/_dbqueryGetParallelTrend.php";
     $.ajax({
@@ -313,6 +313,7 @@ function ajaxParallelChart(iso) {
             data: JSON.stringify(observeTarget),
             iso: iso,
             permission: JSON.stringify(permission),
+            exportFileType: exportFileType,
         },
         type: "POST",
         dataType: 'json',

@@ -146,6 +146,21 @@ function MapObject(mapname) {
                 this.jsonData.features[i].properties.models = data.models;
             }
         }
+        this.setParallelMaxMin();
+    };
+    
+    this.setParallelMaxMin = function(){
+        var parallelMode = isModeActive(parallelMode) ? 'importRatio' : 'exportRatio';
+        this.max = null;
+        this.min = null;
+        console.log(this.jsonData);
+        for (var i = 0; i < this.jsonData.features.length; ++i) {
+            var value = parseFloat(this.jsonData.features[i].properties[parallelMode]);
+//            console.log(value);
+            this.max = (this.max == null || value>this.max) ? value : this.max;
+            this.min = (this.min == null || value<this.min) ? value : this.min;
+        }
+        console.log('this.max:'+this.max+'/this.min:'+this.min);
     };
 
     this.mapDataLoad = function () {
@@ -222,7 +237,8 @@ function MapObject(mapname) {
                         
                     case FUNC_PARALLEL:
                         var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? feature.tags.importRatio : feature.tags.exportRatio ;
-                        
+                        ctx.strokeStyle = "white";
+                        ctx.lineWidth = 2;
                         ctx.fillStyle = colorHexToRGBString(obj.getParallelColor(parseFloat(targetRatio)) , 0.5);
                         break;
                         
@@ -427,7 +443,8 @@ function MapObject(mapname) {
                     //pointing on country region
                     if (props) {
 //                        console.log(props);
-                        var displayName = props.ISO_A3;
+//                        var displayName = props.ISO_A3;
+                        var displayName = props.NAME;
 
                         if (!$.isEmptyObject(props.models)) {
                             var countryModelData = [];
@@ -456,7 +473,7 @@ function MapObject(mapname) {
                         for(var i in mapObj.jsonData.features){
                             var data = mapObj.jsonData.features[i].properties;
                             
-                            var iso = data.ISO_A3;
+                            var iso = data.NAME;
                             allCountryData.push({iso:iso,ratio:data[targetRatio]})
                         }
                         allCountryData.sort(function(a, b){return parseFloat(b.ratio) - parseFloat(a.ratio)});
@@ -673,24 +690,39 @@ function MapObject(mapname) {
                                     break;
                                 
                                 case FUNC_PARALLEL:
-                                    console.log(layerJson.properties);
+//                                    console.log(layerJson.properties);
                                     var iso = layerJson.properties.ISO_A3;
                                     var displayName = layerJson.properties.NAME;
 
                                     var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio' ;
+                                    var targetRatioText = isModeActive(MODE_PARALLEL_IMPORT) ? 'Import rate of ' : 'Export rate of ' ;
                                     
                                     var displayNum = layerJson.properties[targetRatio];
                                     var buttonHTML = "<button class ='showChart' " + "onclick =trendParallel.showChart('"+iso+"','"+displayName+"')>Show trend</button>";
-                                    var popup = "<div class='pop'>"+ targetRatio+' of '+ iso + " : " + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                                    var popup = "<div class='pop'>"+ targetRatioText+ displayName + " : " + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
                                     mapObj.map.openPopup(popup, e.latlng);
                                     mapObj.zoomToFeature(e);
 
                                     break;
                                     
+                                case FUNC_QC:
+                                    var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
+                                    if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
+                                        displayName = layerJson.properties.NAME_1;
+                                    }
+                                    var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
+                                    var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
+                                    var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                                    mapObj.map.openPopup(popup, e.latlng);
+
+                                    //zoom to location
+                                    mapObj.zoomToFeature(e);
+                                    break;
+                                    
                                 default:
                                     var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
                                     if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                                        layerJson.properties.NAME_1;
+                                        displayName = layerJson.properties.NAME_1;
                                     }
                                     var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
                                     var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";

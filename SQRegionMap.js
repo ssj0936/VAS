@@ -317,7 +317,7 @@ function highlightFunc (e) {
                     var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
 
                     if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                        layerJson.properties.NAME_1;
+                        displayName = layerJson.properties.NAME_1;
                     }
 
                     var displayNum = numToString(layerJson.properties.totalCFR.toFixed(2));

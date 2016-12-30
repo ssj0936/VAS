@@ -345,6 +345,7 @@ function parallelControlPanelInit(){
         
         //data reset
         loading('Data loading');
+        firstMap.setParallelMaxMin();
         firstMap.mapDataLoad();
         firstMap.updateLegend();
         firstMap.info.update();

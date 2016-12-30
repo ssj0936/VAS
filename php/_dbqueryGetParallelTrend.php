@@ -7,23 +7,25 @@
     $results = array();
     $db = new DB();
 
-    $color = '["all"]';
-    $cpu = '["all"]';
-    $rearCamera = '["all"]';
-    $frontCamera = '["all"]';
-    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-    $iso = 'TWN';
-    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
-    $permission = '{}';
+//    $color = '["all"]';
+//    $cpu = '["all"]';
+//    $rearCamera = '["all"]';
+//    $frontCamera = '["all"]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
+//    $iso = 'TWN';
+//    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+//    $permission = '{}';
+//    $exportFileType = 'Import';
 
 
-//    $color = $_POST['color'];
-//    $cpu = $_POST['cpu'];
-//    $rearCamera = $_POST['rearCamera'];
-//    $frontCamera = $_POST['frontCamera'];
-//    $data = $_POST['data'];
-//    $iso = $_POST['iso'];
-//    $permission = $_POST['permission'];
+    $color = $_POST['color'];
+    $cpu = $_POST['cpu'];
+    $rearCamera = $_POST['rearCamera'];
+    $frontCamera = $_POST['frontCamera'];
+    $data = $_POST['data'];
+    $iso = $_POST['iso'];
+    $permission = $_POST['permission'];
+    $exportFileType = $_POST['exportFileType'];
 
     $stratTime = null;
     $endTime = null;
@@ -68,11 +70,16 @@
             //if(!$result['queryable']) continue;
         }
         
+        if($exportFileType == 'Import')
+            $exportFileColumn = 'ABC_is_dis_not';
+        else if($exportFileType == 'Export')
+            $exportFileColumn = 'ABC_not_dis_is';
+        
         //1.import/export ratio group by country
-        $queryStr = " select NAME_0,shipping_year"
+        $queryStr = "SELECT * FROM ("
+                    ." select NAME_0,shipping_year"
                         .",shipping_mon"
-                        .",case when (import+normal)=0 then '0.00' else FORMAT(import/(import+normal)*100,'N2') end 'importRatio'"
-                        .",case when (export+normal)=0 then '0.00' else FORMAT(export/(export+normal)*100,'N2') end 'exportRatio'"
+                        .(($exportFileType == 'Import') ? (",case when (import+normal)=0 then '0.00' else FORMAT(import/(import+normal)*100,'N2') end 'ratio'") : (",case when (export+normal)=0 then '0.00' else FORMAT(export/(export+normal)*100,'N2') end 'ratio'"))
                     ."from("
                         ."SELECT NAME_0,shipping_year,shipping_mon"
                                 .",CAST(sum(ABC_is_dis_not) AS DECIMAL(18,2)) import"
@@ -90,6 +97,8 @@
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by NAME_0,shipping_year,shipping_mon"
                     ." )foo "
+                    ." )goo "
+                    ." WHERE ratio != '0.00'"
                     ." order by shipping_year,shipping_mon";
                                     
 //		echo $queryStr."<br><br><br>";
@@ -102,8 +111,7 @@
             $countryName = $row['NAME_0'];
             $year = $row['shipping_year'];
             $month = $row['shipping_mon'];
-            $importRatio = $row['importRatio'];
-            $exportRatio = $row['exportRatio'];
+            $ratio = $row['ratio'];
          
             if($recordFirst){
                 $recordFirst = false;
@@ -111,15 +119,15 @@
             }
             $endTime = ($year.'-'.$month);
             
-            $countryFlowRatio[$countryName][] = array('date' => ($year.'-'.$month), 'import'=>$importRatio,'export'=>$exportRatio);
+            $countryFlowRatio[$countryName][] = array('date' => ($year.'-'.$month), 'value'=>$ratio);
 		}
         
         //2.import/export ratio group by model
-        $queryStr = " select shipping_year"
+        $queryStr = "SELECT * FROM ("
+                    ." select shipping_year"
                         .",shipping_mon"
                         .",model"
-                        .",case when (import+normal)=0 then '0.00' else FORMAT(import/(import+normal)*100,'N2') end 'importRatio'"
-                        .",case when (export+normal)=0 then '0.00' else FORMAT(export/(export+normal)*100,'N2') end 'exportRatio'"
+                        .(($exportFileType == 'Import') ? ",case when (import+normal)=0 then '0.00' else FORMAT(import/(import+normal)*100,'N2') end 'ratio'" : ",case when (export+normal)=0 then '0.00' else FORMAT(export/(export+normal)*100,'N2') end 'ratio'")
                     ."from("
                         ."SELECT shipping_year,shipping_mon,model"
                                 .",CAST(sum(ABC_is_dis_not) AS DECIMAL(18,2)) import"
@@ -135,6 +143,8 @@
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by shipping_year,shipping_mon,model"
                     ." )foo "
+                    ." )goo "
+                    ." WHERE ratio != '0.00'"
                     ." order by model,shipping_year,shipping_mon";
                                     
 //		echo $queryStr."<br><br><br>";
@@ -146,16 +156,15 @@
             $model = $row['model'];
             $year = $row['shipping_year'];
             $month = $row['shipping_mon'];
-            $importRatio = $row['importRatio'];
-            $exportRatio = $row['exportRatio'];
+            $ratio = $row['ratio'];
             
-            $modelFlowRatio[$model][] = array('date' => ($year.'-'.$month), 'import'=>$importRatio,'export'=>$exportRatio);
+            $modelFlowRatio[$model][] = array('date' => ($year.'-'.$month), 'value'=>$ratio);
 		}
         
         //3.import/export count group by model
-        $queryStr = "SELECT shipping_year,shipping_mon,model"
-                                .",sum(ABC_is_dis_not) import"
-                                .",sum(ABC_not_dis_is) export"
+        $queryStr = "SELECT * FROM("
+                    ."SELECT shipping_year,shipping_mon,model"
+                                .(($exportFileType == 'Import') ? ",sum(ABC_is_dis_not) count" : ",sum(ABC_not_dis_is) count")
                         ." FROM "
                               .$_DB['parallel']['name']." a1,"
                               .$_DB['parallel']['mapping']." a2"
@@ -165,6 +174,8 @@
                         ." AND a1.MRRD_numcode = a2.numcode"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by shipping_year,shipping_mon,model"
+                    ." ) foo"
+                    ." WHERE count !=0 "
                     ." order by model,shipping_year,shipping_mon";
                                     
 //		echo $queryStr."<br><br><br>";
@@ -176,16 +187,15 @@
             $model = $row['model'];
             $year = $row['shipping_year'];
             $month = $row['shipping_mon'];
-            $import = $row['import'];
-            $export = $row['export'];
+            $count = $row['count'];
             
-            $modelFlowCount[$model][] = array('date' => ($year.'-'.$month), 'import'=>$import,'export'=>$export);
+            $modelFlowCount[$model][] = array('date' => ($year.'-'.$month), 'value'=>$count);
 		}
         
         //4.import/export count group by dist
-        $queryStr = "SELECT shipping_year,shipping_mon,distributor_id"
-                                .",sum(ABC_is_dis_not) import"
-                                .",sum(ABC_not_dis_is) export"
+        $queryStr = "SELECT * FROM("
+                    ."SELECT shipping_year,shipping_mon,distributor_id"
+                                .(($exportFileType == 'Import') ? ",sum(ABC_is_dis_not) count" : ",sum(ABC_not_dis_is) count")
                         ." FROM "
                               .$_DB['parallel']['name']." a1,"
                               .$_DB['parallel']['mapping']." a2"
@@ -195,6 +205,8 @@
                         ." AND a1.MRRD_numcode = a2.numcode"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by shipping_year,shipping_mon,distributor_id"
+                    ." ) foo"
+                    ." WHERE count !=0 "
                     ." order by distributor_id,shipping_year,shipping_mon";
                                     
 //		echo $queryStr."<br><br><br>";
@@ -206,10 +218,9 @@
             $dist = $row['distributor_id'];
             $year = $row['shipping_year'];
             $month = $row['shipping_mon'];
-            $import = $row['import'];
-            $export = $row['export'];
+            $count = $row['count'];
             
-            $distFlowCount[$dist][] = array('date' => ($year.'-'.$month), 'import'=>$import,'export'=>$export);
+            $distFlowCount[$dist][] = array('date' => ($year.'-'.$month), 'value'=>$count);
 		}
     }
     

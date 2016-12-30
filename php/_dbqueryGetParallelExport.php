@@ -13,10 +13,10 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $iso = '["BGD", "KHM", "HKG", "IND", "IDN", "JPN", "MYS", "MMR", "PHL", "SGP", "KOR", "THA", "VNM", "TWN"]';
+//    $iso = '["IND"]';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 //    $permission = '{}';
-//    $exportFileType = 'Import';
+//    $exportFileType = 'Export';
 
 
     $color = $_POST['color'];
@@ -91,6 +91,7 @@
                     ." AND country IN ($isoIn) "
                     ." AND a1.MRRD_numcode = a2.numcode"
                     ." AND geo.iso = a1.country"
+                    ." AND $exportFileColumn != 0"
                     .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by NAME_0,model,shipping_year,shipping_mon,distributor_id,act_year,act_mon"
                     ." order by count DESC";
@@ -108,7 +109,7 @@
             $str .= "<td style ='$tableStyle'>".$row['NAME_0']."</td>";
             $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
             $str .= "<td style ='$tableStyle'>".$row['model']."</td>";
-            $str .= "<td style ='$tableStyle'>".$row['NAME_0'].'-'.$row['distributor_id']."</td>";
+            $str .= "<td style ='$tableStyle'>".$row['distributor_id']."</td>";
             $str .= "<td style ='$tableStyle'>".(string)($row['shipping_year'].'-'.$row['shipping_mon'])."</td>";
             $str .= "<td style ='$tableStyle'>".$row['count']."</td>";
             
