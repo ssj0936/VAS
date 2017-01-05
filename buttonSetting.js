@@ -743,6 +743,8 @@ function submitBtnSetting() {
             showAlert("Please select a observation Target");
         } else if ($("#locationFilter input[type='checkbox']:checked").length == 0 && isNeedCheckCountry()) {
             showAlert("Please select a observation Location");
+        } else if(activeFunctionTmp == FUNC_QC && $("#locationFilter input[type='checkbox'][datatype='country']:checked").length > 1){
+                showAlert("Only allows of 1 country checked in CFR function");
         } else {
             resetIsClickFromFilterResult();
             //UI display change

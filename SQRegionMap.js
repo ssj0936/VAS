@@ -324,7 +324,11 @@ function highlightFunc (e) {
                         displayName = layerJson.properties.NAME_1;
                     }
 
-                    var displayNum = layerJson.properties.totalCFR ? numToString(layerJson.properties.totalCFR.toFixed(2)) : 0;
+                    if (currentCategory == 'ALL') {
+                        var displayNum = layerJson.properties.totalCFR ? numToString(layerJson.properties.totalCFR.toFixed(2)) : 0;
+                    } else {
+                        var displayNum = layerJson.properties.category[currentCategory] ? numToString(layerJson.properties.category[currentCategory].toFixed(2)) : 0;
+                    }
                     var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart('"+displayName.replace(/ /g, "_")+"','" + layerJson.properties.OBJECTID + "')>Show trend</button>";
                     var popup = "<div class='pop'>" + displayName + ":" + displayNum + '% ' + ((displayNum == 0) ? "" : buttonHTML) + "</div>";
                     mapObj.map.openPopup(popup, e.latlng);
