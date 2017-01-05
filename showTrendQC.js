@@ -367,7 +367,7 @@ var trendQC = (function (mapObj) {
         //clean
         trendObj.datasets.length = 0;
 
-        console.log(jsonObj);
+//        console.log(jsonObj);
 
         var jsonArray = Object.keys(jsonObj);
         for (var index in jsonArray) {
@@ -399,7 +399,7 @@ var trendQC = (function (mapObj) {
             
             //in order to make 'ALL' in the last position
             //so push 'ALL' at last
-            if(name == 'all')
+            if(name == 'All')
                 totalDataset = dataset;
             else
                 trendObj.datasets.push(dataset);
@@ -466,6 +466,7 @@ var trendQC = (function (mapObj) {
 
         $('#rightPopupContainer').append(container);
         var ctx = node.getContext("2d");
+//        console.log(trendObj);
         linechart = new Chart(ctx).Overlay(trendObj, percentageOptions);
 
         //show up

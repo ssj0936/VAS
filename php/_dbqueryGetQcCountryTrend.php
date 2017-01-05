@@ -190,7 +190,7 @@
                     ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
                 FROM
                 (
-                    SELECT $moduleCodeMappingColumn = 'other'
+                    SELECT $moduleCodeMappingColumn = 'The Rest'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) partSum
@@ -213,7 +213,7 @@
                     group by shipping_year,shipping_mon
                 )foo,
                 (
-                    SELECT $moduleCodeMappingColumn = 'other'
+                    SELECT $moduleCodeMappingColumn = 'The Rest'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) total
@@ -245,7 +245,7 @@
                     ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
                 FROM
                 (
-                    SELECT $moduleCodeMappingColumn = 'all'
+                    SELECT $moduleCodeMappingColumn = 'All'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) partSum
@@ -267,7 +267,7 @@
                     group by shipping_year,shipping_mon
                 )foo,
                 (
-                    SELECT $moduleCodeMappingColumn = 'all'
+                    SELECT $moduleCodeMappingColumn = 'All'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) total
@@ -359,7 +359,7 @@
                     ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
                 FROM
                 (
-                    SELECT model = 'other'
+                    SELECT model = 'The Rest'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) partSum
@@ -382,7 +382,7 @@
                     group by shipping_year,shipping_mon
                 )foo,
                 (
-                    SELECT model = 'other'
+                    SELECT model = 'The Rest'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) total
@@ -470,7 +470,7 @@
                     ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
                 FROM
                 (
-                    SELECT model = 'all'
+                    SELECT model = 'All'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) partSum
@@ -492,7 +492,7 @@
                     group by shipping_year,shipping_mon
                 )foo,
                 (
-                    SELECT model = 'all'
+                    SELECT model = 'All'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) total
@@ -583,7 +583,7 @@
                     ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
                 FROM
                 (
-                    SELECT productdevice = 'other'
+                    SELECT productdevice = 'The Rest'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) partSum
@@ -606,7 +606,7 @@
                     group by shipping_year,shipping_mon
                 )foo,
                 (
-                    SELECT productdevice = 'other'
+                    SELECT productdevice = 'The Rest'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) total
@@ -694,7 +694,7 @@
                     ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
                 FROM
                 (
-                    SELECT productdevice = 'all'
+                    SELECT productdevice = 'All'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) partSum
@@ -716,7 +716,7 @@
                     group by shipping_year,shipping_mon
                 )foo,
                 (
-                    SELECT productdevice = 'all'
+                    SELECT productdevice = 'All'
                         ,shipping_year
                         ,shipping_mon
                         ,sum(count) total
