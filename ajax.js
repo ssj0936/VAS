@@ -1040,13 +1040,7 @@ function ajaxGetHeatMap(){
     });
 }
 
-function ajaxGetSQMarker(view){
-    let repairView;
-    if (view) {
-        repairView = view;
-    } else {
-        repairView = 'muc';
-    }
+function ajaxGetSQMarker(){
     loading("Data loading...");
     $.ajax({
         url: "php/_dbqueryGetSQDevice.php",
@@ -1054,7 +1048,7 @@ function ajaxGetSQMarker(view){
         data: {
             iso: JSON.stringify(observeLoc),
             data: JSON.stringify(observeTarget),
-            view: repairView,
+            view: currentView,
             category: 1,
             permission: JSON.stringify(permission),
         },
@@ -1072,13 +1066,7 @@ function ajaxGetSQMarker(view){
     });
 }
 
-function ajaxGetSQRegion(view) {
-    let repairView;
-    if (view) {
-        repairView = view;
-    } else {
-        repairView = 'muc';
-    }
+function ajaxGetSQRegion() {
     loading("Data loading...");
     $.ajax({
         url: "php/_dbqueryGetSQRegion.php",
@@ -1090,7 +1078,7 @@ function ajaxGetSQRegion(view) {
             frontCamera: JSON.stringify(observeSpec.front_camera),
             iso: JSON.stringify(observeLoc),
             data: JSON.stringify(observeTarget),
-            view: repairView,
+            view: currentView,
             category: 1,
             permission: JSON.stringify(permission),
         },

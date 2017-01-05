@@ -165,7 +165,7 @@ function setSQInfo() {
     // method that we will use to update the control based on feature properties passed
     mapObj.info.update = function (props) {
         let timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+ "CFR" + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
-        let btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
+        let btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick=trendQC.showChart('"+observeLocFullName[0]+"')>Show trend</button>";
         let modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
         let totalStr = "<table class = 'model_table'>";
         let liStr = '';
@@ -325,7 +325,7 @@ function highlightFunc (e) {
                     }
 
                     var displayNum = layerJson.properties.totalCFR ? numToString(layerJson.properties.totalCFR.toFixed(2)) : 0;
-                    var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
+                    var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart('"+displayName.replace(/ /g, "_")+"','" + layerJson.properties.OBJECTID + "')>Show trend</button>";
                     var popup = "<div class='pop'>" + displayName + ":" + displayNum + '% ' + ((displayNum == 0) ? "" : buttonHTML) + "</div>";
                     mapObj.map.openPopup(popup, e.latlng);
 

@@ -260,6 +260,7 @@ function qcControlPanelInit() {
     $('#qcView button').click(function () {
         if (isLoading()) return;
         radioButtonClick($('#qcView'), $(this));
+        currentView = $(this).attr('data-value');
         if (isModeActive(MODE_QC_REGION)) {
             submitSQRegion($(this).attr('data-value'));
         }
@@ -267,6 +268,8 @@ function qcControlPanelInit() {
             submitSQMarker($(this).attr('data-value'));
         }
     });
+    
+    disableQCControl();
 }
 
 function lifezoneControlPanelInit() {
@@ -803,19 +806,35 @@ function submitBtnSetting() {
                     case FUNC_GAP:
                         console.log('switch from ' + FUNC_GAP);
                         //change table button text
-                        $('#table').button('option', 'label', 'Table');
                         firstMap.currentRegionIso = [];
                         firstMap.removePolygonMap();
                         cleanBranch();
                         break;
                     case FUNC_QC:
+                        //reset
+                        currentView = DEFAULT_VIEW;
+                        
                         console.log('switch from ' + FUNC_QC);
+                        //reset view button
+                        $('#qcView button').removeClass('active');
+                        
+                        
                         //change table button text
-                        $('#table').button('option', 'label', 'Table');
                         firstMap.currentRegionIso = [];
                         firstMap.removePolygonMap();
+                        if(isModeActive(MODE_QC_MARKER)){
+                            removeSQMarker();
+                            setModeOff(MODE_QC_MARKER);
+                        }
+                            
+                        if(isModeActive(MODE_QC_REGION)){
+                            removeSQRegion();
+                            setModeOff(MODE_QC_REGION);
+                        }
+                        
                         removeSQMarker();
                         removeSQRegion();
+                        disableQCControl();
                         mapInit();
                         break;
                 }
@@ -955,6 +974,8 @@ function submitBtnSetting() {
                     break;
 
                 case FUNC_QC:
+                    enableQCControl();
+                    
                     $('#tableContainer').hide();
                     $('#workset').show('medium');
                     if ($("#qcMode button.active").length == 0 || $("button#qcRegion").hasClass("active")) {
@@ -970,11 +991,12 @@ function submitBtnSetting() {
 
                         submitSQMarker();
                     }
-                    $("button#qcMucModule").addClass("active");
+                    if(!$('#qcView button[data-value="'+currentView+'"]').hasClass("active"))
+                        $('#qcView button[data-value="'+currentView+'"]').addClass("active");
+                    
                     needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
                     console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
                     firstMap.zoomToSelectedLocation();
-                    setInitialZoom(firstMap.map.getZoom());
                     break;
                     
                 case FUNC_PARALLEL:
@@ -1159,24 +1181,24 @@ function submitHeatMap() {
     ajaxGetHeatMap();
 }
 
-function submitSQRegion(view) {
+function submitSQRegion() {
     setModeOn(MODE_QC_REGION);
     if (observeTarget.length == 0) {
         firstMap.info.update();
-        firstMap.cleanMap();
+        removeSQRegion();
         loadingDismiss();
     } else {
         //same world region, no need to re-fetch/*
         if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !isMapModified && !needToForceExtractMap) {
             console.log("same world region");
             if (observeTarget.length != 0) {
-                ajaxGetSQRegion(view);
+                ajaxGetSQRegion();
             } else {
                 loadingDismiss();
             }
         } else {
             console.log("diff world region");
-            ajaxExtractMap(false, ajaxGetSQRegion, view);
+            ajaxExtractMap(false, ajaxGetSQRegion);
         }
         needToForceExtractMap = false;
     }
@@ -1184,7 +1206,7 @@ function submitSQRegion(view) {
 
 function submitSQMarker(view) {
     setModeOn(MODE_QC_MARKER);
-    ajaxGetSQMarker(view);
+    ajaxGetSQMarker();
 }
 
 function collapseBtnInit() {
@@ -1322,6 +1344,19 @@ function disableParallelControl() {
 function enableParallelControl() {
     //    console.log('enable activation');
     $("#parallelMode button").removeAttr("disabled");
+}
+
+function disableQCControl() {
+    //    console.log('disable activation');
+    $("#qcControlPanel button").attr("disabled", true);
+    $("#qcCategory").selectmenu( "disable" );
+    
+}
+
+function enableQCControl() {
+    //    console.log('enable activation');
+    $("#qcControlPanel button").removeAttr("disabled");
+    $("#qcCategory").selectmenu( "enable" );
 }
 
 //return current mode whether need check country or not

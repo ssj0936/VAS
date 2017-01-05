@@ -233,6 +233,7 @@ function MapObject(mapname) {
                             ctx.strokeStyle = "white";
                             ctx.lineWidth = 1;
                         }
+                        ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
                         break;
                         
                     case FUNC_PARALLEL:
