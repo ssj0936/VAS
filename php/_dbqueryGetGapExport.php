@@ -1,6 +1,7 @@
     <?php
     ini_set("max_execution_time", 0);
 
+    $detailIso = array('IND','IDN');
     require_once("DBconfig.php");
     require_once("DBclass.php");
     require_once("function.php");
@@ -19,13 +20,14 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $from = "2016-11-13";
-//    $to = "2016-12-13";  
-//    $iso ='["IND"]';
-//    $data = '[{"model":"ZENFONE-P","devices":"ZENFONE-P","product":"ZENFONE-P","datatype":"product"},{"model":"ZC553KL","devices":"ZC553KL","product":"ZENFONE-D","datatype":"model"},{"model":"ZC520TL","devices":"ZC520TL","product":"ZENFONE-D","datatype":"model"},{"model":"ZB552KL","devices":"ZB552KL","product":"ZENFONE-D","datatype":"model"},{"model":"ZB500KL","devices":"ZB500KL","product":"ZENFONE-D","datatype":"model"},{"model":"ZB500KG","devices":"ZB500KG","product":"ZENFONE-D","datatype":"model"},{"model":"ZS570KL","devices":"ZS570KL","product":"ZENFONE","datatype":"model"},{"model":"ZS550KL","devices":"ZS550KL","product":"ZENFONE","datatype":"model"},{"model":"ZE552KL","devices":"ZE552KL","product":"ZENFONE","datatype":"model"},{"model":"ZE520KL","devices":"ZE520KL","product":"ZENFONE","datatype":"model"},{"model":"ZC551KL","devices":"ZC551KL","product":"ZENFONE","datatype":"model"}]';
+//    $from = "2016-11-29";
+//    $to = "2016-12-29";  
+//    $iso ='["BGD"]';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $permission = '{}';
 //    $distBranch = '[]';
-//    $groupBy = 'summary';
+////    $groupBy = 'summary';
+//    $groupBy = 'branch';
 //    $singleBranch = null;
 
     $color = $_POST['color'];
@@ -80,6 +82,7 @@
         $db->query($getLevelQuery);
         $row = $db->fetch_array();
         $level = intval($row['loc_level']);
+//        echo $level;
         
         $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL'.$level]);
         $str_in='';
@@ -143,12 +146,12 @@
                     ." ORDER BY branchSell, map_id";
                 break;
                 
-            case 'IDN':
-            case 'VNM':
-                if($isoObj[0] == 'VNM')
-                    $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","District","Activation q'ty<br>by District");
-                else
+            default:
+                if($isoObj[0] == 'IDN')
                     $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"               ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","Province","Activation q'ty<br>by Province","Regency","Activation q'ty<br>by Regency");
+                else
+                    $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","District","Activation q'ty<br>by District");
+                    
                 
                 $fromTableStr="SELECT device,map_id,count"
                     ." FROM "
@@ -199,7 +202,8 @@
         //create table
         $file = file('geojson/branchTerritoryDistTam/'.$isoObj[0].'_branchTerritoryDistTam.csv');
         
-        if($level == 1){
+        //
+        if(!in_array($isoObj[0],$detailIso)){
             $tableColumnList = array('branchName','tamShareByBranch','activationShareBranch','activationSumBranch','gapBranch','districtName','activationOfDistrict');
             $hilightColumnList = array('activationShareBranch','gapBranch');
             if($groupBy!='summary')
@@ -249,7 +253,7 @@
                                 break;
                             }
                         }
-                        if(!$found) echo "$branch/$district!!!!!!!!<br>";
+//                        if(!$found) echo "$branch/$district!!!!!!!!<br>";
                     }
                 }
 

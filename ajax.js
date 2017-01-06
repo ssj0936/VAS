@@ -488,12 +488,23 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
     if (linechart != null) {
         linechart.destroy();
     }
-    
+    console.log(FUNC_ACTIVATION);
+    console.log(JSON.stringify(observeSpec.color));
+    console.log(JSON.stringify(observeSpec.cpu));
+    console.log(JSON.stringify(observeSpec.rear_camera));
+    console.log(JSON.stringify(observeSpec.front_camera));
+    console.log(JSON.stringify(observeTarget));
+    console.log(mapObj.fromFormatStr);
+    console.log(mapObj.toFormatStr);
+    console.log(branchName);
+    console.log(JSON.stringify(observeLoc));
+    console.log(JSON.stringify(permission));
+
     var URLs = "php/_dbqueryGetTrendOfBranch.php";
     $.ajax({
         url: URLs,
         data: {
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: FUNC_ACTIVATION,
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -509,7 +520,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
         dataType: 'json',
 
         success: function (json) {
-//            console.log(json);
+            console.log(json);
             //empty data set
             updateBranchChart(json,branchName);
         },
@@ -941,7 +952,7 @@ function ajaxGetGapData(callback){
             data: JSON.stringify(observeTarget),
             from: firstMap.fromFormatStr,
             to: firstMap.toFormatStr,
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: FUNC_ACTIVATION,
             permission: JSON.stringify(permission),
         },
         success: function(json){
@@ -981,7 +992,7 @@ function ajaxGetGapExport(groupBy){
         },
         function (text) {
 //            console.log(text);
-            var filename = '[' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + ']' + "_GapReport";
+            var filename = '['+observeLoc[0]+'][' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + '][Group By '+groupBy+']'+ "_GapReport";
             tableExportToExcel(text,filename);
         },
         'text'

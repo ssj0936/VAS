@@ -28,12 +28,13 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $dataset = 'activation';
-//    $branch = 'SE';
-//    $from = "2016-11-1";
-//    $to = "2016-12-1";  
-//    $iso ='["VNM"]';
+//    $branch = '3';
+//    $from = "2016-11-29";
+//    $to = "2016-12-29";  
+//    $iso ='["PHL"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
+//    $permission = '{}';
 
     
     $isoObj = json_decode($iso);
@@ -140,8 +141,7 @@
                         ." ORDER BY date";
             break;
             
-        case 'IDN':
-        case 'VNM':
+        default:
             //Group by branch
             $queryStr.="SELECT date,count,map_id"
                     ." FROM "
@@ -222,8 +222,8 @@
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                     ." GROUP BY date, model_name, branch ORDER BY date,model_name";
             break;
-        case 'IDN':
-        case 'VNM':
+        
+        default:
             //Group by Model
             $queryStr="SELECT model_name,date,SUM(count) AS count, branchName AS branch"
                     ." FROM "
@@ -296,8 +296,8 @@
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                         ." GROUP BY date, device, branch ORDER BY date,device";
                 break;
-            case 'IDN':
-            case 'VNM':
+            
+            default:
                 $queryStr="SELECT device,date,SUM(count) AS count,branchName AS branch"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
