@@ -81,7 +81,7 @@
             $exportFileColumn = 'ABC_not_dis_is';
         
         //1.import/export ratio group by country
-        $queryStr = "SELECT NAME_0,act_year,act_mon,model,distributor_id,shipping_year,shipping_mon".",sum($exportFileColumn) count"
+        $queryStr = "SELECT NAME_0,act_year,act_mon,model,distributor_id,act_year,act_mon".",sum($exportFileColumn) count"
                     ." FROM "
                         .$_DB['parallel']['name']." a1,"
                         .$_DB['parallel']['mapping']." a2,"
@@ -93,7 +93,7 @@
                     ." AND geo.iso = a1.country"
                     ." AND $exportFileColumn != 0"
                     .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
-                    ." group by NAME_0,model,shipping_year,shipping_mon,distributor_id,act_year,act_mon"
+                    ." group by NAME_0,model,act_year,act_mon,distributor_id,act_year,act_mon"
                     ." order by count DESC";
                                     
 //		echo $queryStr."<br><br><br>";
@@ -110,7 +110,7 @@
             $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
             $str .= "<td style ='$tableStyle'>".$row['model']."</td>";
             $str .= "<td style ='$tableStyle'>".$row['distributor_id']."</td>";
-            $str .= "<td style ='$tableStyle'>".(string)($row['shipping_year'].'-'.$row['shipping_mon'])."</td>";
+            $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
             $str .= "<td style ='$tableStyle'>".$row['count']."</td>";
             
             $str .= "</tr>";
