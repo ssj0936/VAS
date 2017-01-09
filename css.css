@@ -522,13 +522,21 @@
         border-top: solid #c4c4c4 1pt;
     }
     
-    .collapse-open span {
-        display: block;
-        float: right;
+    .trendCollapsible-open span {
+        display: inline-block;
+        background: url(img/arrow_up.png) center center no-repeat;
         padding: 10px;
+        opacity: 0.4;
+    }
+
+    .trendCollapsible-close span {
+        display: inline-block;
+        background: url(img/arrow_down.png) center center no-repeat;
+        padding: 10px;
+        opacity: 0.4;
     }
     
-    .trendCollapsible-open span,
+    
     .collapse-open span {
         display: block;
         float: right;
@@ -536,7 +544,6 @@
         padding: 10px;
     }
     
-    .trendCollapsible-close span,
     .collapse-close span {
         display: block;
         float: right;
@@ -707,16 +714,34 @@
         background: url(img/arrow_down.png) no-repeat;
     }
     
+    div[id^='displayFilter_content']{
+        color: #999;
+    }
+
+    div[id^='displayFilter_content'] label{
+        line-height: 1.75;
+    }
+
     div[id^='displayFilter_content'] li {
         list-style-type: none;
         display: block;
     }
     
-    div[id^='displayFilter_content'] ul {
+    div[id^='displayFilter_content'] ul,
+    div[id^='displayFilter_content'] ul ul{
         -webkit-margin-before: 0px;
         -webkit-margin-after: 0px;
-        -webkit-padding-start: 16px;
-        padding-left: 16px;
+        -webkit-padding-start: 0px;
+        padding-left: 0px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+
+    div[id^='displayFilter_content'] ul ul ul{
+        -webkit-margin-before: 0px;
+        -webkit-margin-after: 0px;
+        -webkit-padding-start: 12px;
+        padding-left: 12px;
         margin-left: 0px;
         margin-right: 0px;
     }
@@ -1036,5 +1061,5 @@
     }
 
     .leaflet-container {
-         font: 12px/1.5 "Segoe UI Semibold","Helvetica Neue", Arial, Helvetica, sans-serif; 
+         font: 13px/1.5 "Segoe UI Semibold","Helvetica Neue", Arial, Helvetica, sans-serif; 
     }

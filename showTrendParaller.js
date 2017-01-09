@@ -89,6 +89,7 @@ var trendParallel = (function (mapObj) {
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
+            'background-color': '#EEE',
         }).appendTo(row);
 
         var rightPopup = jQuery('<div/>', {
@@ -194,7 +195,7 @@ var trendParallel = (function (mapObj) {
                     }
                 }(i));
         }
-        var filterDisplayer = createFilterDisplayer();
+        var filterDisplayer = createFilterResult();
         filterDisplayer.appendTo(leftPopup);
 
         //chart

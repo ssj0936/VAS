@@ -1,6 +1,6 @@
 "use strict";
 
-var chartHeight = 400;
+var chartHeight = 450;
 var filterInTrendIconWidth = 12;
 var filterInTrendIconmarginright = 3;
 var isTotalShowing = true;
@@ -179,6 +179,7 @@ function updateBranchChart(json,branchName) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
+            'background-color': '#EEE',
         }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
@@ -278,7 +279,7 @@ function updateBranchChart(json,branchName) {
                 }
             }(trendList[i]));
     }
-    var filterDisplayer = createFilterDisplayer();
+    var filterDisplayer = createFilterResult();
     filterDisplayer.appendTo(leftPopup);
 
     isNowBranchTrend = true;
@@ -313,6 +314,7 @@ function updateRegionChart(json, displayname, displaynum) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
+            'background-color': '#EEE',
         }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
@@ -425,7 +427,7 @@ function updateRegionChart(json, displayname, displaynum) {
                 }
             }(trendList[i]));
     }
-    var filterDisplayer = createFilterDisplayer();
+    var filterDisplayer = createFilterResult();
     filterDisplayer.appendTo(leftPopup);
 
     //chart
@@ -470,6 +472,7 @@ function updateTrendChart(json) {
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
+            'background-color': '#EEE',
         }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
@@ -570,7 +573,7 @@ function updateTrendChart(json) {
                 }
             }(trendList[i]));
     }
-    var filterDisplayer = createFilterDisplayer();
+    var filterDisplayer = createFilterResult();
     filterDisplayer.appendTo(leftPopup);
 
     //title re-position
@@ -684,9 +687,6 @@ function createDeviceFilter(dataObj, container, titleContainer) {
     var ul = jQuery('<ul/>').appendTo(container);
 
     var li = jQuery('<li/>').attr("id", "check_device_li").appendTo($(ul));
-    jQuery('<span/>', {
-        class: 'ui-icon ui-icon-bullet',
-    }).appendTo(li);
     
     jQuery('<label/>', {
         text: "All",
@@ -724,10 +724,6 @@ function createDeviceFilter(dataObj, container, titleContainer) {
                 'margin-left': ''+(filterInTrendIconWidth + filterInTrendIconmarginright)+'px',
             })
         }
-
-        jQuery('<span/>', {
-            class: 'ui-icon ui-icon-bullet',
-        }).appendTo(li);
         
         jQuery('<label/>', {
             text: productName,
@@ -768,10 +764,6 @@ function createDeviceFilter(dataObj, container, titleContainer) {
                 })
             }
 
-            jQuery('<span/>', {
-                class: 'ui-icon ui-icon-bullet',
-            }).appendTo(li);
-            
             jQuery('<label/>', {
                 text: modelName,
             }).appendTo(li);
@@ -781,12 +773,12 @@ function createDeviceFilter(dataObj, container, titleContainer) {
             var deviceUl = jQuery('<ul/>').appendTo(modelUl).hide();
             for (var i = 0; i < dataObj[productName][modelName].length; ++i) {
                 var li = jQuery('<li/>').appendTo(deviceUl);
-                jQuery('<span/>', {
-                    class: 'ui-icon ui-icon-bullet',
-                }).appendTo(li);
+                
                 jQuery('<label/>', {
                     text: dataObj[productName][modelName][i],
-                }).appendTo(li);
+                })
+                    .css('padding-left','3px')
+                    .appendTo(li);
             }
         }
     }
@@ -803,10 +795,6 @@ function createTwoLevelFilter(dataArray, container, titleContainer) {
         for (var i = 0; i < dataArray.length; ++i) {
             var li = jQuery('<li/>').appendTo($(ul));
 
-            jQuery('<span/>', {
-                class: 'ui-icon ui-icon-bullet',
-            }).appendTo(li);
-
             jQuery('<label/>', {
                 text: dataArray[i],
             }).appendTo(li);
@@ -818,10 +806,6 @@ function createTwoLevelFilter(dataArray, container, titleContainer) {
         if (dataArray[0] == 'all') {
             var li = jQuery('<li/>').appendTo(ul);
 
-            jQuery('<span/>', {
-                class: 'ui-icon ui-icon-bullet',
-            }).appendTo(li);
-
             jQuery('<label/>', {
                 text: "All",
             }).appendTo(li);
@@ -829,10 +813,6 @@ function createTwoLevelFilter(dataArray, container, titleContainer) {
             //            var allUl = jQuery('<ul/>').appendTo(ul);
             for (var i = 0; i < dataArray.length; ++i) {
                 var li = jQuery('<li/>').appendTo(ul);
-
-                jQuery('<span/>', {
-                    class: 'ui-icon ui-icon-bullet',
-                }).appendTo(li);
 
                 jQuery('<label/>', {
                     text: dataArray[i],
@@ -842,6 +822,61 @@ function createTwoLevelFilter(dataArray, container, titleContainer) {
             titleContainer.toggleClass('trendCollapsible-close trendCollapsible-open');
         }
     }
+}
+
+function createFilterResult(){
+    //filter content
+    var container = jQuery('<div/>', {
+        class: 'filter_wrapper',
+    }).css({
+        'margin-top': '30%',
+        'width': '100%',
+        'border-radius': '5px',
+        'z-index': 5,
+    });
+
+    var body = jQuery('<div/>').appendTo(container);
+
+    //structure build for each filter
+    for (var i in FilterList) {
+        var filterName = FilterList[i];
+
+        var $container = $('<div/>', {
+                id: 'displayFilter_title_' + filterName,
+                class: 'trendCollapsible-close',
+            })
+            .css({
+//                'border-top': (i != 0) ? ('solid #AAA 1pt') : (''),
+                'margin': '10px 5px 0px 5px',
+                'margin-bottom': '5px',
+                'padding-top': '8px',
+                'font-size': '24px',
+            })
+            .html(filterName + '<span></span>')
+            .appendTo(body);
+
+        var $content = $('<div/>', {
+                id: 'displayFilter_content_' + filterName,
+                class: 'selector customScrollBar',
+                filterName: filterName,
+            })
+            .css({
+                'max-height': '250px',
+//                'overflow': 'auto',
+            })
+            .appendTo(body).hide();
+
+        $container.click(function ($content, $container) {
+            return function () {
+                $content.stop(true, true).slideToggle('medium');
+                $container.toggleClass('trendCollapsible-close trendCollapsible-open');
+            }
+        }($content, $container));
+
+        addingContent(filterName, $content, $container);
+    }
+
+    return container;
 }
 
 function addingContent(filterName, container, titleContainer) {
@@ -961,16 +996,6 @@ function createFilterDisplayer() {
 
         $container.click(function ($content, $container) {
             return function () {
-                //only one filter can be opend
-//                $('div[id^="displayFilter_content_"]').each(function () {
-//                    if ($(this).attr('id') != $content.attr('id')) {
-//                        if ($('#displayFilter_title_' + $(this).attr('filterName')).hasClass('trendCollapsible-open')) {
-//                            $(this).stop(true, true).slideUp('medium');
-//                            $('#displayFilter_title_' + $(this).attr('filterName')).removeClass('trendCollapsible-open').addClass('trendCollapsible-close');
-//                        }
-//                    }
-//                });
-
                 $content.stop(true, true).slideToggle('medium');
                 $container.toggleClass('trendCollapsible-close trendCollapsible-open');
             }
