@@ -177,9 +177,10 @@ var trendQC = (function (mapObj) {
 
         var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
+            class:'col-xs-2',
         }).css({
             'display': 'inline-block',
-            'width': '15%',
+//            'width': '15%',
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
@@ -187,9 +188,10 @@ var trendQC = (function (mapObj) {
 
         var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
+            class:'col-xs-10',
         }).css({
             'display': 'inline-block',
-            'width': '' + rightPopupContainerWidthP * 100 + '%',
+//            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
@@ -336,7 +338,7 @@ var trendQC = (function (mapObj) {
                 break;
         }
         createChartElement();
-        updateColorInfo();
+        //updateColorInfo();
         loadingDismiss();
     }
 
@@ -418,14 +420,14 @@ var trendQC = (function (mapObj) {
         }
         chartDestroy(false);
         createChartElement();
-        updateColorInfo();
+        //updateColorInfo();
     }
 
     function addTotalLine(){
         trendObj.datasets.push(totalDataset);
         chartDestroy(false);
         createChartElement();
-        updateColorInfo();
+        //updateColorInfo();
     }
 
     function createChartElement() {
@@ -448,11 +450,11 @@ var trendQC = (function (mapObj) {
             "opacity": "0",
         }).attr('id', 'trendContainer');
 
-        jQuery('<div/>', {
-                id: 'trendColorInfo',
-                class: "w3-light-grey customScrollBar",
-            })
-            .appendTo($("#rightPopupContainer"));
+//        jQuery('<div/>', {
+//                id: 'trendColorInfo',
+//                class: "w3-light-grey customScrollBar",
+//            })
+//            .appendTo($("#rightPopupContainer"));
 
         container.append($(node));
 
@@ -467,7 +469,11 @@ var trendQC = (function (mapObj) {
         $('#rightPopupContainer').append(container);
         var ctx = node.getContext("2d");
 //        console.log(trendObj);
-        linechart = new Chart(ctx).Overlay(trendObj, percentageOptions);
+        linechart = new Chart(ctx, {
+            type: 'line',
+            data: trendObj,
+            options: percentageOptions,
+        });
 
         //show up
         container.animate({

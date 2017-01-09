@@ -18,8 +18,8 @@ function lineDataObj() {
     this.labelsByWeek = [];
     this.labelsByMonth = [];
     //default by date
-    this.labels =null;
-    
+    this.labels = null;
+
     this.datasets = [];
     this.yAxes = [{
         name: "rightAxis",
@@ -33,21 +33,47 @@ function lineDataObj() {
 }
 
 function lineDatasetsObj(label, fillColor, pointColor, highlightColor, rightAxis) {
+    //    this.label = label;
+    //    this.type = 'line';
+    //    this.yAxesGroup = (rightAxis ? 'rightAxis' : 'normal');
+    //    this.fillColor = fillColor;
+    ////    this.fillColor = "rgba(0,0,0,0)";
+    //    this.strokeColor = pointColor;
+    //    this.pointColor = pointColor;
+    //    this.pointStrokeColor = "#fff";
+    //    this.pointHighlightFill = "#fff";
+    //    this.pointHighlightStroke = highlightColor;
+    //    this.dataByDate = [];
+    //    this.dataByWeek = [];
+    //    this.dataByMonth = [];
+    //    //default by date
+    //    this.data = this.dataByDate;
+
     this.label = label;
-    this.type = 'line';
     this.yAxesGroup = (rightAxis ? 'rightAxis' : 'normal');
-    this.fillColor = fillColor;
-//    this.fillColor = "rgba(0,0,0,0)";
-    this.strokeColor = pointColor;
-    this.pointColor = pointColor;
-    this.pointStrokeColor = "#fff";
-    this.pointHighlightFill = "#fff";
-    this.pointHighlightStroke = highlightColor;
+    this.fill = false;
+    this.lineTension = 0.1;
+    this.backgroundColor = pointColor;
+    this.borderColor = pointColor;
+    this.borderCapStyle = 'butt';
+    this.borderDash = [];
+    this.borderDashOffset = 0.0;
+    this.borderJoinStyle = 'miter';
+    this.pointBorderColor = pointColor;
+    this.pointBackgroundColor = "#fff";
+    this.pointBorderWidth = 1;
+    this.pointHoverRadius = 5;
+    this.pointHoverBackgroundColor = pointColor;
+    this.pointHoverBorderColor = "rgba(220,220,220,1)";
+    this.pointHoverBorderWidth = 2;
+    this.pointRadius = 1;
+    this.pointHitRadius = 10;
     this.dataByDate = [];
     this.dataByWeek = [];
     this.dataByMonth = [];
-    //default by date
     this.data = this.dataByDate;
+    this.spanGaps = false;
+
 }
 
 //var options = {
@@ -198,19 +224,20 @@ var newOptions = {
     populateSparseData: true,
     overlayBars: false,
     datasetFill: true,
-
+    responsive: true,
+    maintainAspectRatio: false,
     showTooltips: true,
-//    // String - Template string for single tooltips
-//    tooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
-//
-//    // String - Template string for multiple tooltips
-//    multiTooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
-    
-    tooltipTemplate: function(label) {
+    //    // String - Template string for single tooltips
+    //    tooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
+    //
+    //    // String - Template string for multiple tooltips
+    //    multiTooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
+
+    tooltipTemplate: function (label) {
         return '' + (label.datasetLabel) + ': ' + (label.value);
     },
     // String - Template string for multiple tooltips
-    multiTooltipTemplate: function(label) {
+    multiTooltipTemplate: function (label) {
         return '' + (label.datasetLabel) + ': ' + (label.value);
     },
 }
@@ -221,19 +248,37 @@ var percentageOptions = {
     populateSparseData: true,
     overlayBars: false,
     datasetFill: true,
-
+    responsive: true,
+    maintainAspectRatio: false,
     showTooltips: true,
-    scaleLabel:function(label) { 
-        return '' + label.value + ' %';
+
+    scales: {
+        yAxes: [{
+            ticks: {
+                // Create scientific notation labels
+                callback: function (value, index, values) {
+                    return value + ' %';
+                }
+            }
+            }]
     },
 
-    tooltipTemplate: function(label) {
-        return '' + (label.datasetLabel) + ': ' + label.value + ' %';
+    //    scaleLabel:function(label) { 
+    //        return '' + label.value + ' %';
+    //    },
+
+    tooltips: {
+        callbacks: {
+            label: function (tooltipItem, data) {
+                return data.datasets[tooltipItem.datasetIndex].label +': ' + tooltipItem.yLabel+ ' %';
+//                return tooltipItem.yLabel + ' %';
+            }
+        }
     },
 
-    multiTooltipTemplate: function(label) {
-        return '' + (label.datasetLabel) + ': ' + label.value + ' %';
-    },
+    //    multiTooltipTemplate: function (label) {
+    //        return '' + (label.datasetLabel) + ': ' + label.value + ' %';
+    //    },
 }
 
 var negOptions = {
@@ -242,17 +287,37 @@ var negOptions = {
     populateSparseData: true,
     overlayBars: false,
     datasetFill: true,
-
+    responsive: true,
+    maintainAspectRatio: false,
     showTooltips: true,
-    scaleLabel:function(label) { 
-        return '' + ((label.value)*100).toFixed(2) + ' %';
+
+    scales: {
+        yAxes: [{
+            ticks: {
+                // Create scientific notation labels
+                callback: function (value, index, values) {
+                    return (value * 100).toFixed(2) + ' %';
+                }
+            }
+            }]
     },
 
-    tooltipTemplate: function(label) {
-        return '' + (label.datasetLabel) + ': ' + ((label.value)*100).toFixed(2) + ' %';
-    },
+    //    scaleLabel: function (label) {
+    //        return '' + ((label.value) * 100).toFixed(2) + ' %';
+    //    },
 
-    multiTooltipTemplate: function(label) {
-        return '' + (label.datasetLabel) + ': ' + ((label.value)*100).toFixed(2) + ' %';
+    tooltips: {
+        callbacks: {
+            label: function (tooltipItem, data) {
+                return data.datasets[tooltipItem.datasetIndex].label +': ' + (tooltipItem.yLabel * 100).toFixed(2) + ' %';
+            }
+        }
     },
+    //    tooltipTemplate: function (label) {
+    //        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
+    //    },
+
+//    multiTooltipTemplate: function (label) {
+//        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
+//    },
 }

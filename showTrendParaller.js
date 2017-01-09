@@ -82,9 +82,10 @@ var trendParallel = (function (mapObj) {
 
         var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
+            class:'col-xs-2',
         }).css({
             'display': 'inline-block',
-            'width': '15%',
+//            'width': '15%',
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
@@ -92,9 +93,10 @@ var trendParallel = (function (mapObj) {
 
         var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
+            class:'col-xs-10',
         }).css({
             'display': 'inline-block',
-            'width': '' + rightPopupContainerWidthP * 100 + '%',
+//            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
@@ -230,7 +232,7 @@ var trendParallel = (function (mapObj) {
         }
         
         _setActiveTrend(trendMode);
-        updateColorInfo();
+        //updateColorInfo();
         loadingDismiss();
     }
 
@@ -317,11 +319,11 @@ var trendParallel = (function (mapObj) {
             "opacity": "0",
         }).attr('id', 'trendContainer');
 
-        jQuery('<div/>', {
-                id: 'trendColorInfo',
-                class: "w3-light-grey customScrollBar",
-            })
-            .appendTo($("#rightPopupContainer"));
+//        jQuery('<div/>', {
+//                id: 'trendColorInfo',
+//                class: "w3-light-grey customScrollBar",
+//            })
+//            .appendTo($("#rightPopupContainer"));
 
         container.append($(node));
 
@@ -335,11 +337,28 @@ var trendParallel = (function (mapObj) {
 
         $('#rightPopupContainer').append(container);
         var ctx = node.getContext("2d");
-        if (opt)
-            linechart = new Chart(ctx).Overlay(trendObj, opt);
-        else
-            linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+        linechart = new Chart(ctx, {
+            type: 'line',
+            data: trendObj,
+            options: ( opt ? opt : newOptions)
+        });
 
+        //show node info
+        node.onclick = function(evt)
+        {
+            $('#loginHistoryContainer').remove();
+
+            var str = '';
+            var activePoints = linechart.getElementsAtEvent(evt);
+            console.log(activePoints);
+            for(var i in activePoints){
+                var datasetLabel = activePoints[i].datasetLabel;
+                var value = activePoints[i].value;
+                
+                str += '['+datasetLabel+':'+value+']';
+            }
+            console.log(str);
+        }
         //show up
         container.animate({
             opacity: 1,

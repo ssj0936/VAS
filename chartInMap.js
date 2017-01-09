@@ -21,7 +21,7 @@ var TREND_DIST = 'Disti';
 var TREND_BRANCH = 'Branch';
 
 var rightPopupContainerWidthP = 0.84;
-var trendContainerWidthP = 0.8;
+var trendContainerWidthP = 0.9;
 
 var trendContainerWidthR = $(window).width() * rightPopupContainerWidthP * trendContainerWidthP - 20;
 
@@ -103,7 +103,7 @@ function createFunctionalBtn(){
                         createChartElement(negOptions);
                     else
                         createChartElement();
-                    updateColorInfo();
+                    //updateColorInfo();
                     break;
                 
                 case 'By Month' :
@@ -120,7 +120,7 @@ function createFunctionalBtn(){
                         createChartElement(negOptions);
                     else
                         createChartElement();
-                    updateColorInfo();
+                    //updateColorInfo();
                     break;
                     
                 case 'By Week' :
@@ -137,7 +137,7 @@ function createFunctionalBtn(){
                         createChartElement(negOptions);
                     else
                         createChartElement();
-                    updateColorInfo();
+                    //updateColorInfo();
                     break;
             }
         }
@@ -172,9 +172,10 @@ function updateBranchChart(json,branchName) {
         }).appendTo(container);
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
+            class:'col-xs-2',
         }).css({
             'display':'inline-block',
-            'width': '15%',
+//            'width': '15%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
@@ -182,9 +183,10 @@ function updateBranchChart(json,branchName) {
 
     var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
+            class:'col-xs-10',
         }).css({
             'display':'inline-block',
-            'width': '' + rightPopupContainerWidthP * 100 + '%',
+//            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
@@ -304,9 +306,10 @@ function updateRegionChart(json, displayname, displaynum) {
     
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
+            class:'col-xs-2',
         }).css({
             'display':'inline-block',
-            'width': '15%',
+//            'width': '15%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
@@ -314,9 +317,10 @@ function updateRegionChart(json, displayname, displaynum) {
 
     var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
+            class:'col-xs-10',
         }).css({
             'display':'inline-block',
-            'width': '' + rightPopupContainerWidthP * 100 + '%',
+//            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align':'top',
             'position': 'relative',
@@ -459,7 +463,7 @@ function updateTrendChart(json) {
     
     var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
-            class:'col-sm-2',
+            class:'col-xs-2',
         }).css({
             'display':'inline-block',
 //            'width': '15%',
@@ -470,7 +474,7 @@ function updateTrendChart(json) {
 
     var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
-            class:'col-sm-10',
+            class:'col-xs-10',
         }).css({
             'display':'inline-block',
 //            'width': '' + rightPopupContainerWidthP*100 + '%',
@@ -1605,14 +1609,14 @@ function removeTotalLine(){
     }
     chartDestroy(false);
     createChartElement();
-    updateColorInfo();
+    //updateColorInfo();
 }
 
 function addTotalLine(){
     trendObj.datasets.push(totalDataset);
     chartDestroy(false);
     createChartElement();
-    updateColorInfo();
+    //updateColorInfo();
 }
 
 function setActiveTrend(trend) {
@@ -1646,11 +1650,11 @@ function createChartElement(opt){
     }).attr('id', 'trendContainer');
 
 
-    jQuery('<div/>', {
-            id: 'trendColorInfo',
-            class: "w3-light-grey customScrollBar",
-        })
-        .appendTo($("#rightPopupContainer"));
+//    jQuery('<div/>', {
+//            id: 'trendColorInfo',
+//            class: "w3-light-grey customScrollBar",
+//        })
+//        .appendTo($("#rightPopupContainer"));
 
     container.append($(node));
 //    container.appendChild(node);
@@ -1669,11 +1673,18 @@ function createChartElement(opt){
 
     $('#rightPopupContainer').append(container);
     var ctx = node.getContext("2d");
-    if(opt)
-        linechart = new Chart(ctx).Overlay(trendObj, opt);
-    else
-        linechart = new Chart(ctx).Overlay(trendObj, newOptions);
     
+    linechart = new Chart(ctx, {
+        type: 'line',
+        data: trendObj,
+        options: ( opt ? opt : newOptions)
+    });
+
+//    if(opt)
+//        linechart = new Chart(ctx).Overlay(trendObj, opt);
+//    else
+//        linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+//    
     //show up
     container.animate({
         opacity: 1,
@@ -1719,7 +1730,7 @@ function createsingleRegionChart(json, trendMode, regionName) {
     //create chart element
     createChartElement();
 
-    updateColorInfo();
+    //updateColorInfo();
     loadingDismiss();
 }
 
@@ -1754,7 +1765,7 @@ function createBranchChart(json, trendMode, branchName) {
     //create chart element
     createChartElement(negOptions);
 
-    updateColorInfo();
+    //updateColorInfo();
     loadingDismiss();
 }
 
@@ -1812,46 +1823,47 @@ function createTrendChart(json, trendMode) {
     }
     setActiveTrend(trendMode);
     createChartElement();
-    updateColorInfo();
+    //updateColorInfo();
 }
 
-function updateColorInfo() {
-    var infoDiv = $('#trendColorInfo');
-    infoDiv.css({
-        'max-width': '15%',
-//        'overflow-y': 'auto',
-        'top': '' + getWindowHeightPercentagePx(0.15) + 'px',
-    });
-
-    var totalHeight = 0;
-    for (var i in trendObj.datasets) {
-        var dataset = trendObj.datasets[i];
-        var color = dataset.pointColor;
-        var name = dataset.label;
-
-        var colorBlock = jQuery('<i/>').css({
-            'background': color,
-            'width': '18px',
-            'height': '18px',
-            'margin-right': '8px',
-            'opacit': '0.7',
-            'display': 'inline-block',
-        });
-
-        var colorName = jQuery('<p/>').css({
-            'margin': '0px',
-            'display': 'inline-block',
-        }).text(name);
-
-        var oneColorInfo = jQuery('<div/>')
-            .append(colorBlock)
-            .append(colorName)
-            .appendTo(infoDiv);
-
-        totalHeight += oneColorInfo.height();
-    }
-
-}
+//no needed
+//function updateColorInfo() {
+//    var infoDiv = $('#trendColorInfo');
+//    infoDiv.css({
+//        'max-width': '15%',
+////        'overflow-y': 'auto',
+//        'top': '' + getWindowHeightPercentagePx(0.15) + 'px',
+//    });
+//
+//    var totalHeight = 0;
+//    for (var i in trendObj.datasets) {
+//        var dataset = trendObj.datasets[i];
+//        var color = dataset.backgroundColor;
+//        var name = dataset.label;
+//
+//        var colorBlock = jQuery('<i/>').css({
+//            'background': color,
+//            'width': '18px',
+//            'height': '18px',
+//            'margin-right': '8px',
+//            'opacit': '0.7',
+//            'display': 'inline-block',
+//        });
+//
+//        var colorName = jQuery('<p/>').css({
+//            'margin': '0px',
+//            'display': 'inline-block',
+//        }).text(name);
+//
+//        var oneColorInfo = jQuery('<div/>')
+//            .append(colorBlock)
+//            .append(colorName)
+//            .appendTo(infoDiv);
+//
+//        totalHeight += oneColorInfo.height();
+//    }
+//
+//}
 
 function createTable(isDiff,json,mapObj) {
     
