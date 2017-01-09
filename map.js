@@ -36,7 +36,7 @@ function MapObject(mapname) {
         //map
         if (typeof this.map == "undefined") {
             this.map = L.map(containerID, {
-                layers: L.tileLayer("https://api.tiles.mapbox.com/v4/mapbox.light/{z}/{x}/{y}.png?access_token=" + token),
+                layers: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),
                 minZoom : 2
             });
             this.setInfo();

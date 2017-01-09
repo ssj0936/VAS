@@ -26,7 +26,8 @@
 
     <!--ChartJS-->
     <!-- modified chartjs with duo axes-->
-    <script src="https://raw.githack.com/leighquince/Chart.js/master/Chart.js"></script>
+<!--    <script src="https://raw.githack.com/leighquince/Chart.js/master/Chart.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
     <!--<script src="Chart.js-master/Chart.js"></script>-->
     <script src="lib/lineOption.js"></script>
 
@@ -161,25 +162,27 @@
                                 <label>Date:</label>
                                 <div id='databtn' style="display: inline-block;vertical-align: top; width:100%">
                                     <button class="date">Date</button>
-                                    <div id="dateDropdown" class="selector">
+                                    <div id="dateDropdown" >
                                         <div id="timeSection">
                                             <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
                                             <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
                                             <!--                            <button class="btn_unpressed" id="btnAllTime">All Time</button>-->
                                         </div>
-                                        <p style="margin-left:3%;text-align: left;"><b>Custom date range</b></p>
-                                        <div id="date_selection_zone_1" style="text-align: left;">
-                                            <input value="From Time" type="text" id="from" name="from"> -
-                                            <input value="To Time" type="text" id="to" name="to">
+                                        <div style="background-color: white;">
+                                            <p style="margin-left:3%;margin-top:0px;text-align: left;"><b>Custom date range</b></p>
+                                            <div id="date_selection_zone_1" style="text-align: left;">
+                                                <input value="From Time" type="text" id="from" name="from"> -
+                                                <input value="To Time" type="text" id="to" name="to">
+                                            </div>
+                                            <!--
+                                            <input id="compare" type="checkbox">Compare to</input>
+                                            <div id="date_selection_zone_2" style="display:none">
+                                                <input value="From Time" type="text" id="from_compare" name="from"> -
+                                                <input value="To Time" type="text" id="to_compare" name="to">
+                                            </div>
+                                            -->
                                         </div>
-                                        <!--
-                                        <input id="compare" type="checkbox">Compare to</input>
-                                        <div id="date_selection_zone_2" style="display:none">
-                                            <input value="From Time" type="text" id="from_compare" name="from"> -
-                                            <input value="To Time" type="text" id="to_compare" name="to">
-                                        </div>
-        -->
-                                        <div style="display: block; text-align: left;">
+                                        <div style="display: block; text-align: left; background-color: white;">
                                             <button class="submit" id="dateOK">OK</button>
                                         </div>
                                     </div>

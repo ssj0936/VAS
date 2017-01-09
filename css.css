@@ -130,7 +130,7 @@
     .legend_comparisonMap,
     .legend_firstMap {
         padding: 6px 8px;
-        font: 14px/16px Arial, Helvetica, sans-serif;
+/*        font: 14px/16px Arial, Helvetica, sans-serif;*/
         background: white;
         background: rgba(255, 255, 255, 0.8);
         box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.2);
@@ -355,7 +355,7 @@
         /*margin-left:-100px;*/
         background-color: #383838;
         color: #F0F0F0;
-        font-family: Calibri;
+/*        font-family: Calibri;*/
         font-size: 20px;
         padding: 10px;
         text-align: center;
@@ -418,8 +418,8 @@
     
     #timeSection,
     #overviewTimeSection {
-        margin: -5px;
-        padding: 5px 0px 5px 0px;
+/*        margin: -5px;*/
+        padding: 5px 0px 2px 0px;
     }
     
     #timeSection button,
@@ -681,7 +681,7 @@
     
     .model_table {
         width: 100%;
-        font: 14px/16px Arial, Helvetica, sans-serif;
+/*        font: 14px/16px Arial, Helvetica, sans-serif;*/
         margin: 0px 0px 5px;
         color: #777;
         font-weight: bold;
@@ -1033,4 +1033,8 @@
     
     .ui-selectmenu-button span.ui-selectmenu-text {
         text-align: center;
+    }
+
+    .leaflet-container {
+         font: 12px/1.5 "Segoe UI Semibold","Helvetica Neue", Arial, Helvetica, sans-serif; 
     }
