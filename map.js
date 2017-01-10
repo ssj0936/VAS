@@ -1,6 +1,6 @@
 "use strict";
 var colorPattern = [50000, 5000, 500, 50];
-var parallelGrade = [0, 20, 40, 60, 80, 100];
+var parallelGrade = [];
 var gapGrade = [-0.4, -0.2, 0, 0.2];
 
 function MapObject(mapname) {
@@ -150,17 +150,23 @@ function MapObject(mapname) {
     };
 
     this.setParallelMaxMin = function () {
-        var parallelMode = isModeActive(parallelMode) ? 'importRatio' : 'exportRatio';
+        var parallelMode = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio';
         this.max = null;
         this.min = null;
-        console.log(this.jsonData);
-        for (var i = 0; i < this.jsonData.features.length; ++i) {
-            var value = parseFloat(this.jsonData.features[i].properties[parallelMode]);
+        //        console.log(this.countryMapping);
+        for (var i in this.countryMapping) {
+            var value = parseFloat(((this.countryMapping)[i].total)[parallelMode]);
             //            console.log(value);
             this.max = (this.max == null || value > this.max) ? value : this.max;
             this.min = (this.min == null || value < this.min) ? value : this.min;
         }
-        console.log('this.max:' + this.max + '/this.min:' + this.min);
+
+
+        //update parallelGrade
+        var length = this.max - this.min;
+        parallelGrade = [this.min, (this.min + length / 3), (this.min + length * 2 / 3), this.max];
+        //        console.log('this.max:' + this.max + '/this.min:' + this.min);
+        //        console.log(parallelGrade);
     };
 
     this.mapDataLoad = function () {
@@ -315,13 +321,13 @@ function MapObject(mapname) {
             case FUNC_PARALLEL:
                 var grades = parallelGrade;
 
-                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor(0) + '"></i> 0 %</div> ';
+                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor((grades[0])) + '"></i> ' + numToString(grades[0]) + ' %</div> ';
                 for (var i = 0; i < grades.length - 1; i++) {
                     div.innerHTML +=
                         '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i] + 1)) + '"></i> ' +
                         numToString(grades[i]) + ' % &ndash;' + numToString(grades[i + 1]) + ' % </div>';
                 }
-                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length - 1] + 1)) + '"></i> ' + numToString(grades[grades.length - 1]) + " %+" + "</div>";
+                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length - 1] + 1)) + '"></i> ' + numToString(grades[grades.length - 1]) + " %" + "</div>";
                 break;
 
             default:
@@ -879,13 +885,12 @@ function MapObject(mapname) {
     };
 
     this.getParallelColor = function (d) {
-        return d > 100 ? '#800026' :
-            d > 80 ? '#BD0026' :
-            d > 60 ? '#E31A1C' :
-            d > 40 ? '#FD8D3C' :
-            d > 20 ? '#FEB24C' :
-            d == 0 ? '#FFFFFF' :
-            '#FED976';
+        return d >= parallelGrade[3] ? '#FF0000' :
+            d >= parallelGrade[2] ? '#FF8800' :
+            d >= parallelGrade[1] ? '#77FF00' :
+            d == parallelGrade[0] ? '#0000FF' :
+            '#00FFCC';
+
     }
 
     this.getGapColor = function (d) {
