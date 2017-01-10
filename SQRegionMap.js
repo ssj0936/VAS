@@ -71,9 +71,9 @@ function getSQRegionCanvas() {
 
 
             if (currentCategory == 'ALL')
-                ctx.fillStyle = colorHexToRGBString(getColor(feature.tags.totalCFR) , 0.5);
-            else 
-                ctx.fillStyle = colorHexToRGBString(getColor((feature.tags.category[currentCategory])?feature.tags.category[currentCategory]:0) , 0.5);
+                ctx.fillStyle = colorHexToRGBString(getColor(feature.tags.totalCFR), 0.5);
+            else
+                ctx.fillStyle = colorHexToRGBString(getColor((feature.tags.category[currentCategory]) ? feature.tags.category[currentCategory] : 0), 0.5);
             ctx.globalCompositeOperation = 'destination-over';
             ctx.strokeStyle = "white";
             ctx.lineWidth = 1;
@@ -103,7 +103,7 @@ function getSQRegionCanvas() {
 function updateMapProperties(data) {
     let mapObj = firstMap;
     for (let i = 0; i < mapObj.jsonData.features.length; ++i) {
-        if(data[mapObj.jsonData.features[i].properties.OBJECTID] != undefined) {
+        if (data[mapObj.jsonData.features[i].properties.OBJECTID] != undefined) {
             let l2QcData = data[mapObj.jsonData.features[i].properties.OBJECTID];
             mapObj.jsonData.features[i].properties.totalCFR = l2QcData.totalCFR;
             mapObj.jsonData.features[i].properties.category = l2QcData.category;
@@ -126,7 +126,7 @@ function setSQLegend(category) {
         div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + getColor(0) + '"></i> 0</div> ';
         for (let i = 0; i < grades.length - 1; i++) {
             div.innerHTML +=
-                '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + getColor((grades[i]+0.0000000001)) + '"></i> ' +
+                '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + getColor((grades[i] + 0.0000000001)) + '"></i> ' +
                 numToString(grades[i].toFixed(1)) + '&ndash;' + numToString(grades[i + 1].toFixed(1)) + '</div>';
         }
         div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + getColor(grades[grades.length - 1]) + '"></i> ' + numToString(grades[grades.length - 1].toFixed(1)) + "+" + "</div>";
@@ -164,8 +164,8 @@ function setSQInfo() {
     };
     // method that we will use to update the control based on feature properties passed
     mapObj.info.update = function (props) {
-        let timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+ "CFR" + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
-        let btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick=trendQC.showChart('"+observeLocFullName[0]+"')>Show trend</button>";
+        let timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>' + "CFR" + '</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+        let btnPieChartStr = "<button id='showPieChart_" + mapObj.mapName + "' onclick=trendQC.showChart('" + observeLocFullName[0] + "')>Show trend</button>";
         let modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
         let totalStr = "<table class = 'model_table'>";
         let liStr = '';
@@ -177,37 +177,37 @@ function setSQInfo() {
                 displayName = props.NAME_1;
             }
             if (!$.isEmptyObject(props.category)) {
-                if (currentCategory =='ALL') {
+                if (currentCategory == 'ALL') {
                     $.each(props.category, function (k, e) {
-                        sortArray.push([k,e]);
+                        sortArray.push([k, e]);
                     });
                 } else {
                     if (props.category[currentCategory])
-                        sortArray.push([currentCategory,props.category[currentCategory]]);
+                        sortArray.push([currentCategory, props.category[currentCategory]]);
                 }
             }
         } else {
             if (!$.isEmptyObject(totalRecord.category)) {
-                if (currentCategory =='ALL') {
+                if (currentCategory == 'ALL') {
                     $.each(totalRecord.category, function (k, e) {
-                        sortArray.push([k,e]);
+                        sortArray.push([k, e]);
                     });
                 } else {
                     if (totalRecord.category[currentCategory])
-                        sortArray.push([currentCategory,totalRecord.category[currentCategory]]);
+                        sortArray.push([currentCategory, totalRecord.category[currentCategory]]);
                 }
             }
         }
 
         //select top 5
         sortArray.sort((a, b) => b[1] - a[1]);
-        for (let i = 0;i < (sortArray.length>5?5:sortArray.length); i++) {
+        for (let i = 0; i < (sortArray.length > 5 ? 5 : sortArray.length); i++) {
             liStr += "<tr><td>" + sortArray[i][0] + " </td><td class = 'model_table_count'> " + numToString(sortArray[i][1].toFixed(2)) + "%</td></tr>";
         };
         modelStr += liStr;
         modelStr += "</table></div>";
         if (currentCategory == 'ALL')
-            totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + ((props.totalCFR)?numToString(props.totalCFR.toFixed(2)):0) + "%</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(totalRecord.totalCFR.toFixed(2)) + "%</td></tr>");
+            totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + ((props.totalCFR) ? numToString(props.totalCFR.toFixed(2)) : 0) + "%</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(totalRecord.totalCFR.toFixed(2)) + "%</td></tr>");
         totalStr += "</table>";
         this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnPieChartStr);
 
@@ -228,14 +228,14 @@ function setSQInfo() {
 function setHighlightFeature() {
     var mapObj = firstMap;
 
-    mapObj.map.off('mousemove',highlightFunc);
+    mapObj.map.off('mousemove', highlightFunc);
     mapObj.map.on('mousemove', highlightFunc);
 };
 
 function unsetHighlightFeature() {
     var mapObj = firstMap;
 
-    mapObj.map.off('mousemove',highlightFunc);
+    mapObj.map.off('mousemove', highlightFunc);
 }
 
 function getColor(d) {
@@ -252,7 +252,7 @@ function getColor(d) {
     }
 }
 
-function highlightFunc (e) {
+function highlightFunc(e) {
     let mapObj = firstMap;
     var x = e.latlng.lng;
     var y = e.latlng.lat;
@@ -329,7 +329,7 @@ function highlightFunc (e) {
                     } else {
                         var displayNum = layerJson.properties.category[currentCategory] ? numToString(layerJson.properties.category[currentCategory].toFixed(2)) : 0;
                     }
-                    var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart('"+displayName.replace(/ /g, "_")+"','" + layerJson.properties.OBJECTID + "')>Show trend</button>";
+                    var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart('" + displayName.replace(/ /g, "_") + "','" + layerJson.properties.OBJECTID + "')>Show trend</button>";
                     var popup = "<div class='pop'>" + displayName + ":" + displayNum + '% ' + ((displayNum == 0) ? "" : buttonHTML) + "</div>";
                     mapObj.map.openPopup(popup, e.latlng);
 

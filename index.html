@@ -26,7 +26,7 @@
 
     <!--ChartJS-->
     <!-- modified chartjs with duo axes-->
-<!--    <script src="https://raw.githack.com/leighquince/Chart.js/master/Chart.js"></script>-->
+    <!--    <script src="https://raw.githack.com/leighquince/Chart.js/master/Chart.js"></script>-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.js"></script>
     <!--<script src="Chart.js-master/Chart.js"></script>-->
     <script src="lib/lineOption.js"></script>
@@ -156,13 +156,14 @@
                                     <option value="lifezone">LifeZone</option>
                                     <option value="qc">CFR Map</option>
                                     <option value="parallel">Parallel Goods</option>
+                                    <option value="activationTrend">Activation Trend</option>
                                 </select>
                             </div>
                             <div id="dateContainer" class="filterSelector">
                                 <label>Date:</label>
                                 <div id='databtn' style="display: inline-block;vertical-align: top; width:100%">
                                     <button class="date">Date</button>
-                                    <div id="dateDropdown" >
+                                    <div id="dateDropdown">
                                         <div id="timeSection">
                                             <button class="btn_unpressed" id="btnLastSeven">Last 7 Days</button>
                                             <button class="btn_unpressed" id="btnLastThirty">Last 30 Days</button>
@@ -259,131 +260,174 @@
                     <!--right side function button-->
                     <!--                    <div id="account" style="text-align: right;margin-bottom: 10px;font-weight: bold;">account</div>-->
 
-                    <div class="control_panel_right" style="float:right; display:none;">
-                        <button id="export" class="rightPanelButton">Export</button>
-                    </div>
-
-
-                    <!--left side function button-->
-                    <div class="control_panel_btn_area">
-                        <div id="lifezoneControlPanel" class="needTohideAtFirst controlPanel">
-                            <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 15px;">
-                                <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
-                                <div id="lifezoneWeekDayBtnset">
-                                    <button class="lifezoneWeekDayBtnset" id="mon" data-value="1">Mon</button>
-                                    <button class="lifezoneWeekDayBtnset" id="tus" data-value="2">Tus</button>
-                                    <button class="lifezoneWeekDayBtnset" id="wed" data-value="3">Wed</button>
-                                    <button class="lifezoneWeekDayBtnset" id="tes" data-value="4">Tes</button>
-                                    <button class="lifezoneWeekDayBtnset" id="fri" data-value="5">Fri</button>
-                                    <button class="lifezoneWeekDayBtnset" id="sat" data-value="6">Sat</button>
-                                    <button class="lifezoneWeekDayBtnset" id="sun" data-value="7">Sun</button>
-                                </div>
-                            </div>
-
-                            <div id="lifezonePartOfDay" style="margin: 10px 0px 15px 20px;">
-                                <label class="buttonSetLable" for="lifezonePartOfDaySlider">PartOfDay</label>
-                                <div id="lifezonePartOfDayBtnset">
-                                    <button class="lifezonePartOfDayBtnset" id="timePeriod1" data-value="1">10:00 - 14:00</button>
-                                    <button class="lifezonePartOfDayBtnset" id="timePeriod2" data-value="2">14:00 - 18:00</button>
-                                    <button class="lifezonePartOfDayBtnset" id="timePeriod3" data-value="3">18:00 - 22:00</button>
-                                </div>
-                            </div>
+                    <div class="row">
+                        <div class="control_panel_right col-xs-1" style="float:right; display:none;">
+                            <button id="export" class="rightPanelButton">Export</button>
                         </div>
 
-                        <div id="activationControlPanel" class="controlPanel">
-                            <div id="mode" style="margin-top: 3px;">
-                                <label class="buttonSetLable" for="mode">Layer</label>
-                                <button class="mode" id="region">Region</button>
-                                <button class="mode" id="marker">Marker</button>
-                                <!--                                <button class="mode" id="comparison">Comparison</button>-->
-                                <!--                                <button class="mode" id="table">Table</button>-->
-                                <!--                                <button class="mode" id="gap">Gap</button>-->
+
+                        <!--left side function button-->
+                        <div class="control_panel_btn_area col-xs-11">
+                            <div id="lifezoneControlPanel" class="needTohideAtFirst controlPanel">
+                                <div id="lifezoneWeekDay" style="margin-top: 10px;margin-bottom: 15px;">
+                                    <label class="buttonSetLable" for="lifezoneWeekDaySlider">WeekDay</label>
+                                    <div id="lifezoneWeekDayBtnset">
+                                        <button class="lifezoneWeekDayBtnset" id="mon" data-value="1">Mon</button>
+                                        <button class="lifezoneWeekDayBtnset" id="tus" data-value="2">Tus</button>
+                                        <button class="lifezoneWeekDayBtnset" id="wed" data-value="3">Wed</button>
+                                        <button class="lifezoneWeekDayBtnset" id="tes" data-value="4">Tes</button>
+                                        <button class="lifezoneWeekDayBtnset" id="fri" data-value="5">Fri</button>
+                                        <button class="lifezoneWeekDayBtnset" id="sat" data-value="6">Sat</button>
+                                        <button class="lifezoneWeekDayBtnset" id="sun" data-value="7">Sun</button>
+                                    </div>
+                                </div>
+
+                                <div id="lifezonePartOfDay" style="margin: 10px 0px 15px 20px;">
+                                    <label class="buttonSetLable" for="lifezonePartOfDaySlider">PartOfDay</label>
+                                    <div id="lifezonePartOfDayBtnset">
+                                        <button class="lifezonePartOfDayBtnset" id="timePeriod1" data-value="1">10:00 - 14:00</button>
+                                        <button class="lifezonePartOfDayBtnset" id="timePeriod2" data-value="2">14:00 - 18:00</button>
+                                        <button class="lifezonePartOfDayBtnset" id="timePeriod3" data-value="3">18:00 - 22:00</button>
+                                    </div>
+                                </div>
                             </div>
 
+                            <div id="activationControlPanel" class="controlPanel">
+                                <div id="mode" style="margin-top: 3px;">
+                                    <label class="buttonSetLable" for="mode">Layer</label>
+                                    <button class="mode" id="region">Region</button>
+                                    <button class="mode" id="marker">Marker</button>
+                                    <!--                                <button class="mode" id="comparison">Comparison</button>-->
+                                    <!--                                <button class="mode" id="table">Table</button>-->
+                                    <!--                                <button class="mode" id="gap">Gap</button>-->
+                                </div>
 
-                            <!--
+
+                                <!--
                             <div id="overlay" style="margin-top: 3px;">
                                 <label class="buttonSetLable" for="overlay">Overlay</label>
                                 <button class="overlay" id="dealer">Dealer</button>
                                 <button class="overlay" id="service">Service</button>
                             </div>
 -->
-                        </div>
-
-                        <div id="parallelControlPanel" class="needTohideAtFirst controlPanel">
-                            <div id="parallelMode" style="margin-top: 3px;">
-                                <label class="buttonSetLable" for="parallelMode">Mode</label>
-                                <button class="parallelMode" id="parallelImport">Parallel Import</button>
-                                <button class="parallelMode" id="parallelExport">Parallel Export</button>
-                            </div>
-                        </div>
-
-                        <div id="qcControlPanel" class="needTohideAtFirst controlPanel">
-                            <div id="qcMode" style="margin-top: 3px;">
-                                <label class="buttonSetLable">Mode</label>
-                                <button class="qcMode" id="qcRegion">Region</button>
-                                <button class="qcMode" id="qcMarker">Marker</button>
                             </div>
 
-                            <div id="qcView" style="margin-top: 3px;">
-                                <label class="buttonSetLable">View</label>
-                                <button class="qcView" id="qcMucModule" data-value="muc">MucModule</button>
-                                <button class="qcView" id="qcLmdPartGroup" data-value="lmd">LmdPartGroup</button>
+                            <div id="parallelControlPanel" class="needTohideAtFirst controlPanel">
+                                <div id="parallelMode" style="margin-top: 3px;">
+                                    <label class="buttonSetLable" for="parallelMode">Mode</label>
+                                    <button class="parallelMode" id="parallelImport">Parallel Import</button>
+                                    <button class="parallelMode" id="parallelExport">Parallel Export</button>
+                                </div>
                             </div>
-                                
-                            <div style="margin-top: 3px;">
-                                <label class="buttonSetLable">Category</label>
-                                <select id="qcCategory">
-                                    <option value="ALL" selected="selected">All</option>
-                                </select>
-                            </div>
-                        </div>
 
-                        <div id="filterResult" style="margin-top: 10px;">
-                            <label class="buttonSetLable" for="filterresult">Filters</label>
-                            <span id="filterBarResults"></span>
+                            <div id="qcControlPanel" class="needTohideAtFirst controlPanel">
+                                <div id="qcMode" style="margin-top: 3px;">
+                                    <label class="buttonSetLable">Mode</label>
+                                    <button class="qcMode" id="qcRegion">Region</button>
+                                    <button class="qcMode" id="qcMarker">Marker</button>
+                                </div>
+
+                                <div id="qcView" style="margin-top: 3px;">
+                                    <label class="buttonSetLable">View</label>
+                                    <button class="qcView" id="qcMucModule" data-value="muc">MucModule</button>
+                                    <button class="qcView" id="qcLmdPartGroup" data-value="lmd">LmdPartGroup</button>
+                                </div>
+
+                                <div style="margin-top: 3px;">
+                                    <label class="buttonSetLable">Category</label>
+                                    <select id="qcCategory">
+                                        <option value="ALL" selected="selected">All</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="activationTrendControlPanel" class="needTohideAtFirst controlPanel">
+                                <div class="row">
+                                    <div class="col-xs-6">
+
+                                        <label class="buttonSetLable" for="activationTrendBy">Trend by</label>
+                                        <div id="activationTrendBy" style="margin-top: 3px;">
+                                            <button class="activationTrendBy" id="trendByModel">Model</button>
+                                            <button class="activationTrendBy" id="trendByDevice">Device</button>
+                                            <button class="activationTrendBy" id="trendByRegion">Region</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-6">
+                                        <label class="buttonSetLable" for="activationTrendLevel">Level</label>
+                                        <div id="activationTrendLevel" style="margin-top: 3px;">
+                                            <button class="activationTrendLevel" id="trendLevelCountry">Country</button>
+                                            <button class="activationTrendLevel" id="trendLevelBranch">Branch</button>
+                                            <button class="activationTrendLevel" id="trendLevelL1">L1</button>
+                                            <button class="activationTrendLevel" id="trendLevelL2">L2</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <label class="buttonSetLable" for="activationTrendTimeScale">Timescale</label>
+                                        <div id="activationTrendTimeScale" style="margin-top: 3px;">
+                                            <button class="activationTrendTimeScale" id="trendScaleDay">Day</button>
+                                            <button class="activationTrendTimeScale" id="trendScaleWeek">Week</button>
+                                            <button class="activationTrendTimeScale" id="trendScaleMonth">Month</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-6" id="activationShowSelector" style="margin-top: 3px;">
+                                        <label class="buttonSetLable" for="activationShowSelector">Show</label>
+                                        <select id="showSelector">
+                                            <option value="1" selected="selected">Top 5 </option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="filterResult" style="margin-top: 10px;">
+                                <label class="buttonSetLable" for="filterresult">Filters</label>
+                                <span id="filterBarResults"></span>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!--workset-->
-                <div id="mapContainer" style="float:left">
-                    <div id="workset" style="display: none">
-                        <div id="mapid"></div>
-                        <div id="mapidComparison" style="display: none"></div>
-                        <div id="updatetime"></div>
+                    <!--workset-->
+                    <div id="mapContainer" style="float:left">
+                        <div id="workset" style="display: none">
+                            <div id="mapid"></div>
+                            <div id="mapidComparison" style="display: none"></div>
+                            <div id="updatetime"></div>
+                        </div>
+                        <div id="tableContainer" style="display: none"></div>
+                        <div id="homepage"></div>
                     </div>
-                    <div id="tableContainer" style="display: none"></div>
-                    <div id="homepage"></div>
-                </div>
 
+                </div>
             </div>
         </div>
-    </div>
-    <!--save bookmark dialog-->
-    <div id="bookmarkDialog" style="display:none;">
-        <div id="addBookmarkDialog">
-            Title:
-            <br>
-            <textarea style="resize:none" rows="1" cols="55" id="bookmark_title"></textarea>
-            <br> Description:
-            <br>
-            <textarea style="resize:none" rows="7" cols="55" id="bookmark_description"></textarea>
-            <br>
+        <!--save bookmark dialog-->
+        <div id="bookmarkDialog" style="display:none;">
+            <div id="addBookmarkDialog">
+                Title:
+                <br>
+                <textarea style="resize:none" rows="1" cols="55" id="bookmark_title"></textarea>
+                <br> Description:
+                <br>
+                <textarea style="resize:none" rows="7" cols="55" id="bookmark_description"></textarea>
+                <br>
+            </div>
+            <div id="bookmarkList">
+                <ul id="bk-ul"></ul>
+            </div>
         </div>
-        <div id="bookmarkList">
-            <ul id="bk-ul"></ul>
-        </div>
-    </div>
 
-    <div id="alertDialog">
-        <p></p>
-    </div>
-    <script>
-        (function () {
-            checkSSOCookie();
-        }());
-    </script>
+        <div id="alertDialog">
+            <p></p>
+        </div>
+        <script>
+            (function () {
+                checkSSOCookie();
+            }());
+        </script>
 </body>
 
 </html>

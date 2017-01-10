@@ -14,14 +14,14 @@ function isHighlightNeeded() {
     //no data need to observe
     if (observeTarget.length == 0)
         return false;
-    else if(! (getFunction() == FUNC_ACTIVATION || getFunction() == FUNC_DISTBRANCH || getFunction() == FUNC_GAP || getFunction() == FUNC_PARALLEL) )
+    else if (!(getFunction() == FUNC_ACTIVATION || getFunction() == FUNC_DISTBRANCH || getFunction() == FUNC_GAP || getFunction() == FUNC_PARALLEL))
         return false;
-    else if(getFunction() == FUNC_ACTIVATION){
-        if((!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER)) || (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER)))
+    else if (getFunction() == FUNC_ACTIVATION) {
+        if ((!isModeActive(MODE_REGION) && isModeActive(MODE_MARKER)) || (!isModeActive(MODE_REGION) && !isModeActive(MODE_MARKER)))
             return false;
         else
             return true;
-    }else{
+    } else {
         return true;
     }
 }
@@ -56,7 +56,7 @@ function setUpdateTime(time) {
 }
 
 function getUpdateTime() {
-    var func = ((getFunction()==FUNC_LIFEZONE)?FUNC_LIFEZONE:FUNC_ACTIVATION);
+    var func = ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION);
     return updateTime[func];
 }
 
@@ -155,7 +155,7 @@ function resetIsClickFromFilterResult() {
 
 function setAccount(string) {
     $('#navAccount').text(string);
-//    $('#account').text(string);
+    //    $('#account').text(string);
 }
 
 function parseDateToStr(date) {
@@ -174,7 +174,7 @@ function parseDateToStr(date) {
 }
 
 function pressToggle(target) {
-//    console.log("target:"+$(target).attr("id"));
+    //    console.log("target:"+$(target).attr("id"));
     var parent = $(target).parent();
     parent.children("button").each(function () {
         //console.log("$(this):"+$(this).attr("id"));
@@ -199,18 +199,18 @@ function loading(text) {
     $("body").css("cursor", "progress");
     //if($('.toast').css("display")=='none')
     $('.toast').html(text).fadeIn(400);
-    
-    if(isFunctionSelectorInit)
-        $( "#dataset" ).selectmenu( "option", "disabled", true );
+
+    if (isFunctionSelectorInit)
+        $("#dataset").selectmenu("option", "disabled", true);
 }
 
 function loadingDismiss() {
     $("body").css("cursor", "default");
     if ($('.toast').css("display") != 'none')
         $('.toast').fadeOut(400);
-    
-    if(isFunctionSelectorInit)
-        $( "#dataset" ).selectmenu( "option", "disabled", false );
+
+    if (isFunctionSelectorInit)
+        $("#dataset").selectmenu("option", "disabled", false);
 }
 
 function isLoading() {
@@ -236,8 +236,8 @@ function onChangeTrigger() {
 }
 
 function onDatepickerMaxMinReset() {
-    $( "#from" ).datepicker( "option", "maxDate", null);
-    $( "#to" ).datepicker( "option", "minDate", null);
+    $("#from").datepicker("option", "maxDate", null);
+    $("#to").datepicker("option", "minDate", null);
 }
 
 function getRandomColor() {
@@ -366,7 +366,7 @@ function enableScroll() {
     });
 }
 
-function scrollToTop(){
+function scrollToTop() {
     $('html, body').scrollTop(0);
 }
 
@@ -414,25 +414,27 @@ function checkSSOCookie() {
             var c = getCookie('SSO').split('&');
             account = c[3].substring((c[3].indexOf('=') + 1));
             init_();
-//            var accessable = isInArray(accessableList, account);
-//            if (!accessable)
-//                window.location.href = '404.html';
+            //            var accessable = isInArray(accessableList, account);
+            //            if (!accessable)
+            //                window.location.href = '404.html';
         }
     } else {
         window.location.href = '404.html';
     }
 }
 
-function isVIP(){
-    return (isInArray(administrator,account) || isInArray(vipList,account));
+function isVIP() {
+    return (isInArray(administrator, account) || isInArray(vipList, account));
 }
 
 function updateReleaseNote() {
     $('#homepage').empty();
     jQuery('<h2/>').text('Welcome').appendTo('#homepage');
-    var notice = jQuery('<div/>',{id:'notice'}).appendTo('#homepage');
-    
-    
+    var notice = jQuery('<div/>', {
+        id: 'notice'
+    }).appendTo('#homepage');
+
+
     jQuery.get('releasenote.txt', function (data) {
         data = "<p>" + data;
         data = replaceAll(data, '\r\n', '　</p><p>');
@@ -451,7 +453,7 @@ function replaceAll(str, find, replace) {
 function filterDataNull() {
     allDevicesList = null;
     //delete allDevicesList;
-//    allLoc = null;
+    //    allLoc = null;
     //delete allLoc;
     allProduct = null;
     //delete allProduct;
@@ -459,30 +461,30 @@ function filterDataNull() {
     //delete allDealerCountry;
 }
 
-function getWindowHeightPercentagePx(float){
+function getWindowHeightPercentagePx(float) {
     return ($(window).height() * float);
 }
 
-function getDocumentFullHeight(){
+function getDocumentFullHeight() {
     return $(document).height();
 }
 
-Math.radians = function(degrees) {
-  return degrees * Math.PI / 180;
+Math.radians = function (degrees) {
+    return degrees * Math.PI / 180;
 };
 
 //degree to tile number
 function deg2num(lat_deg, lon_deg, zoom) {
-  var lat_rad = Math.radians(lat_deg);
-  var n = Math.pow(2,zoom);
-  var xtile = parseInt((lon_deg + 180.0) / 360.0 * n);
-  var ytile = parseInt((1.0 - Math.log(Math.tan(lat_rad) + (1 / Math.cos(lat_rad))) / Math.PI) / 2.0 * n);
-  return [xtile, ytile];
+    var lat_rad = Math.radians(lat_deg);
+    var n = Math.pow(2, zoom);
+    var xtile = parseInt((lon_deg + 180.0) / 360.0 * n);
+    var ytile = parseInt((1.0 - Math.log(Math.tan(lat_rad) + (1 / Math.cos(lat_rad))) / Math.PI) / 2.0 * n);
+    return [xtile, ytile];
 }
 
-function saveLog(){
-    if(account == "Developer") return;
-    if(window.location.href.indexOf('dev') >= 0) return;
+function saveLog() {
+    if (account == "Developer") return;
+    if (window.location.href.indexOf('dev') >= 0) return;
     ajaxSaveLog();
 }
 
@@ -497,42 +499,42 @@ function initCFRCategory(list) {
     let sel = $("#qcCategory");
     sel.empty().append('<option value="ALL" selected="selected">All</option>')
     for (let k = 0; k < list.length; k++)
-       sel.append("<option value='" + list[k]+ "'>" + list[k] + "</option>");
-    sel.selectmenu( "refresh" );
+        sel.append("<option value='" + list[k] + "'>" + list[k] + "</option>");
+    sel.selectmenu("refresh");
     currentCategory = 'ALL';
 }
 
 function rePaintCFR() {
     if (SQRegionTileLayer && isModeActive(MODE_QC_REGION)) {
         rePaintSQRegion();
-    } 
+    }
     if (SQMarkerTileLayer && isModeActive(MODE_QC_MARKER)) {
         rePaintSQMarker();
     }
 }
 
-function weekdayConvert(num){
+function weekdayConvert(num) {
     var weekday = (num == 1) ? "Mon" :
-            (num == 2) ? "Tue" :
-            (num == 3) ? "Wed" :
-            (num == 4) ? "Tus" :
-            (num == 5) ? "Fri" :
-            (num == 6) ? "Sat" : 
-            (num == 7) ? "Sun" : null;
+        (num == 2) ? "Tue" :
+        (num == 3) ? "Wed" :
+        (num == 4) ? "Tus" :
+        (num == 5) ? "Fri" :
+        (num == 6) ? "Sat" :
+        (num == 7) ? "Sun" : null;
 
     return weekday;
 }
 
-function partOfDayConvert(num){
+function partOfDayConvert(num) {
     var partOfDay = (num == 1) ? "10:00" :
-                (num == 2) ? "14:00" :
-                (num == 3) ? "18:00" : 
-                (num == 4) ? "22:00" : null;
+        (num == 2) ? "14:00" :
+        (num == 3) ? "18:00" :
+        (num == 4) ? "22:00" : null;
 
     return partOfDay;
 }
 
-function optMapSize(){
+function optMapSize() {
     $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 30) + 'px');
 }
 
@@ -540,8 +542,8 @@ function optMapSize(){
 
 //REF: http://www.epochconverter.com/weeknumbers
 Date.prototype.getWeek = function () {
-    var target  = new Date(this.valueOf());
-    var dayNr   = (this.getDay() + 6) % 7;
+    var target = new Date(this.valueOf());
+    var dayNr = (this.getDay() + 6) % 7;
     target.setDate(target.getDate() - dayNr + 3);
     var firstThursday = target.valueOf();
     target.setMonth(0, 1);
@@ -549,7 +551,7 @@ Date.prototype.getWeek = function () {
         target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
     }
     var retVal = 1 + Math.ceil((firstThursday - target) / 604800000);
-    
+
     return (retVal < 10 ? '0' + retVal : retVal);
 }
 

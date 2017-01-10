@@ -5,8 +5,8 @@ function init_() {
 
     //account isVIP init
     isVip = isVIP();
-//    console.log('account:'+account);
-//    console.log('isVip:'+isVip);
+    //    console.log('account:'+account);
+    //    console.log('isVip:'+isVip);
     //selector option init
     var URLs = "php/dbqueryInit.php";
     $.ajax({
@@ -18,67 +18,67 @@ function init_() {
             isVIP: isVip,
         },
         success: function (json) {
-//            console.log(json);
-            if(!isVip && !json.isPass){
+            //            console.log(json);
+            if (!isVip && !json.isPass) {
                 noPermissionShow();
                 //window.location.href = '404.html';
             }
-            
+
             isVip = json.isVIP;
             permission = jQuery.extend({}, json.accountPermission);
             console.log(permission);
-            console.log('ispass:'+json.isPass);
-            console.log('isVIP:'+isVip);
-            
-            
+            console.log('ispass:' + json.isPass);
+            console.log('isVIP:' + isVip);
+
+
             productTopProductIDList = jQuery.extend({}, json.productToProductID);
-//            console.log(productTopProductIDList);
-            
+            //            console.log(productTopProductIDList);
+
             allDevicesList = jQuery.extend({}, json.allDevices);
             checkboxDeviceInit();
-//                    console.log(allDevicesList);
+            //                    console.log(allDevicesList);
 
-            allLoc = jQuery.extend(true,{}, json.allLoc);
-//            console.log(allLoc);
-            
+            allLoc = jQuery.extend(true, {}, json.allLoc);
+            //            console.log(allLoc);
+
             //check is Gap mode need to hide
-            gapLoc = jQuery.extend(true,{}, json.allLoc);
-            for(var terrority in gapLoc){
-                for(var country in gapLoc[terrority]){
-                    if(!isInArray(countryGapModeSupported,gapLoc[terrority][country][0])){
+            gapLoc = jQuery.extend(true, {}, json.allLoc);
+            for (var terrority in gapLoc) {
+                for (var country in gapLoc[terrority]) {
+                    if (!isInArray(countryGapModeSupported, gapLoc[terrority][country][0])) {
                         delete gapLoc[terrority][country];
                     }
                 }
-                
-                if(Object.keys(gapLoc[terrority]).length == 0)
+
+                if (Object.keys(gapLoc[terrority]).length == 0)
                     delete gapLoc[terrority];
             }
-            if(Object.keys(gapLoc).length == 0)
+            if (Object.keys(gapLoc).length == 0)
                 isNeedToHideGap = true;
 
             //check is distBranch mode need to hide
-            distBranchLoc = jQuery.extend(true,{}, json.allLoc);
-            for(var terrority in distBranchLoc){
-                for(var country in distBranchLoc[terrority]){
-                    if(!isInArray(countryNeedToShowDistBranch,distBranchLoc[terrority][country][0])){
+            distBranchLoc = jQuery.extend(true, {}, json.allLoc);
+            for (var terrority in distBranchLoc) {
+                for (var country in distBranchLoc[terrority]) {
+                    if (!isInArray(countryNeedToShowDistBranch, distBranchLoc[terrority][country][0])) {
                         delete distBranchLoc[terrority][country];
                     }
                 }
-                
-                if(Object.keys(distBranchLoc[terrority]).length == 0)
+
+                if (Object.keys(distBranchLoc[terrority]).length == 0)
                     delete distBranchLoc[terrority];
             }
-            if(Object.keys(distBranchLoc).length == 0)
+            if (Object.keys(distBranchLoc).length == 0)
                 isNeedToHideDistBranch = true;
 
             //if is needed, hide it
-            if(isNeedToHideGap)
+            if (isNeedToHideGap)
                 $('#dataset option[value="gap"]').remove();
 
-            if(isNeedToHideDistBranch)
+            if (isNeedToHideDistBranch)
                 $('#dataset option[value="distBranch"]').remove();
-            
-            
+
+
             checkboxLocationInit(allLoc);
             branchDistInit();
 
@@ -89,17 +89,17 @@ function init_() {
 
             datepickerSetting();
             defaultDateSetting();
-            
+
             //init is activation dataset
             setUpdateTime(updateTime.activation);
 
             //overview
-            if(account == "Developer" || jQuery.inArray(account,administrator) != -1){
+            if (account == "Developer" || jQuery.inArray(account, administrator) != -1) {
                 overviewSetting();
-            }else{
+            } else {
                 $('li#info').remove();
             }
-            
+
             loadingDismiss();
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -108,8 +108,8 @@ function init_() {
         }
     });
 
-    setAccount(' '+account);
-    
+    setAccount(' ' + account);
+
     ajaxLoadBookmark();
 
     //init
@@ -130,13 +130,13 @@ function init_() {
     helpBtnSetting();
     //custom init
     updateReleaseNote();
-    
+
     //map_container
     $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 30) + 'px');
     //checkLocationInit();
 }
 
-function datepickerSetting(){
+function datepickerSetting() {
     //datePicker
     $("#from").datepicker().on("change", function (e) {
         $("#to").datepicker("option", "minDate", $(this).val());
@@ -148,7 +148,7 @@ function datepickerSetting(){
         datePickerOnChange();
     });
     $("#to").datepicker('setDate', new Date());
-    
+
     $("#to").datepicker("option", "maxDate", new Date(getUpdateTime()));
     $("#from").datepicker("option", "maxDate", new Date(getUpdateTime()));
 
@@ -176,7 +176,7 @@ function resizeInit() {
 
             $("#dateDropdown").css({
                 "left": '' + pos.left + 'px',
-//                "top": '' + ((pos.top + dateBtn.height() + 2) + 'px'),
+                //                "top": '' + ((pos.top + dateBtn.height() + 2) + 'px'),
                 "width": '' + dateBtn.width() - 8 + 'px',
                 "z-index": '9px',
             });
@@ -222,10 +222,10 @@ function showFilterResult() {
                 "devices": observeTarget[i].devices,
                 "datatype": observeTarget[i].datatype,
             })
-            .text(observeTarget[i].product + 
-                    ((observeTarget[i].model == observeTarget[i].product) ? "" : ("/" + observeTarget[i].model)) +
-                    ((observeTarget[i].devices == observeTarget[i].model) ? "" : ("/" + observeTarget[i].devices))
-                 )
+            .text(observeTarget[i].product +
+                ((observeTarget[i].model == observeTarget[i].product) ? "" : ("/" + observeTarget[i].model)) +
+                ((observeTarget[i].devices == observeTarget[i].model) ? "" : ("/" + observeTarget[i].devices))
+            )
             .appendTo(spanDevice);
 
         devicebtn.click(function (product, model, devices, datatype) {
@@ -234,7 +234,7 @@ function showFilterResult() {
 
                 //console.log($(this).attr('model'));
                 setIsClickFromFilterResult(true);
-                console.log("filter delete:"+ product + "/" + model + "/" + devices + "/" + datatype);
+                console.log("filter delete:" + product + "/" + model + "/" + devices + "/" + datatype);
                 for (var i = 0; i < observeTarget.length; ++i) {
                     if (observeTarget[i].product == product && observeTarget[i].model == model && observeTarget[i].devices == devices && observeTarget[i].datatype == datatype) {
                         observeTarget.splice(i, 1);
@@ -245,7 +245,7 @@ function showFilterResult() {
 
                 needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
 
-                if (getFunction() == FUNC_ACTIVATION){
+                if (getFunction() == FUNC_ACTIVATION) {
                     if (isModeActive(MODE_REGION)) {
                         submitRegion();
                     }
@@ -256,24 +256,19 @@ function showFilterResult() {
                     if (isModeActive(MODE_COMPARISION)) {
                         submitComparision();
                     }
-                }
-                else if (getFunction() == FUNC_GAP) {
+                } else if (getFunction() == FUNC_GAP) {
                     submitGap();
-                }
-                else if (getFunction() == FUNC_LIFEZONE) {
+                } else if (getFunction() == FUNC_LIFEZONE) {
                     submitHeatMap();
-                }
-                else if (getFunction() == FUNC_ACTIVATION_TABLE){
+                } else if (getFunction() == FUNC_ACTIVATION_TABLE) {
                     $(tableContainer).empty();
                     showTable();
-                }
-                else if (getFunction() == FUNC_QC) {
+                } else if (getFunction() == FUNC_QC) {
                     if (isModeActive(MODE_QC_REGION))
                         submitSQRegion();
                     if (isModeActive(MODE_QC_MARKER))
                         submitSQMarker();
-                }
-                else if (getFunction() == FUNC_PARALLEL){
+                } else if (getFunction() == FUNC_PARALLEL) {
                     submitParallel();
                 }
 
@@ -310,37 +305,37 @@ function clearFilterResult() {
     document.getElementById("filterBarResults").innerHTML = "";
 }
 
-function noPermissionShow(){
+function noPermissionShow() {
     $('body').empty();
-    
+
     var container = jQuery('<div/>').appendTo('body');
-    var img = jQuery('<img/>',{
-           src: 'img/Lock.png',
-        }).css({
-            'display':'block',
-            'margin':'auto',
-            'width':'15%',
-        }).appendTo(container);
-    
-    var text = jQuery('<p/>',{
-        'class':'text-info',
-    })
-    .css({
-        'font-size':'18px',
-        'text-align': 'center',
-        'font-weight': 'bold',
-    })
-    .text('Permission Deny')
-    .appendTo(container);
-    
+    var img = jQuery('<img/>', {
+        src: 'img/Lock.png',
+    }).css({
+        'display': 'block',
+        'margin': 'auto',
+        'width': '15%',
+    }).appendTo(container);
+
+    var text = jQuery('<p/>', {
+            'class': 'text-info',
+        })
+        .css({
+            'font-size': '18px',
+            'text-align': 'center',
+            'font-weight': 'bold',
+        })
+        .text('Permission Deny')
+        .appendTo(container);
+
     container.css({
-        'margin-top':'10%'
-//        'position': 'absolute',
-//        'top': '50%',
-//        'left': '50%',
-//        'width': ''+container.outerWidth()+'px',
-//        'height': ''+container.outerHeight()+'px',
-//        'margin-top':'' + (-1*(container.outerHeight()/2)) + 'px',
-//        'margin-left':'' + (-1*(container.outerWidth()/2)) + 'px',
+        'margin-top': '10%'
+            //        'position': 'absolute',
+            //        'top': '50%',
+            //        'left': '50%',
+            //        'width': ''+container.outerWidth()+'px',
+            //        'height': ''+container.outerHeight()+'px',
+            //        'margin-top':'' + (-1*(container.outerHeight()/2)) + 'px',
+            //        'margin-left':'' + (-1*(container.outerWidth()/2)) + 'px',
     })
 }

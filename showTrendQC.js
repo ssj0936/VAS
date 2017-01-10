@@ -14,7 +14,7 @@ var trendQC = (function (mapObj) {
 
     var FILE_EXPORT_TYPE_IMPORT = 'Import',
         FILE_EXPORT_TYPE_EXPORT = 'Export';
-    
+
     var trendList,
         trendNameList,
         defaultTrendMode,
@@ -22,9 +22,9 @@ var trendQC = (function (mapObj) {
 
     var countryID,
         iso;
-    
+
     var displayTitle;
-    
+
     var activeTrend = defaultTrendMode;
 
     var rightPopupContainerWidthP = 0.84;
@@ -32,31 +32,30 @@ var trendQC = (function (mapObj) {
 
     var isTotalShowing = true;
     var totalDataset = null;
-    
-    function _init(displayname,id){
 
-        if(currentCategory == 'ALL'){
+    function _init(displayname, id) {
+
+        if (currentCategory == 'ALL') {
             trendList = [TREND_BY_MODEL, TREND_BY_DEVICE, TREND_BY_COUNTRY, TREND_BY_VIEW];
             trendNameList = [TREND_BY_MODEL_DISPLAY, TREND_BY_DEVICE_DISPLAY, TREND_BY_COUNTRY_DISPLAY, TREND_BY_VIEW_DISPLAY];
-        }
-        else if(currentCategory != 'ALL'){
+        } else if (currentCategory != 'ALL') {
             trendList = [TREND_BY_MODEL, TREND_BY_DEVICE, TREND_BY_COUNTRY];
             trendNameList = [TREND_BY_MODEL_DISPLAY, TREND_BY_DEVICE_DISPLAY, TREND_BY_COUNTRY_DISPLAY];
         }
-        
+
         defaultTrendMode = trendList[0];
         defaultTrendModeName = trendNameList[0];
-        
+
         iso = observeLoc[0];
         countryID = (id) ? id : 'null';
         displayTitle = displayname;
-//        console.log(iso+'/'+countryID+'/'+displayTitle);
+        //        console.log(iso+'/'+countryID+'/'+displayTitle);
     }
-    
-    function showChart(displayname,id) {
+
+    function showChart(displayname, id) {
         if (observeTarget.length > 0 && !mapObj.isEmpty) {
             loading("Creating Chart...");
-            _init(displayname,id);
+            _init(displayname, id);
             resetFilterStatus();
             scrollToTop();
             popupChartShow(true);
@@ -68,10 +67,10 @@ var trendQC = (function (mapObj) {
         if (linechart != null) {
             linechart.destroy();
         }
-//        console.log("countryID:"+countryID);
-//        console.log("iso:"+iso);
-//        console.log("repairCategory:"+currentCategory);
-//        console.log("repairView:"+currentView);
+        //        console.log("countryID:"+countryID);
+        //        console.log("iso:"+iso);
+        //        console.log("repairCategory:"+currentCategory);
+        //        console.log("repairView:"+currentView);
         var URLs = "php/_dbqueryGetQcCountryTrend.php";
         $.ajax({
             url: URLs,
@@ -97,12 +96,12 @@ var trendQC = (function (mapObj) {
             },
 
             error: function (xhr, ajaxOptions, thrownError) {
-                alert("ajaxGetTrendValue:"+xhr.status);
+                alert("ajaxGetTrendValue:" + xhr.status);
                 alert(thrownError);
             }
         });
     }
-    
+
     function _createFunctionalBtn() {
         var container = jQuery('<div/>', {
                 id: "functionalBtnContainer",
@@ -115,13 +114,13 @@ var trendQC = (function (mapObj) {
                 })
                 .text('EXPORT FILE')
                 .click(function () {
-                        return exportFile(_getActiveTrend(), true);
+                    return exportFile(_getActiveTrend(), true);
                 })
                 .button()
             );
-        
+
         //need to append total line btn
-        if(currentCategory == 'ALL'){
+        if (currentCategory == 'ALL') {
             container.append(
                 jQuery('<button/>', {
                     id: "btnTotalToggle",
@@ -129,17 +128,17 @@ var trendQC = (function (mapObj) {
                 })
                 .text('Hide Total')
                 .click(function () {
-                    if(_getActiveTrend() == TREND_BY_COUNTRY) return;
-                    if(_getActiveTrend() == TREND_BY_REGION) return;
-                    
+                    if (_getActiveTrend() == TREND_BY_COUNTRY) return;
+                    if (_getActiveTrend() == TREND_BY_REGION) return;
+
                     //hide
-                    if(isTotalShowing){
+                    if (isTotalShowing) {
                         removeTotalLine();
                         $(this).button('option', 'label', 'Show Total');
                         isTotalShowing = false;
                     }
                     //show
-                    else{
+                    else {
                         addTotalLine();
                         $(this).button('option', 'label', 'Hide Total');
                         isTotalShowing = true;
@@ -150,14 +149,14 @@ var trendQC = (function (mapObj) {
         return container;
     }
 
-    function resetTotalToggleBtn(){
+    function resetTotalToggleBtn() {
         $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
         isTotalShowing = true;
     }
-    
+
     function updateQCChart(json) {
-//        if (json.countryFlowRatio.length == 0) return;
-        
+        //        if (json.countryFlowRatio.length == 0) return;
+
         if (linechart != null) {
             linechart.destroy();
         }
@@ -177,11 +176,11 @@ var trendQC = (function (mapObj) {
 
         var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
-            class:'col-xs-2',
+            class: 'col-xs-2',
         }).css({
             'display': 'inline-block',
-//            'width': '15%',
-            'height': '100%',
+            //            'width': '15%',
+            'min-height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
             'background-color': '#EEE',
@@ -189,10 +188,10 @@ var trendQC = (function (mapObj) {
 
         var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
-            class:'col-xs-10',
+            class: 'col-xs-10',
         }).css({
             'display': 'inline-block',
-//            'width': '' + rightPopupContainerWidthP * 100 + '%',
+            //            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
@@ -221,10 +220,10 @@ var trendQC = (function (mapObj) {
                 jQuery('<p/>', {
                     'id': 'optionTitle'
                 })
-                .text(displayTitle+'/'+currentCategory+'/'+currentView)
+                .text(displayTitle + '/' + currentCategory + '/' + currentView)
                 .css({
                     'margin': '0px',
-//                    'display': 'inline-block',
+                    //                    'display': 'inline-block',
                     'font-size': '42px',
                 })
             )
@@ -289,11 +288,11 @@ var trendQC = (function (mapObj) {
                         $('#trendContainer').css({
                             'opacity': 0
                         });
-                        
+
                         resetTotalToggleBtn();
                         createChart(json, trendList[index]);
-                        
-//                        $('#currentTrendTitle p#optionTitle').text(displayTitle+'/'+currentCategory+'/'+currentView);
+
+                        //                        $('#currentTrendTitle p#optionTitle').text(displayTitle+'/'+currentCategory+'/'+currentView);
                         $('#currentTrendTitle p#option').text(trendNameList[index]);
                         $('#trendContainer').fadeTo(300, 1);
 
@@ -318,25 +317,25 @@ var trendQC = (function (mapObj) {
 
         _setActiveTrend(trendMode);
         switch (trendMode) {
-            case TREND_BY_MODEL:
-                setTrendData(json.resultByModel);
-                break;
+        case TREND_BY_MODEL:
+            setTrendData(json.resultByModel);
+            break;
 
-            case TREND_BY_DEVICE:
-                setTrendData(json.resultByDevice);
-                break;
+        case TREND_BY_DEVICE:
+            setTrendData(json.resultByDevice);
+            break;
 
-            case TREND_BY_VIEW:
-                setTrendData(json.resultByModule);
-                break;
+        case TREND_BY_VIEW:
+            setTrendData(json.resultByModule);
+            break;
 
-            case TREND_BY_COUNTRY:
-                setTrendData(json.resultByCountry);
-                break;
-            
-            case TREND_BY_REGION:
-                setTrendData(json.resultByCountry);
-                break;
+        case TREND_BY_COUNTRY:
+            setTrendData(json.resultByCountry);
+            break;
+
+        case TREND_BY_REGION:
+            setTrendData(json.resultByCountry);
+            break;
         }
         createChartElement();
         //updateColorInfo();
@@ -370,7 +369,7 @@ var trendQC = (function (mapObj) {
         //clean
         trendObj.datasets.length = 0;
 
-//        console.log(jsonObj);
+        //        console.log(jsonObj);
 
         var jsonArray = Object.keys(jsonObj);
         for (var index in jsonArray) {
@@ -392,29 +391,29 @@ var trendQC = (function (mapObj) {
             for (var i = 0; i < trendObj.labelsByMonth.length; ++i) {
                 var date = trendObj.labelsByMonth[i];
 
-                if(data[date])
+                if (data[date])
                     dataset.dataByMonth.push(data[date]);
                 else
                     dataset.dataByMonth.push(0);
             }
-            
+
             dataset.data = dataset.dataByMonth;
-            
+
             //in order to make 'ALL' in the last position
             //so push 'ALL' at last
-            if(name == 'All')
+            if (name == 'All')
                 totalDataset = dataset;
             else
                 trendObj.datasets.push(dataset);
         }
-        
+
         //like by Country/by Region
         //dont need to show total line
-        if(currentCategory == 'ALL' && _getActiveTrend() != TREND_BY_COUNTRY && _getActiveTrend() != TREND_BY_REGION)
+        if (currentCategory == 'ALL' && _getActiveTrend() != TREND_BY_COUNTRY && _getActiveTrend() != TREND_BY_REGION)
             trendObj.datasets.push(totalDataset);
     }
-    
-    function removeTotalLine(){
+
+    function removeTotalLine() {
         var index = trendObj.datasets.indexOf(totalDataset);
         if (index > -1) {
             trendObj.datasets.splice(index, 1);
@@ -424,7 +423,7 @@ var trendQC = (function (mapObj) {
         //updateColorInfo();
     }
 
-    function addTotalLine(){
+    function addTotalLine() {
         trendObj.datasets.push(totalDataset);
         chartDestroy(false);
         createChartElement();
@@ -451,11 +450,11 @@ var trendQC = (function (mapObj) {
             "opacity": "0",
         }).attr('id', 'trendContainer');
 
-//        jQuery('<div/>', {
-//                id: 'trendColorInfo',
-//                class: "w3-light-grey customScrollBar",
-//            })
-//            .appendTo($("#rightPopupContainer"));
+        //        jQuery('<div/>', {
+        //                id: 'trendColorInfo',
+        //                class: "w3-light-grey customScrollBar",
+        //            })
+        //            .appendTo($("#rightPopupContainer"));
 
         container.append($(node));
 
@@ -469,7 +468,7 @@ var trendQC = (function (mapObj) {
 
         $('#rightPopupContainer').append(container);
         var ctx = node.getContext("2d");
-//        console.log(trendObj);
+        //        console.log(trendObj);
         linechart = new Chart(ctx, {
             type: 'line',
             data: trendObj,
@@ -484,20 +483,19 @@ var trendQC = (function (mapObj) {
 
     function exportFile(ReportTitle, addPercentageMark) {
         console.log(trendObj.datasets);
-        
+
         var style = 'style="border:1px solid black"';
         var exportArray = [];
         for (var i in trendObj.labels) {
             var date = trendObj.labels[i];
-            if(date == '') continue;
+            if (date == '') continue;
 
             var Obj = {
                 "date": date
             };
             for (var j in trendObj.datasets) {
                 var label = trendObj.datasets[j].label;
-                var countAtThatDay = trendObj.datasets[j].data[i] 
-                                        + (addPercentageMark ? " %": "");
+                var countAtThatDay = trendObj.datasets[j].data[i] + (addPercentageMark ? " %" : "");
                 Obj[label] = countAtThatDay;
             }
             exportArray.push(Obj);
@@ -512,9 +510,9 @@ var trendQC = (function (mapObj) {
         var row = "";
         for (var index in arrData[0]) {
             //Now convert each value to string and comma-seprated
-            row += '<td '+style+'>'+index + '</td>';
+            row += '<td ' + style + '>' + index + '</td>';
         }
-        row = '<tr>'+row+'</tr>';
+        row = '<tr>' + row + '</tr>';
 
         //append Label row with line break
         HTMLTableStr += row;
@@ -523,9 +521,9 @@ var trendQC = (function (mapObj) {
             var row = "";
 
             for (var index in arrData[i]) {
-                row += '<td '+style+'>' + arrData[i][index] + '</td>';
+                row += '<td ' + style + '>' + arrData[i][index] + '</td>';
             }
-            row = '<tr>'+row+'</tr>';
+            row = '<tr>' + row + '</tr>';
             //add a line break after each row
             HTMLTableStr += row;
         }
@@ -535,15 +533,15 @@ var trendQC = (function (mapObj) {
             alert("Invalid data");
             return;
         }
-        
+
         var blob = new Blob([HTMLTableStr], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8,%EF%BB%BF"
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8,%EF%BB%BF"
         });
         var fileName = "MyReport_";
         fileName += ReportTitle.replace(/ /g, "_") + '.xls';
         saveAs(blob, fileName);
     }
-    
+
     function chartDestroy(dataNeedToSetNull) {
         //destroy old chart
         if (dataNeedToSetNull) {
@@ -568,12 +566,14 @@ var trendQC = (function (mapObj) {
         activeTrend = mode;
     }
 
-    function parallelReportExportDialogShow(){
+    function parallelReportExportDialogShow() {
 
-        if(getFunction() != FUNC_PARALLEL) return;
+        if (getFunction() != FUNC_PARALLEL) return;
 
-        var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ? 
-            (jQuery('<div/>',{id:'exportTypeDialogDiv'}).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
+        var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ?
+            (jQuery('<div/>', {
+                id: 'exportTypeDialogDiv'
+            }).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
             ($('#exportTypeDialogDiv'));
         exportTypeDialogDiv.dialog({
             modal: true,
@@ -601,8 +601,8 @@ var trendQC = (function (mapObj) {
 
     var module = {
         showChart: showChart,
-//        updateQCChart: updateQCChart,
-//        parallelReportExport:parallelReportExportDialogShow,
+        //        updateQCChart: updateQCChart,
+        //        parallelReportExport:parallelReportExportDialogShow,
     };
 
     return module;

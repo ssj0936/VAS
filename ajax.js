@@ -9,7 +9,7 @@ function ajaxGetDateBound() {
         type: "GET",
         data: {
             data: JSON.stringify(observeTargetTmp),
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
         },
         dataType: 'json',
 
@@ -36,19 +36,19 @@ function ajaxGetDateBound() {
 function ajaxFetchMapValue(hasComparison, isComparison) {
     var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
-//    console.log(JSON.stringify(observeLoc));
-//    console.log(JSON.stringify(observeDistBranch));
-//    console.log(JSON.stringify(observeDistName));
-//    console.log(JSON.stringify(observeTarget));
-//    console.log(mapObj.fromFormatStr);
-//    console.log(mapObj.toFormatStr);
-//    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
-//    
-//    console.log(JSON.stringify(observeSpec.color));
-//    console.log(JSON.stringify(observeSpec.cpu));
-//    console.log(JSON.stringify(observeSpec.rear_camera));
-//    console.log(JSON.stringify(observeSpec.front_camera));
-//    console.log(JSON.stringify(permission));
+    //    console.log(JSON.stringify(observeLoc));
+    //    console.log(JSON.stringify(observeDistBranch));
+    //    console.log(JSON.stringify(observeDistName));
+    //    console.log(JSON.stringify(observeTarget));
+    //    console.log(mapObj.fromFormatStr);
+    //    console.log(mapObj.toFormatStr);
+    //    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
+    //    
+    //    console.log(JSON.stringify(observeSpec.color));
+    //    console.log(JSON.stringify(observeSpec.cpu));
+    //    console.log(JSON.stringify(observeSpec.rear_camera));
+    //    console.log(JSON.stringify(observeSpec.front_camera));
+    //    console.log(JSON.stringify(permission));
     var URLs = "php/_dbqueryCntGroupByISO.php";
     $.ajax({
         url: URLs,
@@ -63,7 +63,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             permission: JSON.stringify(permission),
         },
         type: "POST",
@@ -83,7 +83,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             if (mapObj.countryMapping && mapObj.countryMapping.length != 0)
                 mapObj.countryMapping.length = 0;
             mapObj.countryMapping = json.slice();
-//            console.log(mapObj.countryMapping);
+            //            console.log(mapObj.countryMapping);
 
             //piechart
             //updateTrendChart(isComparison);
@@ -103,7 +103,7 @@ function ajaxFetchMapValue(hasComparison, isComparison) {
             //free
             mapObj.countryMapping = null;
             //mapObj.jsonData=null;
-//            console.log(mapObj.jsonData);
+            //            console.log(mapObj.jsonData);
             if (hasComparison) {
                 comparisonMap.currentRegionIso = observeLoc.slice();
                 ajaxFetchMapValue(false, !isComparison);
@@ -184,7 +184,7 @@ function ajaxExtractMap(hasComparison, callback, args) {
             })
         );
     });
-//    console.log(firstMap.jsonData);
+    //    console.log(firstMap.jsonData);
     $.when.apply($, jxhr).done(function () {
         if (hasComparison) {
             comparisonMap.jsonData = {
@@ -211,14 +211,14 @@ function ajaxExtractMap(hasComparison, callback, args) {
 function ajaxFetchParallelValue() {
     var mapObj = firstMap;
     var URLs = "php/_dbqueryGetParallelValue.php";
-//    console.log(JSON.stringify(observeSpec.color));
+    //    console.log(JSON.stringify(observeSpec.color));
     $.ajax({
         url: URLs,
         data: {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
-            frontCamera: JSON.stringify(observeSpec.front_camera),            
+            frontCamera: JSON.stringify(observeSpec.front_camera),
             data: JSON.stringify(observeTarget),
             permission: JSON.stringify(permission),
         },
@@ -234,23 +234,23 @@ function ajaxFetchParallelValue() {
             } else {
                 mapObj.isEmpty = false;
             }
-            
+
             if (mapObj.countryMapping && mapObj.countryMapping.length != 0)
                 mapObj.countryMapping.length = 0;
             mapObj.countryMapping = json;
-            
+
             mapObj.updateParallelMapProperties();
             mapObj.mapDataLoad();
-            
+
             mapObj.updateLegend();
             if (mapObj.info == null) {
                 mapObj.setInfo();
             }
             mapObj.info.update();
             mapObj.setHighlightFeature();
-            
+
             //free
-//            mapObj.countryMapping = null;
+            //            mapObj.countryMapping = null;
 
             mapObj.zoomToSelectedLocation();
             loadingDismiss();
@@ -266,11 +266,11 @@ function ajaxFetchParallelValue() {
 
 function ajaxExtractParallelMap(callback) {
     console.log("ajaxExtractParallelMap Start:" + getCurrentTime());
-    
+
     firstMap.cleanMap();
     firstMap.currentRegionIso = observeLoc.slice();
-//    console.log(observeLoc);
-    
+    //    console.log(observeLoc);
+
     firstMap.jsonData = {
         "type": "FeatureCollection",
         "features": [],
@@ -283,7 +283,7 @@ function ajaxExtractParallelMap(callback) {
         $.getJSON(url, function (json) {
             for (var key in json.objects) {
                 $.each(topojson.feature(json, json.objects[key]).features, function (index, regionjson) {
-                    if(isInArray(observeLoc,regionjson.properties.ISO_A3)){
+                    if (isInArray(observeLoc, regionjson.properties.ISO_A3)) {
                         regionjson.properties["boundBox"] = boundInit(regionjson.geometry);
                         firstMap.jsonData.features.push(regionjson);
                     }
@@ -300,7 +300,7 @@ function ajaxExtractParallelMap(callback) {
     });
 }
 
-function ajaxParallelChart(iso,exportFileType) {
+function ajaxParallelChart(iso, exportFileType) {
 
     var URLs = "php/_dbqueryGetParallelTrend.php";
     $.ajax({
@@ -309,7 +309,7 @@ function ajaxParallelChart(iso,exportFileType) {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
-            frontCamera: JSON.stringify(observeSpec.front_camera),            
+            frontCamera: JSON.stringify(observeSpec.front_camera),
             data: JSON.stringify(observeTarget),
             iso: iso,
             permission: JSON.stringify(permission),
@@ -319,7 +319,7 @@ function ajaxParallelChart(iso,exportFileType) {
         dataType: 'json',
 
         success: function (json) {
-//            console.log(json);
+            //            console.log(json);
             trendParallel.updateParallelChart(json, iso);
         },
 
@@ -338,7 +338,7 @@ function ajaxParallelExport(exportFileType) {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
-            frontCamera: JSON.stringify(observeSpec.front_camera),            
+            frontCamera: JSON.stringify(observeSpec.front_camera),
             data: JSON.stringify(observeTarget),
             iso: JSON.stringify(observeLoc),
             permission: JSON.stringify(permission),
@@ -348,8 +348,8 @@ function ajaxParallelExport(exportFileType) {
         dataType: 'text',
 
         success: function (text) {
-            var filename = exportFileType+"_report";
-            tableExportToExcel(text,filename);
+            var filename = exportFileType + "_report";
+            tableExportToExcel(text, filename);
         },
 
         error: function (xhr, ajaxOptions, thrownError) {
@@ -376,7 +376,7 @@ function ajaxGetMarker() {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             permission: JSON.stringify(permission),
         },
         type: "POST",
@@ -419,7 +419,7 @@ function ajaxGetMarker() {
 }
 
 function ajaxAddBookmark(stringifyObserveTarget, stringifyObserveLoc, stringifyObserveSpec, activeMode, dataset) {
-//    console.log(dataset);
+    //    console.log(dataset);
     $.ajax({
         type: 'GET',
         url: 'php/_dbqueryAddBookmark.php',
@@ -457,7 +457,7 @@ function ajaxLoadBookmark() {
         success: function (json) {
             if (json) {
                 bookmarkList = jQuery.extend(json, {});
-//                console.log(bookmarkList);
+                //                console.log(bookmarkList);
                 //createBookmarkPopup();
             }
         },
@@ -484,7 +484,7 @@ function ajaxRemoveBookmark(idOfBookmarkDel) {
     });
 }
 
-function ajaxTrendOfBranchChart(mapObj,branchName){
+function ajaxTrendOfBranchChart(mapObj, branchName) {
     if (linechart != null) {
         linechart.destroy();
     }
@@ -522,7 +522,7 @@ function ajaxTrendOfBranchChart(mapObj,branchName){
         success: function (json) {
             console.log(json);
             //empty data set
-            updateBranchChart(json,branchName);
+            updateBranchChart(json, branchName);
         },
 
         error: function (xhr, ajaxOptions, thrownError) {
@@ -542,7 +542,7 @@ function ajaxRegionChart(countryID, iso, displayname, displaynum, mapObj) {
     $.ajax({
         url: URLs,
         data: {
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -586,7 +586,7 @@ function ajaxTrendChart(mapObj) {
             data: JSON.stringify(observeTarget),
             from: mapObj.fromFormatStr,
             to: mapObj.toFormatStr,
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             permission: JSON.stringify(permission),
         },
         function (json) {
@@ -623,8 +623,8 @@ function ajaxGetDeviceSpec(devices, checkOption) {
 }
 
 function ajaxFetchTableValue(isDiff) {
-    
-//    var mapObj = (isComparison) ? comparisonMap : firstMap;
+
+    //    var mapObj = (isComparison) ? comparisonMap : firstMap;
     //console.log("ajaxFetchMapValue "+((isComparison)?"comparisonMap":"firstMap")+" Start:"+getCurrentTime());
     var URLs = "php/_dbqueryGetTableContent.php";
     return $.ajax({
@@ -640,15 +640,15 @@ function ajaxFetchTableValue(isDiff) {
             data: JSON.stringify(observeTarget),
             from: firstMap.fromFormatStr,
             to: firstMap.toFormatStr,
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             permission: JSON.stringify(permission),
         },
         type: "POST",
         dataType: 'json',
 
         success: function (json) {
-            var mapObj={};
-            if(isDiff){
+            var mapObj = {};
+            if (isDiff) {
                 console.log("isDiff");
                 mapObj.jsonData = {
                     "type": "FeatureCollection",
@@ -660,7 +660,7 @@ function ajaxFetchTableValue(isDiff) {
                     $.each(observeLoc, function (index, loc) {
                         urls.push("php/geojson/topo/l2/" + loc + ".json");
                     });
-                } else if(observeLoc.length > 1){
+                } else if (observeLoc.length > 1) {
                     $.each(observeLoc, function (index, loc) {
                         urls.push("php/geojson/topo/l1/" + loc + ".json");
                     });
@@ -671,24 +671,26 @@ function ajaxFetchTableValue(isDiff) {
                     jxhr.push(
                         $.getJSON(url, function (json) {
                             for (var key in json.objects) {
-                                console.log(key+" loading...");
+                                console.log(key + " loading...");
                                 $.each(topojson.feature(json, json.objects[key]).features, function (index, regionjson) {
-                                    mapObj.jsonData.features.push({properties:regionjson.properties,});
+                                    mapObj.jsonData.features.push({
+                                        properties: regionjson.properties,
+                                    });
                                 });
                             }
                         })
                     );
                 });
-                
+
                 $.when.apply($, jxhr).done(function () {
-                    createTable(isDiff,json,mapObj);
+                    createTable(isDiff, json, mapObj);
                     loadingDismiss();
                 });
-            }else{
-                createTable(isDiff,json);
+            } else {
+                createTable(isDiff, json);
                 loadingDismiss();
             }
-            
+
         },
 
         error: function (xhr, ajaxOptions, thrownError) {
@@ -699,128 +701,147 @@ function ajaxFetchTableValue(isDiff) {
 }
 
 //Ajax to get dealer's geoJson of select countries
-function ajaxGetDealer(){
+function ajaxGetDealer() {
     $.ajax({
-        type:'GET',
+        type: 'GET',
         url: 'php/_dbqueryGetDealer.php',
         dataType: 'json',
         data: {
-            country:JSON.stringify(observeLocFullName)
+            country: JSON.stringify(observeLocFullName)
         },
-        success: function(json){
+        success: function (json) {
             allDealer = json;
             json = null;
             dealerLayer();
         },
-        error: function(jqXHR, textStatus, errorThrown) {},
+        error: function (jqXHR, textStatus, errorThrown) {},
     });
 
 }
 
 //Ajax to get SC's geoJson of select countries
-function ajaxGetSC(){
+function ajaxGetSC() {
     $.ajax({
-        type:'GET',
+        type: 'GET',
         url: 'php/_dbqueryGetSC.php',
         dataType: 'json',
         data: {
-            country:JSON.stringify(observeLoc),
-            products:JSON.stringify(defaultProductList)
+            country: JSON.stringify(observeLoc),
+            products: JSON.stringify(defaultProductList)
         },
-        success: function(json){
+        success: function (json) {
             allSC = json;
             json = null;
             scLayer();
         },
-        error: function(jqXHR, textStatus, errorThrown) {},
+        error: function (jqXHR, textStatus, errorThrown) {},
     });
 
 }
 
-function ajaxLoadBranchDist(){
+function ajaxLoadBranchDist() {
     $.ajax({
-        type:'GET',
+        type: 'GET',
         url: 'php/_dbqueryLoadDistBranch.php',
         dataType: 'json',
-        success: function(json){
-            
+        success: function (json) {
+
             //order by dist
             distBranch.length = 0;
             var currentDist = null;
             var branchList = [];
             var first = true;
-            for(var i in json.channel){
+            for (var i in json.channel) {
                 var dist = json.channel[i].dist;
                 var branch = json.channel[i].branch;
-                
-                if(dist != currentDist){
-                    if(!first){
-                        distBranch.push({dist:currentDist, branch:branchList.slice()});
+
+                if (dist != currentDist) {
+                    if (!first) {
+                        distBranch.push({
+                            dist: currentDist,
+                            branch: branchList.slice()
+                        });
                         branchList.length = 0;
                         currentDist = dist;
-                    }else{
+                    } else {
                         first = false;
                         currentDist = dist;
                     }
                 }
-                
+
                 branchList.push(branch);
             }
             //last one
-            distBranch.push({dist:currentDist, branch:branchList.slice()});
-//            console.log(distBranch);
-            
+            distBranch.push({
+                dist: currentDist,
+                branch: branchList.slice()
+            });
+            //            console.log(distBranch);
+
             //sort order by branch
-            json.channel.sort(function(a,b) {
-                return (a.branch > b.branch) ? 1 : ((b.branch > a.branch) ? -1 : 
-                       (a.dist > b.dist) ? 1 : ((b.dist > a.dist) ? -1 : 0));} ); 
+            json.channel.sort(function (a, b) {
+                return (a.branch > b.branch) ? 1 : ((b.branch > a.branch) ? -1 :
+                    (a.dist > b.dist) ? 1 : ((b.dist > a.dist) ? -1 : 0));
+            });
             var currentBranch = null;
             var DistList = [];
             var first = true;
-            for(var i in json.channel){
+            for (var i in json.channel) {
                 var dist = json.channel[i].dist;
                 var branch = json.channel[i].branch;
-                
-                if(branch != currentBranch){
-                    if(!first){
-                        branchDist.push({branch:currentBranch, dist:DistList.slice()});
+
+                if (branch != currentBranch) {
+                    if (!first) {
+                        branchDist.push({
+                            branch: currentBranch,
+                            dist: DistList.slice()
+                        });
                         DistList.length = 0;
                         currentBranch = branch;
-                    }else{
+                    } else {
                         first = false;
                         currentBranch = branch;
                     }
                 }
-                
+
                 DistList.push(dist);
             }
             //last one
-            branchDist.push({branch:currentBranch, dist:DistList.slice()});
+            branchDist.push({
+                branch: currentBranch,
+                dist: DistList.slice()
+            });
 
             //order by online dist
             onlineDist.length = 0;
             var currentOnline = null;
             var distList = [];
             var first = true;
-            for(var i in json.online){
+            for (var i in json.online) {
                 var online = json.online[i].online_dist;
                 var dist = json.online[i].dist;
-                
-                if(online != currentOnline){
-                    if(!first){
-                        onlineDist.push({online_dist:currentOnline, dist:distList.slice()});
+
+                if (online != currentOnline) {
+                    if (!first) {
+                        onlineDist.push({
+                            online_dist: currentOnline,
+                            dist: distList.slice()
+                        });
                         distList.length = 0;
                         currentOnline = online;
-                    }else{
+                    } else {
                         first = false;
                         currentOnline = online;
                     }
                 }
-                
+
                 distList.push(dist);
             }
             //last one
-            onlineDist.push({online_dist:currentOnline, dist:distList.slice()});
+            onlineDist.push({
+                online_dist: currentOnline,
+                dist: distList.slice()
+            });
 
 
 
@@ -829,32 +850,31 @@ function ajaxLoadBranchDist(){
     })
 }
 
-function ajaxGetBranchObject(callback){
-    if(observeBranchName.length==0){
-        allBranchObject=[];
+function ajaxGetBranchObject(callback) {
+    if (observeBranchName.length == 0) {
+        allBranchObject = [];
         callback();
-    }
-    else{
+    } else {
         $.ajax({
-            type:'GET',
+            type: 'GET',
             url: 'php/_dbqueryGetBranchObject.php',
             async: "false",
             dataType: 'json',
-            data: { 
-                iso:JSON.stringify(observeLoc),
-                branchName : JSON.stringify(observeBranchName)
+            data: {
+                iso: JSON.stringify(observeLoc),
+                branchName: JSON.stringify(observeBranchName)
             },
-            success: function(json){
+            success: function (json) {
                 console.log(json);
                 allBranchObject = json.union;
                 delete json.union;
                 allHighlighBranch = json;
                 json = null;
-//                console.log(allBranchObject);
-//                console.log(allHighlighBranch);
+                //                console.log(allBranchObject);
+                //                console.log(allHighlighBranch);
                 callback();
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function (jqXHR, textStatus, errorThrown) {
                 alert("ajaxGetBranchObject:" + jqXHR.status);
                 alert(errorThrown);
             },
@@ -862,88 +882,87 @@ function ajaxGetBranchObject(callback){
     }
 }
 
-function ajaxSaveLog(){
+function ajaxSaveLog() {
     //device filter
     var observeTargetStr = '';
-    if(observeTarget.length == 1 && observeTarget[0].datatype == 'all'){
-        observeTargetStr +='[all]';
-    }
-    else{
-        for(var i in observeTarget){
+    if (observeTarget.length == 1 && observeTarget[0].datatype == 'all') {
+        observeTargetStr += '[all]';
+    } else {
+        for (var i in observeTarget) {
             var type = observeTarget[i].datatype;
-            observeTargetStr += '['+observeTarget[i][type]+']';
+            observeTargetStr += '[' + observeTarget[i][type] + ']';
         }
     }
-    
+
     //model filter
     var model = getFilterModel();
     var modelStr = '';
-    for(var i in model){
+    for (var i in model) {
         var type = model[i].datatype;
-        modelStr += '['+model[i]+']';
+        modelStr += '[' + model[i] + ']';
     }
-    
+
     //loc filter
     var observeLocStr = '';
-    for(var i in observeLoc){
-        observeLocStr += '['+observeLoc[i]+']';
+    for (var i in observeLoc) {
+        observeLocStr += '[' + observeLoc[i] + ']';
     }
-    
+
     //observation time
     var dateStr = '[' + firstMap.fromFormatStr + '][' + firstMap.toFormatStr + ']';
-    
+
     //filter all content
     var filter_content = {
-        observeTarget : observeTarget,
-        observeLoc : observeLoc,
-        observeSpec : observeSpec,
+        observeTarget: observeTarget,
+        observeLoc: observeLoc,
+        observeSpec: observeSpec,
     };
-    
-    if(observeDistBranch.length > 0)
+
+    if (observeDistBranch.length > 0)
         filter_content['observeDistBranch'] = observeDistBranch;
-    
+
     //current time
     var date = new Date();
     var dformat = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    
-    
+
+
     $.ajax({
-        type:'POST',
+        type: 'POST',
         url: 'php/_dbquerySaveLog.php',
         dataType: 'json',
-        data: { 
-            date : dformat,
-            username : account,
-            filter_device : observeTargetStr,
-            filter_model : modelStr,
-            filter_country : observeLocStr,
-            filter_date : dateStr,
-            filter_content : JSON.stringify(filter_content),
-            dataset : getFunction(),
+        data: {
+            date: dformat,
+            username: account,
+            filter_device: observeTargetStr,
+            filter_model: modelStr,
+            filter_country: observeLocStr,
+            filter_date: dateStr,
+            filter_content: JSON.stringify(filter_content),
+            dataset: getFunction(),
         },
-        success: function(json){
+        success: function (json) {
             console.log("log saved");
         }
     });
 }
 
-function ajaxGetGapData(callback){
-//    console.log(JSON.stringify(observeSpec.color));
-//    console.log(JSON.stringify(observeSpec.cpu));
-//    console.log(JSON.stringify(observeSpec.rear_camera));
-//    console.log(JSON.stringify(observeSpec.front_camera));
-//    
-//    console.log(JSON.stringify(observeLoc));
-//    console.log(JSON.stringify(observeTarget));
-//    console.log(firstMap.fromFormatStr);
-//    console.log(firstMap.toFormatStr);
-//    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
-//    console.log(JSON.stringify(permission));
+function ajaxGetGapData(callback) {
+    //    console.log(JSON.stringify(observeSpec.color));
+    //    console.log(JSON.stringify(observeSpec.cpu));
+    //    console.log(JSON.stringify(observeSpec.rear_camera));
+    //    console.log(JSON.stringify(observeSpec.front_camera));
+    //    
+    //    console.log(JSON.stringify(observeLoc));
+    //    console.log(JSON.stringify(observeTarget));
+    //    console.log(firstMap.fromFormatStr);
+    //    console.log(firstMap.toFormatStr);
+    //    console.log(((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION));
+    //    console.log(JSON.stringify(permission));
     $.ajax({
-        type:'GET',
+        type: 'GET',
         url: 'php/_dbqueryGetGap.php',
         dataType: 'json',
-        data: { 
+        data: {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -955,11 +974,11 @@ function ajaxGetGapData(callback){
             dataset: FUNC_ACTIVATION,
             permission: JSON.stringify(permission),
         },
-        success: function(json){
-//            console.log(json);
-//            setModeOn(MODE_GAP);
+        success: function (json) {
+            //            console.log(json);
+            //            setModeOn(MODE_GAP);
             allBranchGap = json;
-            if(callback)
+            if (callback)
                 callback();
         },
         error: function (xhr, ajaxOptions, thrownError) {
@@ -967,15 +986,14 @@ function ajaxGetGapData(callback){
             alert(thrownError);
         }
     });
-    
+
 }
 
-function ajaxGetGapExport(groupBy){
+function ajaxGetGapExport(groupBy) {
     loading('File creating...');
     console.log(currentPointingBranch);
     $.post(
-        "php/_dbqueryGetGapExport.php",
-        {
+        "php/_dbqueryGetGapExport.php", {
             color: JSON.stringify(observeSpec.color),
             cpu: JSON.stringify(observeSpec.cpu),
             rearCamera: JSON.stringify(observeSpec.rear_camera),
@@ -984,34 +1002,34 @@ function ajaxGetGapExport(groupBy){
             data: JSON.stringify(observeTarget),
             from: firstMap.fromFormatStr,
             to: firstMap.toFormatStr,
-            dataset: ((getFunction()==FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
+            dataset: ((getFunction() == FUNC_LIFEZONE) ? FUNC_LIFEZONE : FUNC_ACTIVATION),
             distBranch: JSON.stringify(observeDistBranch),
-            groupBy:groupBy,
+            groupBy: groupBy,
             branch: (isNowBranchTrend ? currentPointingBranch : null),
             permission: JSON.stringify(permission),
         },
         function (text) {
-//            console.log(text);
-            var filename = '['+observeLoc[0]+'][' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + '][Group By '+groupBy+']'+ "_GapReport";
-            tableExportToExcel(text,filename);
+            //            console.log(text);
+            var filename = '[' + observeLoc[0] + '][' + firstMap.fromFormatStr + ']-[' + firstMap.toFormatStr + '][Group By ' + groupBy + ']' + "_GapReport";
+            tableExportToExcel(text, filename);
         },
         'text'
     );
 }
 
-function ajaxGetHeatMap(){
-//    console.log(JSON.stringify(observeSpec.color));
-//    console.log(JSON.stringify(observeSpec.cpu));
-//    console.log(JSON.stringify(observeSpec.rear_camera));
-//    console.log(JSON.stringify(observeSpec.front_camera));
-//    
-//    console.log(JSON.stringify(observeLoc));
-//    console.log(JSON.stringify(observeDistBranch));
-//    console.log(JSON.stringify(observeDistName));
-//    console.log(JSON.stringify(lifeZoneTime));
-//    console.log(JSON.stringify(observeTarget));
-//    console.log(JSON.stringify(permission));
-    
+function ajaxGetHeatMap() {
+    //    console.log(JSON.stringify(observeSpec.color));
+    //    console.log(JSON.stringify(observeSpec.cpu));
+    //    console.log(JSON.stringify(observeSpec.rear_camera));
+    //    console.log(JSON.stringify(observeSpec.front_camera));
+    //    
+    //    console.log(JSON.stringify(observeLoc));
+    //    console.log(JSON.stringify(observeDistBranch));
+    //    console.log(JSON.stringify(observeDistName));
+    //    console.log(JSON.stringify(lifeZoneTime));
+    //    console.log(JSON.stringify(observeTarget));
+    //    console.log(JSON.stringify(permission));
+
     loading("Data loading...");
     $.ajax({
         url: "php/_dbqueryGetLifezoneData.php",
@@ -1031,13 +1049,13 @@ function ajaxGetHeatMap(){
         dataType: 'json',
 
         success: function (json) {
-//            console.log(json);
-            
+            //            console.log(json);
+
             //empty data return
-            if(json[lifeZoneTime['week']][lifeZoneTime['time']].length == 0)
+            if (json[lifeZoneTime['week']][lifeZoneTime['time']].length == 0)
                 showToast("Empty Data");
-            
-            if($.isEmptyObject(heatmapLayer)) {
+
+            if ($.isEmptyObject(heatmapLayer)) {
                 addHeatMap(json);
             } else {
                 changeHeatData(json);
@@ -1051,7 +1069,7 @@ function ajaxGetHeatMap(){
     });
 }
 
-function ajaxGetSQMarker(){
+function ajaxGetSQMarker() {
     loading("Data loading...");
     $.ajax({
         url: "php/_dbqueryGetSQDevice.php",

@@ -13,7 +13,7 @@ var trendParallel = (function (mapObj) {
 
     var FILE_EXPORT_TYPE_IMPORT = 'Import',
         FILE_EXPORT_TYPE_EXPORT = 'Export';
-    
+
     var trendList = [TREND_COUNTRY_RATIO, TREND_MODEL_RATIO, TREND_MODEL_COUNT, TREND_DISTI_COUNT];
     var trendNameList = [TREND_COUNTRY_RATIO_DISPLAY, TREND_MODEL_RATIO_DISPLAY, TREND_MODEL_COUNT_DISPLAY, TREND_DISTI_COUNT_DISPLAY];
     var defaultTrendMode = trendList[0];
@@ -30,10 +30,10 @@ var trendParallel = (function (mapObj) {
             resetFilterStatus();
             scrollToTop();
             popupChartShow(true);
-            if(isModeActive(MODE_PARALLEL_IMPORT))
-                ajaxParallelChart(iso,FILE_EXPORT_TYPE_IMPORT);
-            else if(isModeActive(MODE_PARALLEL_EXPORT))
-                ajaxParallelChart(iso,MODE_PARALLEL_EXPORT);
+            if (isModeActive(MODE_PARALLEL_IMPORT))
+                ajaxParallelChart(iso, FILE_EXPORT_TYPE_IMPORT);
+            else if (isModeActive(MODE_PARALLEL_EXPORT))
+                ajaxParallelChart(iso, MODE_PARALLEL_EXPORT);
         }
     }
 
@@ -49,7 +49,7 @@ var trendParallel = (function (mapObj) {
                 })
                 .text('EXPORT FILE')
                 .click(function () {
-                    if(_getActiveTrend() == TREND_COUNTRY_RATIO || _getActiveTrend() == TREND_MODEL_RATIO )
+                    if (_getActiveTrend() == TREND_COUNTRY_RATIO || _getActiveTrend() == TREND_MODEL_RATIO)
                         return exportFile(_getActiveTrend(), true);
                     else
                         return exportFile(_getActiveTrend(), false);
@@ -62,7 +62,7 @@ var trendParallel = (function (mapObj) {
 
     function updateParallelChart(json, iso) {
         if (json.countryFlowRatio.length == 0) return;
-        
+
         if (linechart != null) {
             linechart.destroy();
         }
@@ -82,11 +82,11 @@ var trendParallel = (function (mapObj) {
 
         var leftPopup = jQuery('<div/>', {
             id: 'leftPopupContainer',
-            class:'col-xs-2',
+            class: 'col-xs-2',
         }).css({
             'display': 'inline-block',
-//            'width': '15%',
-            'height': '100%',
+            //            'width': '15%',
+            'min-height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
             'background-color': '#EEE',
@@ -94,10 +94,10 @@ var trendParallel = (function (mapObj) {
 
         var rightPopup = jQuery('<div/>', {
             id: 'rightPopupContainer',
-            class:'col-xs-10',
+            class: 'col-xs-10',
         }).css({
             'display': 'inline-block',
-//            'width': '' + rightPopupContainerWidthP * 100 + '%',
+            //            'width': '' + rightPopupContainerWidthP * 100 + '%',
             'height': '100%',
             'vertical-align': 'top',
             'position': 'relative',
@@ -186,7 +186,7 @@ var trendParallel = (function (mapObj) {
                         });
 
                         createChart(json, trendList[index]);
-                        
+
                         $('#currentTrendTitle p#option').text(parallelMode + ' ' + trendNameList[index]);
                         $('#trendContainer').fadeTo(300, 1);
 
@@ -211,27 +211,27 @@ var trendParallel = (function (mapObj) {
 
 
         switch (trendMode) {
-            case TREND_COUNTRY_RATIO:
-                setTrendData(json.countryFlowRatio);
-                createChartElement(percentageOptions);
-                break;
+        case TREND_COUNTRY_RATIO:
+            setTrendData(json.countryFlowRatio);
+            createChartElement(percentageOptions);
+            break;
 
-            case TREND_MODEL_RATIO:
-                setTrendData(json.modelFlowRatio);
-                createChartElement(percentageOptions);
-                break;
+        case TREND_MODEL_RATIO:
+            setTrendData(json.modelFlowRatio);
+            createChartElement(percentageOptions);
+            break;
 
-            case TREND_MODEL_COUNT:
-                setTrendData(json.modelFlowCount);
-                createChartElement();
-                break;
+        case TREND_MODEL_COUNT:
+            setTrendData(json.modelFlowCount);
+            createChartElement();
+            break;
 
-            case TREND_DISTI_COUNT:
-                setTrendData(json.distFlowCount);
-                createChartElement();
-                break;
+        case TREND_DISTI_COUNT:
+            setTrendData(json.distFlowCount);
+            createChartElement();
+            break;
         }
-        
+
         _setActiveTrend(trendMode);
         //updateColorInfo();
         loadingDismiss();
@@ -294,7 +294,7 @@ var trendParallel = (function (mapObj) {
                     dataset.dataByMonth.push(find[0].value);
                 }
             }
-            
+
             dataset.data = dataset.dataByMonth;
             trendObj.datasets.push(dataset);
         }
@@ -320,11 +320,11 @@ var trendParallel = (function (mapObj) {
             "opacity": "0",
         }).attr('id', 'trendContainer');
 
-//        jQuery('<div/>', {
-//                id: 'trendColorInfo',
-//                class: "w3-light-grey customScrollBar",
-//            })
-//            .appendTo($("#rightPopupContainer"));
+        //        jQuery('<div/>', {
+        //                id: 'trendColorInfo',
+        //                class: "w3-light-grey customScrollBar",
+        //            })
+        //            .appendTo($("#rightPopupContainer"));
 
         container.append($(node));
 
@@ -341,26 +341,25 @@ var trendParallel = (function (mapObj) {
         linechart = new Chart(ctx, {
             type: 'line',
             data: trendObj,
-            options: ( opt ? opt : newOptions)
+            options: (opt ? opt : newOptions)
         });
 
         //show node info
-        node.onclick = function(evt)
-        {
-            $('#loginHistoryContainer').remove();
+        node.onclick = function (evt) {
+                $('#loginHistoryContainer').remove();
 
-            var str = '';
-            var activePoints = linechart.getElementsAtEvent(evt);
-            console.log(activePoints);
-            for(var i in activePoints){
-                var datasetLabel = activePoints[i].datasetLabel;
-                var value = activePoints[i].value;
-                
-                str += '['+datasetLabel+':'+value+']';
+                var str = '';
+                var activePoints = linechart.getElementsAtEvent(evt);
+                console.log(activePoints);
+                for (var i in activePoints) {
+                    var datasetLabel = activePoints[i].datasetLabel;
+                    var value = activePoints[i].value;
+
+                    str += '[' + datasetLabel + ':' + value + ']';
+                }
+                console.log(str);
             }
-            console.log(str);
-        }
-        //show up
+            //show up
         container.animate({
             opacity: 1,
         }, 'slow');
@@ -368,20 +367,19 @@ var trendParallel = (function (mapObj) {
 
     function exportFile(ReportTitle, addPercentageMark) {
         console.log(trendObj.datasets);
-        
+
         var style = 'style="border:1px solid black"';
         var exportArray = [];
         for (var i in trendObj.labels) {
             var date = trendObj.labels[i];
-            if(date == '') continue;
+            if (date == '') continue;
 
             var Obj = {
                 "date": date
             };
             for (var j in trendObj.datasets) {
                 var label = trendObj.datasets[j].label;
-                var countAtThatDay = trendObj.datasets[j].data[i] 
-                                        + (addPercentageMark ? " %": "");
+                var countAtThatDay = trendObj.datasets[j].data[i] + (addPercentageMark ? " %" : "");
                 Obj[label] = countAtThatDay;
             }
             exportArray.push(Obj);
@@ -396,9 +394,9 @@ var trendParallel = (function (mapObj) {
         var row = "";
         for (var index in arrData[0]) {
             //Now convert each value to string and comma-seprated
-            row += '<td '+style+'>'+index + '</td>';
+            row += '<td ' + style + '>' + index + '</td>';
         }
-        row = '<tr>'+row+'</tr>';
+        row = '<tr>' + row + '</tr>';
 
         //append Label row with line break
         HTMLTableStr += row;
@@ -407,9 +405,9 @@ var trendParallel = (function (mapObj) {
             var row = "";
 
             for (var index in arrData[i]) {
-                row += '<td '+style+'>' + arrData[i][index] + '</td>';
+                row += '<td ' + style + '>' + arrData[i][index] + '</td>';
             }
-            row = '<tr>'+row+'</tr>';
+            row = '<tr>' + row + '</tr>';
             //add a line break after each row
             HTMLTableStr += row;
         }
@@ -419,15 +417,15 @@ var trendParallel = (function (mapObj) {
             alert("Invalid data");
             return;
         }
-        
+
         var blob = new Blob([HTMLTableStr], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8,%EF%BB%BF"
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8,%EF%BB%BF"
         });
         var fileName = "MyReport_";
         fileName += ReportTitle.replace(/ /g, "_") + '.xls';
         saveAs(blob, fileName);
     }
-    
+
     function chartDestroy(dataNeedToSetNull) {
         //destroy old chart
         if (dataNeedToSetNull) {
@@ -452,12 +450,14 @@ var trendParallel = (function (mapObj) {
         activeTrend = mode;
     }
 
-    function parallelReportExportDialogShow(){
+    function parallelReportExportDialogShow() {
 
-        if(getFunction() != FUNC_PARALLEL) return;
+        if (getFunction() != FUNC_PARALLEL) return;
 
-        var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ? 
-            (jQuery('<div/>',{id:'exportTypeDialogDiv'}).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
+        var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ?
+            (jQuery('<div/>', {
+                id: 'exportTypeDialogDiv'
+            }).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
             ($('#exportTypeDialogDiv'));
         exportTypeDialogDiv.dialog({
             modal: true,
@@ -486,7 +486,7 @@ var trendParallel = (function (mapObj) {
     var module = {
         showChart: showChart,
         updateParallelChart: updateParallelChart,
-        parallelReportExport:parallelReportExportDialogShow,
+        parallelReportExport: parallelReportExportDialogShow,
     };
 
     return module;

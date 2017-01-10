@@ -21,7 +21,7 @@ function addPruneCluster(json) {
     for (var i = 0; i < json.length; ++i) {
         var count = parseInt(json[i].cnt);
         firstMap.pruneCluster.RegisterMarker(new PruneCluster.Marker(json[i].lat, json[i].lng, count));
-        totalCount+=count;
+        totalCount += count;
     }
     //move below section to PruneCluster src code.
     /*

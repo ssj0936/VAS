@@ -25,180 +25,180 @@ var trendContainerWidthP = 0.9;
 
 var trendContainerWidthR = $(window).width() * rightPopupContainerWidthP * trendContainerWidthP - 20;
 
-function createFunctionalBtn(){
+function createFunctionalBtn() {
     var container = jQuery('<div/>', {
-        id: "functionalBtnContainer",
-    })
-    //export Btn
-    .append(
-        jQuery('<button/>', {
-            id: "btnExport",
-            class: "trendFunctionBtn",
+            id: "functionalBtnContainer",
         })
-        .text('EXPORT')
-//        .click(exportFile(getActiveTrend(), true))
-        .click(function () {
-            return exportFile(getActiveTrend(), true);
-        })
-        .button()
-    )
-    //total line toggle btn
-    .append(
-        jQuery('<button/>', {
-            id: "btnTotalToggle",
-            class: "trendFunctionBtn",
-        })
-        .text('Hide Total')
-        .click(function () {
-            //hide
-            if(isTotalShowing){
-                if(getActiveTrend() == TREND_REGION) return;
-                
-                removeTotalLine();
-                $(this).button('option', 'label', 'Show Total');
-                isTotalShowing = false;
-            }
-            //show
-            else{
-                addTotalLine();
-                $(this).button('option', 'label', 'Hide Total');
-                isTotalShowing = true;
-            }
-        })
-        .button()
-    )
-    
+        //export Btn
+        .append(
+            jQuery('<button/>', {
+                id: "btnExport",
+                class: "trendFunctionBtn",
+            })
+            .text('EXPORT')
+            //        .click(exportFile(getActiveTrend(), true))
+            .click(function () {
+                return exportFile(getActiveTrend(), true);
+            })
+            .button()
+        )
+        //total line toggle btn
+        .append(
+            jQuery('<button/>', {
+                id: "btnTotalToggle",
+                class: "trendFunctionBtn",
+            })
+            .text('Hide Total')
+            .click(function () {
+                //hide
+                if (isTotalShowing) {
+                    if (getActiveTrend() == TREND_REGION) return;
+
+                    removeTotalLine();
+                    $(this).button('option', 'label', 'Show Total');
+                    isTotalShowing = false;
+                }
+                //show
+                else {
+                    addTotalLine();
+                    $(this).button('option', 'label', 'Hide Total');
+                    isTotalShowing = true;
+                }
+            })
+            .button()
+        )
+
     var selectMenu = jQuery('<select/>', {
             id: "btnTimePeriodSelect",
             class: "trendFunctionBtn",
         })
         .appendTo(container);
 
-    for(var i in groupByMode){
+    for (var i in groupByMode) {
         var Mode = groupByMode[i];
-        
+
         jQuery('<option/>', {
-            value: Mode,
-        })
-        .text(Mode)
-        .appendTo(selectMenu);
+                value: Mode,
+            })
+            .text(Mode)
+            .appendTo(selectMenu);
     }
-    
+
     selectMenu.selectmenu({
         width: '100px',
-        change: function( event, data ) {
+        change: function (event, data) {
             var groupBy = data.item.value;
-            switch(groupBy){
-                case 'By Day' :
-                    labelChange(groupBy);
-                    //totalDataset is null in Region trend mode
-                    if(totalDataset){
-                        totalDataset.data = totalDataset.dataByDate;
-                    }
-                    for(var i in trendObj.datasets){
-                        trendObj.datasets[i].data = trendObj.datasets[i].dataByDate;
-                    }
-                    chartDestroy(false);
-                    if(isNowBranchTrend)
-                        createChartElement(negOptions);
-                    else
-                        createChartElement();
-                    //updateColorInfo();
-                    break;
-                
-                case 'By Month' :
-                    labelChange(groupBy);
-                    //totalDataset is null in Region trend mode
-                    if(totalDataset){
-                        totalDataset.data = totalDataset.dataByMonth;
-                    }
-                    for(var i in trendObj.datasets){
-                        trendObj.datasets[i].data = trendObj.datasets[i].dataByMonth;
-                    }
-                    chartDestroy(false);
-                    if(isNowBranchTrend)
-                        createChartElement(negOptions);
-                    else
-                        createChartElement();
-                    //updateColorInfo();
-                    break;
-                    
-                case 'By Week' :
-                    labelChange(groupBy);
-                    //totalDataset is null in Region trend mode
-                    if(totalDataset){
-                        totalDataset.data = totalDataset.dataByWeek;
-                    }
-                    for(var i in trendObj.datasets){
-                        trendObj.datasets[i].data = trendObj.datasets[i].dataByWeek;
-                    }
-                    chartDestroy(false);
-                    if(isNowBranchTrend)
-                        createChartElement(negOptions);
-                    else
-                        createChartElement();
-                    //updateColorInfo();
-                    break;
+            switch (groupBy) {
+            case 'By Day':
+                labelChange(groupBy);
+                //totalDataset is null in Region trend mode
+                if (totalDataset) {
+                    totalDataset.data = totalDataset.dataByDate;
+                }
+                for (var i in trendObj.datasets) {
+                    trendObj.datasets[i].data = trendObj.datasets[i].dataByDate;
+                }
+                chartDestroy(false);
+                if (isNowBranchTrend)
+                    createChartElement(negOptions);
+                else
+                    createChartElement();
+                //updateColorInfo();
+                break;
+
+            case 'By Month':
+                labelChange(groupBy);
+                //totalDataset is null in Region trend mode
+                if (totalDataset) {
+                    totalDataset.data = totalDataset.dataByMonth;
+                }
+                for (var i in trendObj.datasets) {
+                    trendObj.datasets[i].data = trendObj.datasets[i].dataByMonth;
+                }
+                chartDestroy(false);
+                if (isNowBranchTrend)
+                    createChartElement(negOptions);
+                else
+                    createChartElement();
+                //updateColorInfo();
+                break;
+
+            case 'By Week':
+                labelChange(groupBy);
+                //totalDataset is null in Region trend mode
+                if (totalDataset) {
+                    totalDataset.data = totalDataset.dataByWeek;
+                }
+                for (var i in trendObj.datasets) {
+                    trendObj.datasets[i].data = trendObj.datasets[i].dataByWeek;
+                }
+                chartDestroy(false);
+                if (isNowBranchTrend)
+                    createChartElement(negOptions);
+                else
+                    createChartElement();
+                //updateColorInfo();
+                break;
             }
         }
     });
-    
+
     return container;
 }
 
-function resetTotalToggleBtn(){
+function resetTotalToggleBtn() {
     $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
     isTotalShowing = true;
 }
 
-function resetGroupByDelectMenu(){
+function resetGroupByDelectMenu() {
     $('#btnTimePeriodSelect').val(defaultGroupBy);
     $('#btnTimePeriodSelect').selectmenu("refresh");
 }
 
-function updateBranchChart(json,branchName) {
+function updateBranchChart(json, branchName) {
     if (json.groupByBranchResults.length == 0) return;
     var container = jQuery('<div/>', {
-            class: 'container',
-        }).css({
-            'height': '100%',
-            'width': '100%',
-        }).appendTo($('#popupChartContainer'));
-    
+        class: 'container',
+    }).css({
+        'height': '100%',
+        'width': '100%',
+    }).appendTo($('#popupChartContainer'));
+
     var row = jQuery('<div/>', {
-            class: 'row',
-        }).css({
-            'height': '100%',
-        }).appendTo(container);
+        class: 'row',
+    }).css({
+        'height': '100%',
+    }).appendTo(container);
     var leftPopup = jQuery('<div/>', {
-            id: 'leftPopupContainer',
-            class:'col-xs-2',
-        }).css({
-            'display':'inline-block',
-//            'width': '15%',
-            'height': '100%',
-            'vertical-align':'top',
-            'position': 'relative',
-            'background-color': '#EEE',
-        }).appendTo(row);
+        id: 'leftPopupContainer',
+        class: 'col-xs-2',
+    }).css({
+        'display': 'inline-block',
+        //            'width': '15%',
+        'min-height': '100%',
+        'vertical-align': 'top',
+        'position': 'relative',
+        'background-color': '#EEE',
+    }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
-            id: 'rightPopupContainer',
-            class:'col-xs-10',
-        }).css({
-            'display':'inline-block',
-//            'width': '' + rightPopupContainerWidthP * 100 + '%',
-            'height': '100%',
-            'vertical-align':'top',
-            'position': 'relative',
-        }).appendTo(row);
-    
+        id: 'rightPopupContainer',
+        class: 'col-xs-10',
+    }).css({
+        'display': 'inline-block',
+        //            'width': '' + rightPopupContainerWidthP * 100 + '%',
+        'height': '100%',
+        'vertical-align': 'top',
+        'position': 'relative',
+    }).appendTo(row);
+
     //title container
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
         })
         .css({
-            'top':'' + getWindowHeightPercentagePx(0.1) + 'px',
+            'top': '' + getWindowHeightPercentagePx(0.1) + 'px',
         })
         .appendTo(rightPopup);
 
@@ -264,13 +264,13 @@ function updateBranchChart(json,branchName) {
 
                     //table remove
                     $('#table_wrapper').remove();
-//                    disableScroll();
+                    //                    disableScroll();
 
                     $('#trendContainer').css({
                         'opacity': 0
                     });
 
-                    createBranchChart(json, activeTrend,branchName);
+                    createBranchChart(json, activeTrend, branchName);
                     $('#currentTrendTitle p#option').text("Trend by " + activeTrend);
                     $('#trendContainer').fadeTo(300, 1);
 
@@ -293,47 +293,47 @@ function updateRegionChart(json, displayname, displaynum) {
 
     var defaultTrendMode = TREND_MODEL;
     var container = jQuery('<div/>', {
-            class: 'container',
-        }).css({
-            'height': '100%',
-            'width': '100%',
-        }).appendTo($('#popupChartContainer'));
-    
+        class: 'container',
+    }).css({
+        'height': '100%',
+        'width': '100%',
+    }).appendTo($('#popupChartContainer'));
+
     var row = jQuery('<div/>', {
-            class: 'row',
-        }).css({
-            'height': '100%',
-        }).appendTo(container);
-    
+        class: 'row',
+    }).css({
+        'height': '100%',
+    }).appendTo(container);
+
     var leftPopup = jQuery('<div/>', {
-            id: 'leftPopupContainer',
-            class:'col-xs-2',
-        }).css({
-            'display':'inline-block',
-//            'width': '15%',
-            'height': '100%',
-            'vertical-align':'top',
-            'position': 'relative',
-            'background-color': '#EEE',
-        }).appendTo(row);
+        id: 'leftPopupContainer',
+        class: 'col-xs-2',
+    }).css({
+        'display': 'inline-block',
+        //            'width': '15%',
+        'min-height': '100%',
+        'vertical-align': 'top',
+        'position': 'relative',
+        'background-color': '#EEE',
+    }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
-            id: 'rightPopupContainer',
-            class:'col-xs-10',
-        }).css({
-            'display':'inline-block',
-//            'width': '' + rightPopupContainerWidthP * 100 + '%',
-            'height': '100%',
-            'vertical-align':'top',
-            'position': 'relative',
-        }).appendTo(row);
-    
+        id: 'rightPopupContainer',
+        class: 'col-xs-10',
+    }).css({
+        'display': 'inline-block',
+        //            'width': '' + rightPopupContainerWidthP * 100 + '%',
+        'height': '100%',
+        'vertical-align': 'top',
+        'position': 'relative',
+    }).appendTo(row);
+
     //title container
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
         })
         .css({
-            'top':'' + getWindowHeightPercentagePx(0.1) + 'px',
+            'top': '' + getWindowHeightPercentagePx(0.1) + 'px',
         })
         .appendTo(rightPopup);
 
@@ -385,7 +385,7 @@ function updateRegionChart(json, displayname, displaynum) {
 
     //option
     var trendList = [TREND_MODEL, TREND_DEVICE, TREND_REGION];
-    if(isDistBranchSelected){
+    if (isDistBranchSelected) {
         trendList.push(TREND_DIST);
         trendList.push(TREND_BRANCH);
     }
@@ -412,7 +412,7 @@ function updateRegionChart(json, displayname, displaynum) {
 
                     //table remove
                     $('#table_wrapper').remove();
-//                    disableScroll();
+                    //                    disableScroll();
 
                     $('#trendContainer').css({
                         'opacity': 0
@@ -433,13 +433,13 @@ function updateRegionChart(json, displayname, displaynum) {
     //chart
     createsingleRegionChart(json, defaultTrendMode, displayname);
 
-//    bodyHide();
+    //    bodyHide();
     //title re-position
-//    var top = title.offset().top;
-//    title.css({
-//        'top': '' + top + 'px',
-//        'bottom': '',
-//    });
+    //    var top = title.offset().top;
+    //    title.css({
+    //        'top': '' + top + 'px',
+    //        'bottom': '',
+    //    });
 }
 
 function updateTrendChart(json) {
@@ -449,52 +449,52 @@ function updateTrendChart(json) {
 
     //chart
     var defaultTrendMode = TREND_MODEL;
-    
+
     var container = jQuery('<div/>', {
-            class: 'container',
-        }).css({
-            'height': '100%',
-            'width': '100%',
-        }).appendTo($('#popupChartContainer'));
-    
+        class: 'container',
+    }).css({
+        'height': '100%',
+        'width': '100%',
+    }).appendTo($('#popupChartContainer'));
+
     var row = jQuery('<div/>', {
-            class: 'row',
-        }).css({
-            'height': '100%',
-        }).appendTo(container);
-    
+        class: 'row',
+    }).css({
+        'height': '100%',
+    }).appendTo(container);
+
     var leftPopup = jQuery('<div/>', {
-            id: 'leftPopupContainer',
-            class:'col-xs-2',
-        }).css({
-            'display':'inline-block',
-//            'width': '15%',
-            'height': '100%',
-            'vertical-align':'top',
-            'position': 'relative',
-            'background-color': '#EEE',
-        }).appendTo(row);
+        id: 'leftPopupContainer',
+        class: 'col-xs-2',
+    }).css({
+        'display': 'inline-block',
+        //            'width': '15%',
+        'min-height': '100%',
+        'vertical-align': 'top',
+        'position': 'relative',
+        'background-color': '#EEE',
+    }).appendTo(row);
 
     var rightPopup = jQuery('<div/>', {
-            id: 'rightPopupContainer',
-            class:'col-xs-10',
-        }).css({
-            'display':'inline-block',
-//            'width': '' + rightPopupContainerWidthP*100 + '%',
-            'height': '100%',
-            'vertical-align':'top',
-            'position': 'relative',
-        }).appendTo(row);
-    
+        id: 'rightPopupContainer',
+        class: 'col-xs-10',
+    }).css({
+        'display': 'inline-block',
+        //            'width': '' + rightPopupContainerWidthP*100 + '%',
+        'height': '100%',
+        'vertical-align': 'top',
+        'position': 'relative',
+    }).appendTo(row);
+
     createTrendChart(json, defaultTrendMode);
-    
+
     //title container
     var title = jQuery('<div/>', {
             id: 'lineChartTitle',
             //        class: "w3-center",
         })
         .css({
-            'top':'' + getWindowHeightPercentagePx(0.1) + 'px',
+            'top': '' + getWindowHeightPercentagePx(0.1) + 'px',
         })
         .appendTo(rightPopup);
 
@@ -532,7 +532,7 @@ function updateTrendChart(json) {
         .appendTo(title);
 
     var trendList = [TREND_MODEL, TREND_DEVICE, TREND_COUNTRY];
-    if(isDistBranchSelected){
+    if (isDistBranchSelected) {
         trendList.push(TREND_DIST);
         trendList.push(TREND_BRANCH);
     }
@@ -558,7 +558,7 @@ function updateTrendChart(json) {
 
                     //table remove
                     $('#table_wrapper').remove();
-//                    disableScroll();
+                    //                    disableScroll();
 
                     $('#trendContainer').css({
                         'opacity': 0
@@ -582,22 +582,22 @@ function updateTrendChart(json) {
         'top': '' + top + 'px',
         'bottom': '',
     });
-    
+
     //End
     loadingDismiss();
 }
 
-function bodyHide(){
+function bodyHide() {
     $('body').css({
-        'height' : '0px',
-        'overflow' : 'hidden',
+        'height': '0px',
+        'overflow': 'hidden',
     });
 }
 
-function bodyShow(){
+function bodyShow() {
     $('body').css({
-        'height' : 'auto',
-        'overflow' : 'initial',
+        'height': 'auto',
+        'overflow': 'initial',
     });
 }
 
@@ -605,8 +605,8 @@ function exportFile(ReportTitle, ShowLabel) {
     var exportArray = [];
     for (var i in trendObj.labels) {
         var date = trendObj.labels[i];
-        if(date == '') continue;
-        
+        if (date == '') continue;
+
         var Obj = {
             "date": date
         };
@@ -637,8 +637,8 @@ function exportFile(ReportTitle, ShowLabel) {
         CSV += row + '\r\n';
     }
 
-    
-//    var isGap = (getFunction() == FUNC_GAP);
+
+    //    var isGap = (getFunction() == FUNC_GAP);
     for (var i = 0; i < arrData.length; i++) {
         var row = "";
 
@@ -687,7 +687,7 @@ function createDeviceFilter(dataObj, container, titleContainer) {
     var ul = jQuery('<ul/>').appendTo(container);
 
     var li = jQuery('<li/>').attr("id", "check_device_li").appendTo($(ul));
-    
+
     jQuery('<label/>', {
         text: "All",
     }).appendTo(li);
@@ -699,15 +699,15 @@ function createDeviceFilter(dataObj, container, titleContainer) {
         var li = jQuery('<li/>').appendTo($(productUl));
         //all product
         //collapse icon
-        if(!isNoChildModel){
+        if (!isNoChildModel) {
             jQuery('<span />', {
                     class: "ui-icon ui-icon-circlesmall-minus",
                 })
                 .css({
                     'display': 'inline-block',
                     'font-size': '18px',
-                    'height': ''+filterInTrendIconWidth+'px',
-                    'width': ''+filterInTrendIconWidth+'px',
+                    'height': '' + filterInTrendIconWidth + 'px',
+                    'width': '' + filterInTrendIconWidth + 'px',
                     'margin-right': '3px',
                 })
                 .click(function () {
@@ -719,34 +719,34 @@ function createDeviceFilter(dataObj, container, titleContainer) {
                     $(this).parent().next('ul').slideToggle();
                 })
                 .appendTo(li)
-        }else{
+        } else {
             li.css({
-                'margin-left': ''+(filterInTrendIconWidth + filterInTrendIconmarginright)+'px',
+                'margin-left': '' + (filterInTrendIconWidth + filterInTrendIconmarginright) + 'px',
             })
         }
-        
+
         jQuery('<label/>', {
             text: productName,
         }).appendTo(li);
 
-        if(isNoChildModel) continue;
-        
+        if (isNoChildModel) continue;
+
         var modelUl = jQuery('<ul/>').appendTo($(productUl));
-        for(var modelName in dataObj[productName]){
+        for (var modelName in dataObj[productName]) {
             var isNoDeviceChild = (dataObj[productName][modelName] == null);
-            
+
             var li = jQuery('<li/>').appendTo(modelUl);
             //all model
             //collapse icon
-            if(!isNoDeviceChild){
+            if (!isNoDeviceChild) {
                 jQuery('<span />', {
                         class: "ui-icon ui-icon-circlesmall-plus",
                     })
                     .css({
                         'display': 'inline-block',
                         'font-size': '18px',
-                        'height': ''+filterInTrendIconWidth+'px',
-                        'width': ''+filterInTrendIconWidth+'px',
+                        'height': '' + filterInTrendIconWidth + 'px',
+                        'width': '' + filterInTrendIconWidth + 'px',
                         'margin-right': '3px',
                     })
                     .click(function () {
@@ -758,9 +758,9 @@ function createDeviceFilter(dataObj, container, titleContainer) {
                         $(this).parent().next('ul').slideToggle();
                     })
                     .appendTo(li);
-            }else{
+            } else {
                 li.css({
-                    'margin-left': ''+(filterInTrendIconWidth + filterInTrendIconmarginright)+'px',
+                    'margin-left': '' + (filterInTrendIconWidth + filterInTrendIconmarginright) + 'px',
                 })
             }
 
@@ -768,16 +768,16 @@ function createDeviceFilter(dataObj, container, titleContainer) {
                 text: modelName,
             }).appendTo(li);
 
-            if(isNoDeviceChild) continue;
+            if (isNoDeviceChild) continue;
             //devices
             var deviceUl = jQuery('<ul/>').appendTo(modelUl).hide();
             for (var i = 0; i < dataObj[productName][modelName].length; ++i) {
                 var li = jQuery('<li/>').appendTo(deviceUl);
-                
+
                 jQuery('<label/>', {
-                    text: dataObj[productName][modelName][i],
-                })
-                    .css('padding-left','3px')
+                        text: dataObj[productName][modelName][i],
+                    })
+                    .css('padding-left', '3px')
                     .appendTo(li);
             }
         }
@@ -824,7 +824,7 @@ function createTwoLevelFilter(dataArray, container, titleContainer) {
     }
 }
 
-function createFilterResult(){
+function createFilterResult() {
     //filter content
     var container = jQuery('<div/>', {
         class: 'filter_wrapper',
@@ -846,7 +846,7 @@ function createFilterResult(){
                 class: 'trendCollapsible-close',
             })
             .css({
-//                'border-top': (i != 0) ? ('solid #AAA 1pt') : (''),
+                //                'border-top': (i != 0) ? ('solid #AAA 1pt') : (''),
                 'margin': '10px 5px 0px 5px',
                 'margin-bottom': '5px',
                 'padding-top': '8px',
@@ -862,7 +862,7 @@ function createFilterResult(){
             })
             .css({
                 'max-height': '250px',
-//                'overflow': 'auto',
+                //                'overflow': 'auto',
             })
             .appendTo(body).hide();
 
@@ -884,7 +884,7 @@ function addingContent(filterName, container, titleContainer) {
 
     switch (filterName) {
     case 'Device':
-//        console.log(observeTarget);
+        //        console.log(observeTarget);
         var deviceObj = {};
         for (var j in observeTargetDeviceOnly) {
             var targetObj = observeTargetDeviceOnly[j];
@@ -895,32 +895,30 @@ function addingContent(filterName, container, titleContainer) {
             var model = targetObj.model;
             var product = targetObj.product;
 
-            if(dataType == 'devices'){
-                if(deviceObj[product] == undefined){
+            if (dataType == 'devices') {
+                if (deviceObj[product] == undefined) {
                     deviceObj[product] = {};
                 }
-                
-                if(deviceObj[product][model] == undefined){
+
+                if (deviceObj[product][model] == undefined) {
                     deviceObj[product][model] = [];
                 }
 
                 deviceObj[product][model].push(devices);
-            }
-            else if(dataType == 'model'){
-                if(deviceObj[product] == undefined){
+            } else if (dataType == 'model') {
+                if (deviceObj[product] == undefined) {
                     deviceObj[product] = {};
                 }
-                
-                if(deviceObj[product][model] == undefined){
+
+                if (deviceObj[product][model] == undefined) {
                     deviceObj[product][model] = null;
                 }
-            }
-            else if(dataType == 'product'){
-                if(deviceObj[product] == undefined)
-                    deviceObj[product]= null;
+            } else if (dataType == 'product') {
+                if (deviceObj[product] == undefined)
+                    deviceObj[product] = null;
             }
         }
-//        console.log(deviceObj);
+        //        console.log(deviceObj);
         createDeviceFilter(deviceObj, container, titleContainer);
         break;
 
@@ -990,7 +988,7 @@ function createFilterDisplayer() {
             })
             .css({
                 'max-height': '250px',
-//                'overflow': 'auto',
+                //                'overflow': 'auto',
             })
             .appendTo(body).hide();
 
@@ -1032,8 +1030,8 @@ function popupChartShow(needToLockScroll) {
         "opacity": 0.99,
         'z-index': 1,
         //set height to full document size to cover workset
-//        'height': ''+getDocumentFullHeight()+'px',
-//        'height': 'auto',
+        //        'height': ''+getDocumentFullHeight()+'px',
+        //        'height': 'auto',
     });
 
     //<span class="ui-icon ui-icon-circle-close" style="font-size: 4em; color: rgb(127, 127, 127);"></span>
@@ -1052,16 +1050,16 @@ function popupChartShow(needToLockScroll) {
         )
         .appendTo($('#popupChartContainer'))
         .click(function () {
-            if(isLoading()) return;
+            if (isLoading()) return;
             popupChartClose(needToLockScroll);
         });
     bodyHide();
-//    if (needToLockScroll){
-//        disableScroll();
-//        $('#popupChartContainer').css({
-//            "height": screen.height,
-//        })
-//    }
+    //    if (needToLockScroll){
+    //        disableScroll();
+    //        $('#popupChartContainer').css({
+    //            "height": screen.height,
+    //        })
+    //    }
 
 }
 
@@ -1075,7 +1073,7 @@ function popupChartClose(needToLockScroll) {
         "opacity": 0,
         'z-index': -1,
         //set height to 0 in order not to influence workset height
-//        'height': '0px',
+        //        'height': '0px',
     });
 
     $('#popupChartContainer').empty();
@@ -1103,7 +1101,7 @@ function showTrend(mapObj) {
 }
 
 function setTrendLable(json) {
-//    console.log('setTrendLable[start]:'+getCurrentTime());
+    //    console.log('setTrendLable[start]:'+getCurrentTime());
     trendObj = new lineDataObj();
 
     var startDate = json.start_time;
@@ -1120,71 +1118,71 @@ function setTrendLable(json) {
 
     }
     trendObj.labelsByDate.push(endDate);
-    
+
     //label by month
     var currentM = null;
     var currentY = null;
-    for(var i in trendObj.labelsByDate){
+    for (var i in trendObj.labelsByDate) {
         var date = trendObj.labelsByDate[i];
         var d = new Date(date);
         var year = d.getFullYear();
-        var month = d.getMonth()+1;
-        
-        if(currentM != month || currentY != year){
-            trendObj.labelsByMonth.push(year+'-'+month);
+        var month = d.getMonth() + 1;
+
+        if (currentM != month || currentY != year) {
+            trendObj.labelsByMonth.push(year + '-' + month);
             currentM = month;
             currentY = year;
         }
     }
-    
+
     //label by week
     var currentW = null;
     var currentY = null;
-    for(var i in trendObj.labelsByDate){
+    for (var i in trendObj.labelsByDate) {
         var date = trendObj.labelsByDate[i];
         var d = new Date(date);
         var year = d.getFullYear();
         var week = d.getWeek();
-        
-        if(currentW != week || currentY != year){
-            trendObj.labelsByWeek.push(year+'- W'+week);
+
+        if (currentW != week || currentY != year) {
+            trendObj.labelsByWeek.push(year + '- W' + week);
             currentW = week;
             currentY = year;
         }
     }
-//    console.log(trendObj.labelsByDate);
-//    console.log(trendObj.labelsByMonth);
-//    console.log(trendObj.labelsByWeek);
-    
+    //    console.log(trendObj.labelsByDate);
+    //    console.log(trendObj.labelsByMonth);
+    //    console.log(trendObj.labelsByWeek);
+
     labelChange(defaultGroupBy);
-    
-//    console.log('setTrendLable[end]:'+getCurrentTime());
+
+    //    console.log('setTrendLable[end]:'+getCurrentTime());
 }
 
-function labelChange(chanegTo){
-    switch(chanegTo){
-        case 'By Day':
-            trendObj.labels = trendObj.labelsByDate.slice();
-            break;
-        case 'By Month':
-            trendObj.labels = trendObj.labelsByMonth.slice();
-            break;
-        case 'By Week':
-            trendObj.labels = trendObj.labelsByWeek.slice();
-            break;
+function labelChange(chanegTo) {
+    switch (chanegTo) {
+    case 'By Day':
+        trendObj.labels = trendObj.labelsByDate.slice();
+        break;
+    case 'By Month':
+        trendObj.labels = trendObj.labelsByMonth.slice();
+        break;
+    case 'By Week':
+        trendObj.labels = trendObj.labelsByWeek.slice();
+        break;
     }
-    
+
     //in order to adding space
-    trendObj.labels.push("");
-//    trendObj.labels.push(" ");
-//    trendObj.labels.push(" ");
+//    trendObj.labels.push("");
+    //    trendObj.labels.push(" ");
+    //    trendObj.labels.push(" ");
 }
 
-function setTrendData(jsonObj){
+function setTrendData(jsonObj) {
     //clean
     trendObj.datasets.length = 0;
-    
-//    console.log(jsonObj);
+
+    //    console.log(jsonObj);
     var jsonArray = Object.keys(jsonObj);
     for (var index in jsonArray) {
         var name = jsonArray[index];
@@ -1194,7 +1192,7 @@ function setTrendData(jsonObj){
         var highlight = ColorLuminance(color, 0.5);
         var transparentColor = colorHexToRGBString(color, 0.2);
         var dataset = new lineDatasetsObj(name, transparentColor, color, highlight, false);
-        
+
         //first
         //handle the data group by date 
         var DateIndex = 0
@@ -1206,7 +1204,7 @@ function setTrendData(jsonObj){
                 dataset.dataByDate.push(0);
             }
         }
-        
+
         //second 
         //group by month
         var currentM = null;
@@ -1217,28 +1215,28 @@ function setTrendData(jsonObj){
         for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
             var date = trendObj.labelsByDate[i];
             var cnt = dataset.dataByDate[i];
-            
+
             var d = new Date(date);
             var year = d.getFullYear();
-            var month = d.getMonth()+1;
-            
-            if(currentM != month || currentY != year){
-                if(first){
+            var month = d.getMonth() + 1;
+
+            if (currentM != month || currentY != year) {
+                if (first) {
                     first = false;
-                }else{
+                } else {
                     dataset.dataByMonth.push(sumInThatMonth);
                     sumInThatMonth = 0;
                 }
                 currentM = month;
                 currentY = year;
             }
-            
+
             sumInThatMonth += cnt;
         }
         //last one
         dataset.dataByMonth.push(sumInThatMonth);
-        
-        
+
+
         //thrid 
         //group by week
         var currentW = null;
@@ -1249,29 +1247,29 @@ function setTrendData(jsonObj){
         for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
             var date = trendObj.labelsByDate[i];
             var cnt = dataset.dataByDate[i];
-            
+
             var d = new Date(date);
             var year = d.getFullYear();
             var week = d.getWeek();
-            
-            if(currentW != week || currentY != year){
-                if(first){
+
+            if (currentW != week || currentY != year) {
+                if (first) {
                     first = false;
-                }else{
+                } else {
                     dataset.dataByWeek.push(sumInThatWeek);
                     sumInThatWeek = 0;
                 }
                 currentW = week;
                 currentY = year;
             }
-            
+
             sumInThatWeek += cnt;
         }
         //last one
         dataset.dataByWeek.push(sumInThatWeek);
-        
+
         trendObj.datasets.push(dataset);
-//        console.log(dataset);
+        //        console.log(dataset);
     }
 }
 
@@ -1296,7 +1294,7 @@ function setTrendDataByRegion(jsonObj, regionName) {
             regionDataset.dataByDate.push(0);
         }
     }
-    
+
     //group by month
     var currentM = null;
     var currentY = null;
@@ -1309,12 +1307,12 @@ function setTrendDataByRegion(jsonObj, regionName) {
 
         var d = new Date(date);
         var year = d.getFullYear();
-        var month = d.getMonth()+1;
+        var month = d.getMonth() + 1;
 
-        if(currentM != month || currentY != year){
-            if(first){
+        if (currentM != month || currentY != year) {
+            if (first) {
                 first = false;
-            }else{
+            } else {
                 regionDataset.dataByMonth.push(sumInThatMonth);
                 sumInThatMonth = 0;
             }
@@ -1327,7 +1325,7 @@ function setTrendDataByRegion(jsonObj, regionName) {
     //last one
     regionDataset.dataByMonth.push(sumInThatMonth);
 
-    
+
     //group by week
     var currentW = null;
     var currentY = null;
@@ -1342,10 +1340,10 @@ function setTrendDataByRegion(jsonObj, regionName) {
         var year = d.getFullYear();
         var week = d.getWeek();
 
-        if(currentW != week || currentY != year){
-            if(first){
+        if (currentW != week || currentY != year) {
+            if (first) {
                 first = false;
-            }else{
+            } else {
                 regionDataset.dataByWeek.push(sumInThatWeek);
                 sumInThatWeek = 0;
             }
@@ -1357,22 +1355,22 @@ function setTrendDataByRegion(jsonObj, regionName) {
     }
     //last one
     regionDataset.dataByWeek.push(sumInThatWeek);
-    
+
     trendObj.datasets.push(regionDataset);
-//    console.log(regionDataset);
+    //    console.log(regionDataset);
 }
 
-function setGapTrendData(jsonObj,gapDevide,branchName){
+function setGapTrendData(jsonObj, gapDevide, branchName) {
     //clean
     trendObj.datasets.length = 0;
-    
-//    console.log(jsonObj);
+
+    //    console.log(jsonObj);
     var jsonArray = Object.keys(jsonObj);
     for (var index in jsonArray) {
         var name = jsonArray[index];
         var data = jsonObj[name];
-        
-        if(branchName){
+
+        if (branchName) {
             name = branchName;
             data = jsonObj[branchName];
         }
@@ -1381,7 +1379,7 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
         var highlight = ColorLuminance(color, 0.5);
         var transparentColor = colorHexToRGBString(color, 0.2);
         var dataset = new lineDatasetsObj(name, transparentColor, color, highlight, false);
-        
+
         //first
         //handle the data group by date 
         var DateIndex = 0
@@ -1389,35 +1387,35 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
             var currentDate = trendObj.labelsByDate[i];
             var alreadyFound = false;
             while (DateIndex < data.length && currentDate == data[DateIndex].date) {
-                if(data[DateIndex].isTargetBranch){
+                if (data[DateIndex].isTargetBranch) {
                     dataset.dataByDate.push(data[DateIndex].count);
                     alreadyFound = true;
                 }
                 ++DateIndex;
             }
-                
-            if(!alreadyFound) {
+
+            if (!alreadyFound) {
                 dataset.dataByDate.push(0);
             }
         }
-//        console.log(dataset.dataByDate);
-//        var total = 0;
-//        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
-//            
-//            if(dataset.dataByDate[i] == 0) continue;
-//            
-//            var date = trendObj.labelsByDate[i];
-//            for(var j in data){
-//                if(data[j].date == date)
-//                    total += data[j].count;
-//            }
-//            
-//            dataset.dataByDate[i] = ((dataset.dataByDate[i]/total)/gapDevide-1);
-//            total = 0;
-//        }
-//        console.log(dataset.dataByDate);
-        
-        
+        //        console.log(dataset.dataByDate);
+        //        var total = 0;
+        //        for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
+        //            
+        //            if(dataset.dataByDate[i] == 0) continue;
+        //            
+        //            var date = trendObj.labelsByDate[i];
+        //            for(var j in data){
+        //                if(data[j].date == date)
+        //                    total += data[j].count;
+        //            }
+        //            
+        //            dataset.dataByDate[i] = ((dataset.dataByDate[i]/total)/gapDevide-1);
+        //            total = 0;
+        //        }
+        //        console.log(dataset.dataByDate);
+
+
         //second 
         //group by month
         var currentM = null;
@@ -1428,28 +1426,28 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
         for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
             var date = trendObj.labelsByDate[i];
             var cnt = dataset.dataByDate[i];
-            
+
             var d = new Date(date);
             var year = d.getFullYear();
-            var month = d.getMonth()+1;
-            
-            if(currentM != month || currentY != year){
-                if(first){
+            var month = d.getMonth() + 1;
+
+            if (currentM != month || currentY != year) {
+                if (first) {
                     first = false;
-                }else{
+                } else {
                     dataset.dataByMonth.push(sumInThatMonth);
                     sumInThatMonth = 0;
                 }
                 currentM = month;
                 currentY = year;
             }
-            
+
             sumInThatMonth += cnt;
         }
         //last one
         dataset.dataByMonth.push(sumInThatMonth);
-        
-        
+
+
         //thrid 
         //group by week
         var currentW = null;
@@ -1460,84 +1458,84 @@ function setGapTrendData(jsonObj,gapDevide,branchName){
         for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
             var date = trendObj.labelsByDate[i];
             var cnt = dataset.dataByDate[i];
-            
+
             var d = new Date(date);
             var year = d.getFullYear();
             var week = d.getWeek();
-            
-            if(currentW != week || currentY != year){
-                if(first){
+
+            if (currentW != week || currentY != year) {
+                if (first) {
                     first = false;
-                }else{
+                } else {
                     dataset.dataByWeek.push(sumInThatWeek);
                     sumInThatWeek = 0;
                 }
                 currentW = week;
                 currentY = year;
             }
-            
+
             sumInThatWeek += cnt;
         }
         //last one
         dataset.dataByWeek.push(sumInThatWeek);
-        
-        
+
+
         //4th step
         //re-calculate of Gap
         //by month
         for (var i = 0; i < trendObj.labelsByMonth.length; ++i) {
             var date = trendObj.labelsByMonth[i].split('-');
-//            console.log(date);
+            //            console.log(date);
             var year = date[0];
             var month = date[1];
-            
+
             var total = 0;
-            for(var j in data){
+            for (var j in data) {
                 var d = new Date(data[j].date);
-                if(year == d.getFullYear() && month == (d.getMonth()+1))
+                if (year == d.getFullYear() && month == (d.getMonth() + 1))
                     total += data[j].count;
             }
-//            console.log(trendObj.labelsByMonth[i]+':'+total);
-            dataset.dataByMonth[i] = (dataset.dataByMonth[i] == 0) ? -1 :((dataset.dataByMonth[i]/total)/gapDevide-1);
+            //            console.log(trendObj.labelsByMonth[i]+':'+total);
+            dataset.dataByMonth[i] = (dataset.dataByMonth[i] == 0) ? -1 : ((dataset.dataByMonth[i] / total) / gapDevide - 1);
         }
-        
+
         //by week
         for (var i = 0; i < trendObj.labelsByWeek.length; ++i) {
             var date = trendObj.labelsByWeek[i].split('- W');
-//            console.log(date);
+            //            console.log(date);
             var year = date[0];
             var week = date[1];
-            
+
             var total = 0;
-            for(var j in data){
+            for (var j in data) {
                 var d = new Date(data[j].date);
-//                console.log(d);
-                if(year == d.getFullYear() && week == d.getWeek())
+                //                console.log(d);
+                if (year == d.getFullYear() && week == d.getWeek())
                     total += data[j].count;
             }
-//            console.log(trendObj.labelsByMonth[i]+':'+total);
-            dataset.dataByWeek[i] = (dataset.dataByWeek[i] == 0) ? -1 :((dataset.dataByWeek[i]/total)/gapDevide-1);
+            //            console.log(trendObj.labelsByMonth[i]+':'+total);
+            dataset.dataByWeek[i] = (dataset.dataByWeek[i] == 0) ? -1 : ((dataset.dataByWeek[i] / total) / gapDevide - 1);
         }
-        
+
         //by date
         for (var i = 0; i < trendObj.labelsByDate.length; ++i) {
-            
-            if(dataset.dataByDate[i] == 0){
+
+            if (dataset.dataByDate[i] == 0) {
                 dataset.dataByDate[i] = -1;
                 continue;
             }
             var total = 0;
             var date = trendObj.labelsByDate[i];
-            for(var j in data){
-                if(data[j].date == date)
+            for (var j in data) {
+                if (data[j].date == date)
                     total += data[j].count;
             }
-            
-            dataset.dataByDate[i] = (dataset.dataByDate[i]/total)/gapDevide-1;
+
+            dataset.dataByDate[i] = (dataset.dataByDate[i] / total) / gapDevide - 1;
         }
-        
+
         trendObj.datasets.push(dataset);
-//        console.log(dataset);
+        //        console.log(dataset);
     }
 }
 
@@ -1559,7 +1557,7 @@ function addingTotalLine(totalJson) {
             totalDataset.dataByDate.push(0);
         }
     }
-    
+
     //second 
     //group by month
     var currentM = null;
@@ -1573,12 +1571,12 @@ function addingTotalLine(totalJson) {
 
         var d = new Date(date);
         var year = d.getFullYear();
-        var month = d.getMonth()+1;
+        var month = d.getMonth() + 1;
 
-        if(currentM != month || currentY != year){
-            if(first){
+        if (currentM != month || currentY != year) {
+            if (first) {
                 first = false;
-            }else{
+            } else {
                 totalDataset.dataByMonth.push(sumInThatMonth);
                 sumInThatMonth = 0;
             }
@@ -1590,8 +1588,8 @@ function addingTotalLine(totalJson) {
     }
     //last one
     totalDataset.dataByMonth.push(sumInThatMonth);
-    
-    
+
+
     //second 
     //group by week
     var currentW = null;
@@ -1607,10 +1605,10 @@ function addingTotalLine(totalJson) {
         var year = d.getFullYear();
         var week = d.getWeek();
 
-        if(currentW != week || currentY != year){
-            if(first){
+        if (currentW != week || currentY != year) {
+            if (first) {
                 first = false;
-            }else{
+            } else {
                 totalDataset.dataByWeek.push(sumInThatWeek);
                 sumInThatWeek = 0;
             }
@@ -1624,10 +1622,10 @@ function addingTotalLine(totalJson) {
     totalDataset.dataByWeek.push(sumInThatWeek);
 
     trendObj.datasets.push(totalDataset);
-//    console.log(totalDataset);
+    //    console.log(totalDataset);
 }
 
-function removeTotalLine(){
+function removeTotalLine() {
     var index = trendObj.datasets.indexOf(totalDataset);
     if (index > -1) {
         trendObj.datasets.splice(index, 1);
@@ -1637,7 +1635,7 @@ function removeTotalLine(){
     //updateColorInfo();
 }
 
-function addTotalLine(){
+function addTotalLine() {
     trendObj.datasets.push(totalDataset);
     chartDestroy(false);
     createChartElement();
@@ -1652,22 +1650,22 @@ function getActiveTrend(trend) {
     return activeTrend;
 }
 
-function createChartElement(opt){
+function createChartElement(opt) {
     var node = document.createElement("canvas");
     node.className = "chart";
     node.id = 'trendChart';
 
-    var container = jQuery('<div/>',{
-        class : 'customScrollBar',
+    var container = jQuery('<div/>', {
+        class: 'customScrollBar',
     });
-//    var container = document.createElement("div");
+    //    var container = document.createElement("div");
     container.css({
         "position": "absolute",
         "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
         "left": "2%",
-        "width": ""+ trendContainerWidthP * 100 +"%",
+        "width": "" + trendContainerWidthP * 100 + "%",
         'border': '10px solid rgba(255,255,255,0)',
-//        "overflow-x": "scroll",
+        //        "overflow-x": "scroll",
         "overflow-y": "hidden",
         "display": "inline-block",
         //hide first
@@ -1675,45 +1673,47 @@ function createChartElement(opt){
     }).attr('id', 'trendContainer');
 
 
-//    jQuery('<div/>', {
-//            id: 'trendColorInfo',
-//            class: "w3-light-grey customScrollBar",
-//        })
-//        .appendTo($("#rightPopupContainer"));
+    //    jQuery('<div/>', {
+    //            id: 'trendColorInfo',
+    //            class: "w3-light-grey customScrollBar",
+    //        })
+    //        .appendTo($("#rightPopupContainer"));
 
     container.append($(node));
-//    container.appendChild(node);
-    
+    //    container.appendChild(node);
+
     //width cal
     var labelCount = trendObj.labels.length;
-//    console.log(container.width());
-//    console.log(trendContainerWidthR);
-    var tmpSpacing = (trendContainerWidthR - axisWidth) / (labelCount+1);
-    var spacing = (tmpSpacing < chartSpacing) ? chartSpacing : tmpSpacing ;
-    
-    node.style.height = '' + chartHeight + 'px';
-    node.style.width = (axisWidth + spacing * trendObj.labels.length > 32500) 
-            ? ('32500px') 
-            : '' + (axisWidth + spacing * trendObj.labels.length) + 'px';
+    //    console.log(container.width());
+    //    console.log(trendContainerWidthR);
+    var tmpSpacing = (trendContainerWidthR - axisWidth) / (labelCount + 1);
+    var spacing = (tmpSpacing < chartSpacing) ? chartSpacing : tmpSpacing;
 
+    node.style.height = '' + chartHeight + 'px';
+    node.style.width = (axisWidth + spacing * trendObj.labels.length > 32500) ? ('32500px') : '' + (axisWidth + spacing * trendObj.labels.length) + 'px';
+
+//    console.log(labelCount);
+//    console.log(tmpSpacing);
+//    console.log(spacing);
+//    console.log(axisWidth + spacing * trendObj.labels.length);
     $('#rightPopupContainer').append(container);
     var ctx = node.getContext("2d");
-    
+
     linechart = new Chart(ctx, {
         type: 'line',
         data: trendObj,
-        options: ( opt ? opt : newOptions)
+        options: (opt ? opt : newOptions)
     });
 
-//    if(opt)
-//        linechart = new Chart(ctx).Overlay(trendObj, opt);
-//    else
-//        linechart = new Chart(ctx).Overlay(trendObj, newOptions);
-//    
+    //    if(opt)
+    //        linechart = new Chart(ctx).Overlay(trendObj, opt);
+    //    else
+    //        linechart = new Chart(ctx).Overlay(trendObj, newOptions);
+    //    
     //show up
     container.animate({
         opacity: 1,
-    },'slow');
+    }, 'slow');
 }
 
 function createsingleRegionChart(json, trendMode, regionName) {
@@ -1724,7 +1724,7 @@ function createsingleRegionChart(json, trendMode, regionName) {
     //fetch data
     trendObj = new lineDataObj();
     setTrendLable(json);
-    
+
     switch (trendMode) {
     case TREND_MODEL:
         setTrendData(json.groupByModelResults);
@@ -1739,18 +1739,18 @@ function createsingleRegionChart(json, trendMode, regionName) {
         setTrendData(json.groupByDeviceResults);
         addingTotalLine(json.groupByRegionResults);
         break;
-    
+
     case TREND_DIST:
         setTrendData(json.groupByDistResults);
         addingTotalLine(json.groupByRegionResults);
         break;
-            
+
     case TREND_BRANCH:
         setTrendData(json.groupByBranchResults);
         addingTotalLine(json.groupByRegionResults);
         break;
     }
-    
+
     setActiveTrend(trendMode);
     //create chart element
     createChartElement();
@@ -1767,25 +1767,25 @@ function createBranchChart(json, trendMode, branchName) {
     //fetch data
     trendObj = new lineDataObj();
     setTrendLable(json);
-    
+
     switch (trendMode) {
 
     case TREND_MODEL:
-        setGapTrendData(json.groupByModelResults,json.gapDevide);
-//        addingTotalLine(json.groupByRegionResults);
+        setGapTrendData(json.groupByModelResults, json.gapDevide);
+        //        addingTotalLine(json.groupByRegionResults);
         break;
 
     case TREND_DEVICE:
-        setGapTrendData(json.groupByDeviceResults,json.gapDevide);
-//        addingTotalLine(json.groupByRegionResults);
+        setGapTrendData(json.groupByDeviceResults, json.gapDevide);
+        //        addingTotalLine(json.groupByRegionResults);
         break;
-    
+
     case TREND_BRANCH:
-        setGapTrendData(json.groupByBranchResults,json.gapDevide,branchName);
-//        addingTotalLine(json.groupByRegionResults);
+        setGapTrendData(json.groupByBranchResults, json.gapDevide, branchName);
+        //        addingTotalLine(json.groupByRegionResults);
         break;
     }
-    
+
     setActiveTrend(trendMode);
     //create chart element
     createChartElement(negOptions);
@@ -1794,14 +1794,14 @@ function createBranchChart(json, trendMode, branchName) {
     loadingDismiss();
 }
 
-function chartDestroy(dataNeedToSetNull){
+function chartDestroy(dataNeedToSetNull) {
     //destroy old chart
-    if(dataNeedToSetNull){
+    if (dataNeedToSetNull) {
         if (trendObj != null) {
             trendObj = null;
         }
     }
-    
+
     if (linechart != null) {
         linechart.destroy();
     }
@@ -1815,11 +1815,11 @@ function createTrendChart(json, trendMode) {
     chartDestroy(true);
     resetTotalToggleBtn();
     resetGroupByDelectMenu();
-    
+
     trendObj = new lineDataObj();
     setTrendLable(json);
 
-//    console.log('setTrendData[start]:'+getCurrentTime());
+    //    console.log('setTrendData[start]:'+getCurrentTime());
     switch (trendMode) {
     case TREND_MODEL:
         setTrendData(json.groupByModelResults);
@@ -1829,7 +1829,7 @@ function createTrendChart(json, trendMode) {
     case TREND_COUNTRY:
         setTrendData(json.groupByCountryResults);
         addingTotalLine(json.groupByDateResults);
-        
+
         break;
 
     case TREND_DEVICE:
@@ -1840,7 +1840,7 @@ function createTrendChart(json, trendMode) {
         setTrendData(json.groupByDistResults);
         addingTotalLine(json.groupByDateResults);
         break;
-            
+
     case TREND_BRANCH:
         setTrendData(json.groupByBranchResults);
         addingTotalLine(json.groupByDateResults);
@@ -1890,14 +1890,14 @@ function createTrendChart(json, trendMode) {
 //
 //}
 
-function createTable(isDiff,json,mapObj) {
-    
-    var mapSrc = isDiff ? mapObj :firstMap;
-    
+function createTable(isDiff, json, mapObj) {
+
+    var mapSrc = isDiff ? mapObj : firstMap;
+
     console.log("createTable start");
     $("#tableContainer").empty();
 
-    var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' +  '<th>Model</th>'+ '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
+    var tableContenr = '<table id="table" class="table hover table-bordered" cellspacing="0" width="100%">' + '<thead>' + '<tr role="row">' + '<th>Country</th>' + '<th>District/City</th>' + '<th>Model</th>' + '<th>Number</th>' + '</tr>' + '</thead>' + '</table>';
     $("#tableContainer").append(tableContenr);
 
     var finalTableArray = [];
@@ -1915,22 +1915,22 @@ function createTable(isDiff,json,mapObj) {
             if (!isInArray(forcingName2List, find[0].properties.ISO) && (observeLoc.length > 1 || isInArray(forcingName1List, find[0].properties.ISO))) {
                 json[i].displayName = find[0].properties.NAME_1;
             }
-        }else{
+        } else {
             console.log('false');
         }
         //post process
         json[i]['cnt'] = (json[i]['cnt']);
 
-        if(json[i].displayName != ''){
+        if (json[i].displayName != '') {
             finalTableArray.push({
-                displayName:json[i].displayName,
-                iso:json[i].iso,
-                cnt:json[i].cnt,
-                model:json[i].models,
+                displayName: json[i].displayName,
+                iso: json[i].iso,
+                cnt: json[i].cnt,
+                model: json[i].models,
             });
         }
     }
-//            console.log(json);
+    //            console.log(json);
     var table = $('table#table').DataTable({
         data: finalTableArray,
         columns: [
@@ -1950,7 +1950,8 @@ function createTable(isDiff,json,mapObj) {
         pageLength: -1,
         dom: 'Bfrtip',
         buttons: [
-                /*'copy', 'csv', */'excel', 'pdf', 'print'
+                /*'copy', 'csv', */
+            'excel', 'pdf', 'print'
             ]
     });
 
@@ -1961,17 +1962,17 @@ function createTable(isDiff,json,mapObj) {
     console.log("createTable end");
 }
 
-function showGapTrend(mapObj,branchName){
+function showGapTrend(mapObj, branchName) {
     if (observeTarget.length > 0 && !mapObj.isEmpty) {
-//        console.log(branchName);
+        //        console.log(branchName);
         loading("Creating Chart...");
         scrollToTop();
         popupChartShow(true);
-        ajaxTrendOfBranchChart(mapObj,branchName);
+        ajaxTrendOfBranchChart(mapObj, branchName);
     }
 }
 
-function tableExportToExcel(text,filename){
+function tableExportToExcel(text, filename) {
     var blob = new Blob([text], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8,%EF%BB%BF"
     });
@@ -1980,12 +1981,14 @@ function tableExportToExcel(text,filename){
     loadingDismiss();
 }
 
-function gapReportExportDialogShow(){
+function gapReportExportDialogShow() {
 
-    if(getFunction() != FUNC_GAP) return;
-    
-    var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ? 
-        (jQuery('<div/>',{id:'exportTypeDialogDiv'}).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
+    if (getFunction() != FUNC_GAP) return;
+
+    var exportTypeDialogDiv = ($('#exportTypeDialogDiv').length == 0) ?
+        (jQuery('<div/>', {
+            id: 'exportTypeDialogDiv'
+        }).html('<b>Select export type:</b>').appendTo($('#popupChartContainer'))) :
         ($('#exportTypeDialogDiv'));
     exportTypeDialogDiv.dialog({
         modal: true,

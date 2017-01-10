@@ -270,8 +270,8 @@ var percentageOptions = {
     tooltips: {
         callbacks: {
             label: function (tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label +': ' + tooltipItem.yLabel+ ' %';
-//                return tooltipItem.yLabel + ' %';
+                return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + ' %';
+                //                return tooltipItem.yLabel + ' %';
             }
         }
     },
@@ -309,7 +309,7 @@ var negOptions = {
     tooltips: {
         callbacks: {
             label: function (tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label +': ' + (tooltipItem.yLabel * 100).toFixed(2) + ' %';
+                return data.datasets[tooltipItem.datasetIndex].label + ': ' + (tooltipItem.yLabel * 100).toFixed(2) + ' %';
             }
         }
     },
@@ -317,7 +317,7 @@ var negOptions = {
     //        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
     //    },
 
-//    multiTooltipTemplate: function (label) {
-//        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
-//    },
+    //    multiTooltipTemplate: function (label) {
+    //        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
+    //    },
 }

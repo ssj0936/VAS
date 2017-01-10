@@ -14,69 +14,69 @@ function buttonInit() {
     $("#dataset").selectmenu({
         width: '102%',
         disabled: true,
-        create: function( event, ui ) {
+        create: function (event, ui) {
             isFunctionSelectorInit = true;
         },
         change: function (event, data) {
             //not allow switching while loading
-            if (isLoading()) 
+            if (isLoading())
                 return false;
-            
+
             var dataSet = data.item.value;
             activeFunctionTmp = dataSet;
 
             controlPanelDisplayRefresh(dataSet);
             switch (dataSet) {
-                case FUNC_GAP:
+            case FUNC_GAP:
+                if (isDistBranchFilterShowing) {
+                    //data delete
+                    observeDistBranch.length = 0;
+                    //UI remove
+                    destroyDistBranchCheckBox();
+                }
+                checkboxLocationInit(gapLoc);
+
+                break;
+
+            case FUNC_DISTBRANCH:
+                var needToShowDistBranch = false;
+                for (var i in observeLocTmp) {
+                    if (countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1) {
+                        needToShowDistBranch = true;
+                        break;
+                    }
+                }
+                //create dist branch filter
+                if (needToShowDistBranch && observeLocTmp.length == 1) {
+                    if (!isDistBranchFilterShowing) {
+                        isDistBranchFilterShowing = true;
+                        //filter show up
+                        $('#section_branch_dist').stop(true, true).fadeIn('medium');
+                        $('#section_branch_dist').collapsible('open');
+
+                        ajaxLoadBranchDist();
+                    }
+                } else {
                     if (isDistBranchFilterShowing) {
                         //data delete
                         observeDistBranch.length = 0;
                         //UI remove
                         destroyDistBranchCheckBox();
                     }
-                    checkboxLocationInit(gapLoc);
+                }
+                checkboxLocationInit(distBranchLoc);
+                break;
 
-                    break;
+            default:
+                if (isDistBranchFilterShowing) {
+                    //data delete
+                    observeDistBranch.length = 0;
+                    //UI remove
+                    destroyDistBranchCheckBox();
+                }
+                checkboxLocationInit(allLoc);
 
-                case FUNC_DISTBRANCH:
-                    var needToShowDistBranch = false;
-                    for (var i in observeLocTmp) {
-                        if (countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1) {
-                            needToShowDistBranch = true;
-                            break;
-                        }
-                    }
-                    //create dist branch filter
-                    if (needToShowDistBranch && observeLocTmp.length == 1) {
-                        if (!isDistBranchFilterShowing) {
-                            isDistBranchFilterShowing = true;
-                            //filter show up
-                            $('#section_branch_dist').stop(true, true).fadeIn('medium');
-                            $('#section_branch_dist').collapsible('open');
-
-                            ajaxLoadBranchDist();
-                        }
-                    } else {
-                        if (isDistBranchFilterShowing) {
-                            //data delete
-                            observeDistBranch.length = 0;
-                            //UI remove
-                            destroyDistBranchCheckBox();
-                        }
-                    }
-                    checkboxLocationInit(distBranchLoc);
-                    break;
-                    
-                default:
-                    if (isDistBranchFilterShowing) {
-                        //data delete
-                        observeDistBranch.length = 0;
-                        //UI remove
-                        destroyDistBranchCheckBox();
-                    }
-                    checkboxLocationInit(allLoc);
-
-                    break;
+                break;
             }
         }
     });
@@ -133,6 +133,7 @@ function buttonInit() {
     qcControlPanelInit();
     rightControlPanelInit();
     parallelControlPanelInit();
+    activationTrendControlPanelInit();
 }
 
 function controlPanelDisplayRefresh(dataset) {
@@ -140,73 +141,84 @@ function controlPanelDisplayRefresh(dataset) {
     $('.controlPanel').hide();
 
     switch (dataset) {
-        case FUNC_PARALLEL:
-            //hide date button
-            $('#dateContainer').hide();
-            //control panel switch
-            $('.control_panel_right').show();
-            $('#parallelControlPanel').show("medium");
-            $('#filterCountryContainer').show('medium');
-            break;
+    case FUNC_PARALLEL:
+        //hide date button
+        $('#dateContainer').hide();
+        //control panel switch
+        $('.control_panel_right').show();
+        $('#parallelControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
+        break;
 
-        case FUNC_ACTIVATION:
-            //show date button
-            $('#dateContainer').show('medium');
-            //control panel switch
-            $('.control_panel_right').hide();
-            $('#activationControlPanel').show("medium");
-            $('#filterCountryContainer').show('medium');
+    case FUNC_ACTIVATION:
+        //show date button
+        $('#dateContainer').show('medium');
+        //control panel switch
+        $('.control_panel_right').hide();
+        $('#activationControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
 
-            break;
-        case FUNC_LIFEZONE:
-            //hide date button
-            $('#dateContainer').hide();
-            //control panel switch
-            $('.control_panel_right').hide();
-            $('#lifezoneControlPanel').show("medium");
-            $('#filterCountryContainer').show('medium');
+        break;
+    case FUNC_LIFEZONE:
+        //hide date button
+        $('#dateContainer').hide();
+        //control panel switch
+        $('.control_panel_right').hide();
+        $('#lifezoneControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
 
-            break;
-        case FUNC_QC:
-            //hide date button
-            $('#dateContainer').hide();
-            //control panel switch
-            clearControlPanel();
-            $('.control_panel_right').hide();
-            $('#qcControlPanel').show("medium");
-            $('#filterCountryContainer').show('medium');
+        break;
+    case FUNC_QC:
+        //hide date button
+        $('#dateContainer').hide();
+        //control panel switch
+        clearControlPanel();
+        $('.control_panel_right').hide();
+        $('#qcControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
 
-            break;
+        break;
 
-        case FUNC_ACTIVATION_TABLE:
-            //show date button
-            $('#dateContainer').show('medium');
-            //control panel switch
-            $('.control_panel_right').hide();
-            $('#filterCountryContainer').show('medium');
+    case FUNC_ACTIVATION_TABLE:
+        //show date button
+        $('#dateContainer').show('medium');
+        //control panel switch
+        $('.control_panel_right').hide();
+        $('#filterCountryContainer').show('medium');
 
-            break;
+        break;
 
-        case FUNC_DISTBRANCH:
-            //show date button
-            $('#dateContainer').show('medium');
-            //control panel switch
-            clearControlPanel();
-            $('.control_panel_right').hide();
-            $('#activationControlPanel').show("medium");
-            $('#filterCountryContainer').show('medium');
+    case FUNC_DISTBRANCH:
+        //show date button
+        $('#dateContainer').show('medium');
+        //control panel switch
+        clearControlPanel();
+        $('.control_panel_right').hide();
+        $('#activationControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
 
-            break;
+        break;
 
-        case FUNC_GAP:
-            //show date button
-            $('#dateContainer').show('medium');
-            //control panel switch
-            clearControlPanel();
-            $('.control_panel_right').show('medium');
-            $('#filterCountryContainer').show('medium');
+    case FUNC_GAP:
+        //show date button
+        $('#dateContainer').show('medium');
+        //control panel switch
+        clearControlPanel();
+        $('.control_panel_right').show('medium');
+        $('#filterCountryContainer').show('medium');
 
-            break;
+        break;
+
+    case FUNC_ACTIVATION_TREND:
+        //show date button
+        $('#dateContainer').show('medium');
+        //control panel switch
+        clearControlPanel();
+        $('.control_panel_right').show('medium');
+        $('#activationTrendControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
+
+        break;
     }
 }
 
@@ -218,10 +230,10 @@ function clearControlPanel() {
 
 function rightControlPanelInit() {
     $("button.rightPanelButton#export").button();
-    $("button.rightPanelButton#export").click(function(){
-        if(getFunction() == FUNC_GAP)
+    $("button.rightPanelButton#export").click(function () {
+        if (getFunction() == FUNC_GAP)
             gapReportExportDialogShow();
-        else if(getFunction() == FUNC_PARALLEL)
+        else if (getFunction() == FUNC_PARALLEL)
             trendParallel.parallelReportExport();
     });
 }
@@ -268,7 +280,7 @@ function qcControlPanelInit() {
             submitSQMarker($(this).attr('data-value'));
         }
     });
-    
+
     disableQCControl();
 }
 
@@ -306,6 +318,46 @@ function lifezoneControlPanelInit() {
 
 }
 
+function activationTrendControlPanelInit() {
+    //    $("#activationTrendControlPanel button").button();
+    //    $("#activationTrendControlPanel button").css({
+    //        width: '100px'
+    //    });
+    $('#activationTrendControlPanel button').css({
+        width: '70px'
+    });
+
+    $('div#activationTrendBy button').click(function () {
+        if (isLoading()) return;
+
+        radioButtonClick($('div#activationTrendBy'), $(this));
+    });
+
+    $('div#activationTrendLevel button').click(function () {
+        if (isLoading()) return;
+
+        radioButtonClick($('div#activationTrendLevel'), $(this));
+    });
+
+    $('div#activationTrendTimeScale button').click(function () {
+        if (isLoading()) return;
+
+        radioButtonClick($('div#activationTrendTimeScale'), $(this));
+    });
+
+    $('div#activationTrendBy').buttonset();
+    $('div#activationTrendLevel').buttonset();
+    $('div#activationTrendTimeScale').buttonset();
+
+    $("#showSelector").selectmenu({
+        width: '100px',
+        change: function (event, data) {
+            var currentValue = data.item.value;
+            showAlert(currentValue);
+        }
+    });
+}
+
 function lifezoneButtonsetValueReset() {
     lifeZoneTime.time = 1;
     lifeZoneTime.week = 1;
@@ -319,33 +371,33 @@ function lifezoneButtonsetRefresh() {
     $('div#lifezonePartOfDayBtnset button[data-value="' + lifeZoneTime.time + '"]').addClass('active');
 }
 
-function parallelControlPanelInit(){
+function parallelControlPanelInit() {
     $('#parallelControlPanel button').button();
     $("#activationControlPanel button").css({
         width: '100px'
     });
-    
+
     //disable first
     disableParallelControl();
-    
+
     var parallelModeBtns = $("#parallelMode button");
-    
-    parallelModeBtns.click(function(){
+
+    parallelModeBtns.click(function () {
         if (isLoading()) return;
-        
-        radioButtonClick($("#parallelMode"),$(this));
+
+        radioButtonClick($("#parallelMode"), $(this));
         //reset all
-        $("#parallelMode button").each(function(){
+        $("#parallelMode button").each(function () {
             setModeOff($(this).attr('id'));
         });
         //set pressed item
         setModeOn($(this).attr('id'));
-        
-        if(firstMap.map)
+
+        if (firstMap.map)
             firstMap.map.closePopup();
-        if(comparisonMap.map)
+        if (comparisonMap.map)
             comparisonMap.map.closePopup();
-        
+
         //data reset
         loading('Data loading');
         firstMap.setParallelMaxMin();
@@ -353,9 +405,9 @@ function parallelControlPanelInit(){
         firstMap.updateLegend();
         firstMap.info.update();
         loadingDismiss();
-        
+
     });
-    
+
 }
 
 function actiationControlPanelInit() {
@@ -743,8 +795,8 @@ function submitBtnSetting() {
             showAlert("Please select a observation Target");
         } else if ($("#locationFilter input[type='checkbox']:checked").length == 0 && isNeedCheckCountry()) {
             showAlert("Please select a observation Location");
-        } else if(activeFunctionTmp == FUNC_QC && $("#locationFilter input[type='checkbox'][datatype='country']:checked").length > 1){
-                showAlert("Only allows of 1 country checked in CFR function");
+        } else if (activeFunctionTmp == FUNC_QC && $("#locationFilter input[type='checkbox'][datatype='country']:checked").length > 1) {
+            showAlert("Only allows of 1 country checked in CFR function");
         } else {
             resetIsClickFromFilterResult();
             //UI display change
@@ -765,80 +817,80 @@ function submitBtnSetting() {
                 console.log('switch to ' + activeFunctionTmp);
                 switch (getFunction()) {
                     //switch from activation
-                    case FUNC_PARALLEL:
-                        //console.log("region");
-                        firstMap.removePolygonMap();
-                        $('#parallelMode button').removeClass('active');
-                        setModeOff(MODE_PARALLEL_EXPORT);
-                        setModeOff(MODE_PARALLEL_IMPORT);
-//                        firstMap.info.update();
-                        if (firstMap.hasSnapshotBtn) {
-                            firstMap.removeSnapshot();
-                        }
-                        disableParallelControl();
-                        break;
-                        
-                    case FUNC_DISTBRANCH:
-                    case FUNC_ACTIVATION:
-                        console.log('switch from ' + FUNC_ACTIVATION);
-                        //un-pressed every mode btn
-                        $("#mode button.active").each(function () {
-                            console.log($(this).attr('id'));
-                            unactiveModeBtn($(this));
-                            $(this).removeClass('active');
-                        });
-                        firstMap.currentRegionIso = [];
-                        disableModeAndOverlay();
-                        //close overlay
-                        closeDealer();
-                        closeService();
-                        break;
-                        //switch from lifezone
-                    case FUNC_LIFEZONE:
-                        console.log('switch from ' + FUNC_LIFEZONE);
-                        removeHeatMap();
-                        disableLifezoneControl();
-                        firstMap.addSnapshot();
-                        break;
-                    case FUNC_ACTIVATION_TABLE:
-                        console.log('switch from ' + FUNC_ACTIVATION_TABLE);
-                        $('#tableContainer').empty();
-                        break;
+                case FUNC_PARALLEL:
+                    //console.log("region");
+                    firstMap.removePolygonMap();
+                    $('#parallelMode button').removeClass('active');
+                    setModeOff(MODE_PARALLEL_EXPORT);
+                    setModeOff(MODE_PARALLEL_IMPORT);
+                    //                        firstMap.info.update();
+                    if (firstMap.hasSnapshotBtn) {
+                        firstMap.removeSnapshot();
+                    }
+                    disableParallelControl();
+                    break;
 
-                    case FUNC_GAP:
-                        console.log('switch from ' + FUNC_GAP);
-                        //change table button text
-                        firstMap.currentRegionIso = [];
-                        firstMap.removePolygonMap();
-                        cleanBranch();
-                        break;
-                    case FUNC_QC:
-                        //reset
-                        currentView = DEFAULT_VIEW;
-                        
-                        console.log('switch from ' + FUNC_QC);
-                        //reset view button
-                        $('#qcView button').removeClass('active');
-                        
-                        
-                        //change table button text
-                        firstMap.currentRegionIso = [];
-                        firstMap.removePolygonMap();
-                        if(isModeActive(MODE_QC_MARKER)){
-                            removeSQMarker();
-                            setModeOff(MODE_QC_MARKER);
-                        }
-                            
-                        if(isModeActive(MODE_QC_REGION)){
-                            removeSQRegion();
-                            setModeOff(MODE_QC_REGION);
-                        }
-                        
+                case FUNC_DISTBRANCH:
+                case FUNC_ACTIVATION:
+                    console.log('switch from ' + FUNC_ACTIVATION);
+                    //un-pressed every mode btn
+                    $("#mode button.active").each(function () {
+                        console.log($(this).attr('id'));
+                        unactiveModeBtn($(this));
+                        $(this).removeClass('active');
+                    });
+                    firstMap.currentRegionIso = [];
+                    disableModeAndOverlay();
+                    //close overlay
+                    closeDealer();
+                    closeService();
+                    break;
+                    //switch from lifezone
+                case FUNC_LIFEZONE:
+                    console.log('switch from ' + FUNC_LIFEZONE);
+                    removeHeatMap();
+                    disableLifezoneControl();
+                    firstMap.addSnapshot();
+                    break;
+                case FUNC_ACTIVATION_TABLE:
+                    console.log('switch from ' + FUNC_ACTIVATION_TABLE);
+                    $('#tableContainer').empty();
+                    break;
+
+                case FUNC_GAP:
+                    console.log('switch from ' + FUNC_GAP);
+                    //change table button text
+                    firstMap.currentRegionIso = [];
+                    firstMap.removePolygonMap();
+                    cleanBranch();
+                    break;
+                case FUNC_QC:
+                    //reset
+                    currentView = DEFAULT_VIEW;
+
+                    console.log('switch from ' + FUNC_QC);
+                    //reset view button
+                    $('#qcView button').removeClass('active');
+
+
+                    //change table button text
+                    firstMap.currentRegionIso = [];
+                    firstMap.removePolygonMap();
+                    if (isModeActive(MODE_QC_MARKER)) {
                         removeSQMarker();
+                        setModeOff(MODE_QC_MARKER);
+                    }
+
+                    if (isModeActive(MODE_QC_REGION)) {
                         removeSQRegion();
-                        disableQCControl();
-                        mapInit();
-                        break;
+                        setModeOff(MODE_QC_REGION);
+                    }
+
+                    removeSQMarker();
+                    removeSQRegion();
+                    disableQCControl();
+                    mapInit();
+                    break;
                 }
                 needToForceExtractMap = true;
                 setFunction(activeFunctionTmp);
@@ -879,141 +931,141 @@ function submitBtnSetting() {
             saveLog();
             //            console.log(getFunction());
             switch (getFunction()) {
-                case FUNC_ACTIVATION:
-                case FUNC_DISTBRANCH:
+            case FUNC_ACTIVATION:
+            case FUNC_DISTBRANCH:
 
-                    if (getFunction() == FUNC_DISTBRANCH && $('input[name="branchDist"]:checked').length == 0 && $('input[name="distBranch"]:checked').length == 0 && $('input[name="onlineDist"]:checked').length == 0) {
-                        showAlert('plz check any dist/branch');
-                        break;
-                    }
-
-                    $('#tableContainer').hide();
-                    $('#workset').show('medium');
-
-                    enableModeAndOverlay();
-
-                    if ($("#mode button.active").length == 0 || $("button#region").hasClass("active")) {
-                        setModeOn(MODE_REGION);
-                        if (!$("button#region").hasClass("active"))
-                            modeBtnPress($("button#region"));
-                        
-                        if (!firstMap.hasSnapshotBtn) {
-                            firstMap.addSnapshot();
-                        }
-                        
-                        //$("button#region").toggleClass("active");
-
-                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
-                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
-
-                        comparisonMap.fromFormatStr = undefined;
-                        comparisonMap.toFormatStr = undefined;
-
-                        firstMap.zoomToSelectedLocation();
-                        submitRegion();
-                    }
-                    if ($("button#marker").hasClass("active")) {
-                        if (!$("button#marker").hasClass("active"))
-                            modeBtnPress($("button#marker"));
-                        //$("button#marker").toggleClass("active");
-
-                        needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
-                        console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
-
-                        comparisonMap.fromFormatStr = undefined;
-                        comparisonMap.toFormatStr = undefined;
-
-                        firstMap.zoomToSelectedLocation();
-                        submitMarker();
-                    }
-                    //button class reset
-
-                    if (isServiceLayerShowing) {
-                        openService();
-                    }
-
-                    if (isDealerLayerShowing) {
-                        openDealer();
-                    }
-
-                    //reset time section button
-                    $("#timeSection button").each(function () {
-                        $(this).removeClass("btn_pressed").addClass("btn_unpressed");
-                    });
-
+                if (getFunction() == FUNC_DISTBRANCH && $('input[name="branchDist"]:checked').length == 0 && $('input[name="distBranch"]:checked').length == 0 && $('input[name="onlineDist"]:checked').length == 0) {
+                    showAlert('plz check any dist/branch');
                     break;
-                case FUNC_LIFEZONE:
-                    enableLifezoneControl();
+                }
 
-                    $('#tableContainer').hide();
-                    $('#workset').show('medium');
-                    firstMap.zoomToSelectedLocation();
-                    submitHeatMap();
-                    break;
+                $('#tableContainer').hide();
+                $('#workset').show('medium');
 
-                case FUNC_ACTIVATION_TABLE:
-                    //clear the content
-                    $(tableContainer).empty();
+                enableModeAndOverlay();
 
-                    //hide map
-                    $('#workset').hide();
-                    $('#tableContainer').show('medium');
+                if ($("#mode button.active").length == 0 || $("button#region").hasClass("active")) {
+                    setModeOn(MODE_REGION);
+                    if (!$("button#region").hasClass("active"))
+                        modeBtnPress($("button#region"));
 
-                    showTable();
-
-                    break;
-
-                case FUNC_GAP:
-                    if (!isGapButtonCanShow) {
-                        showAlert('GAP mode only supported in single selected country');
-                        return;
+                    if (!firstMap.hasSnapshotBtn) {
+                        firstMap.addSnapshot();
                     }
 
-                    $('#tableContainer').hide();
-                    $('#workset').show('medium');
-                    submitGap();
-                    firstMap.zoomToSelectedLocation();
-                    break;
+                    //$("button#region").toggleClass("active");
 
-                case FUNC_QC:
-                    enableQCControl();
-                    
-                    $('#tableContainer').hide();
-                    $('#workset').show('medium');
-                    if ($("#qcMode button.active").length == 0 || $("button#qcRegion").hasClass("active")) {
-                        setModeOn(MODE_QC_REGION);
-                        if (!$("button#qcRegion").hasClass("active"))
-                            modeBtnPress($("button#qcRegion"));
-
-                        submitSQRegion();
-                    }
-                    if ($("button#qcMarker").hasClass("active")) {
-                        if (!$("button#qcMarker").hasClass("active"))
-                            modeBtnPress($("button#qcMarker"));
-
-                        submitSQMarker();
-                    }
-                    if(!$('#qcView button[data-value="'+currentView+'"]').hasClass("active"))
-                        $('#qcView button[data-value="'+currentView+'"]').addClass("active");
-                    
                     needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
                     console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+
+                    comparisonMap.fromFormatStr = undefined;
+                    comparisonMap.toFormatStr = undefined;
+
                     firstMap.zoomToSelectedLocation();
-                    break;
-                    
-                case FUNC_PARALLEL:
-                    enableParallelControl();
-                    $('#tableContainer').hide();
-                    $('#workset').show('medium');
-                    
-                    //first time launching
-                    if(!isModeActive(MODE_PARALLEL_IMPORT) && !isModeActive(MODE_PARALLEL_EXPORT)){
-                        setModeOn(MODE_PARALLEL_IMPORT);
-                        $('button#'+MODE_PARALLEL_IMPORT).addClass('active');
-                    }
-                        
-                    submitParallel();
-                    break;
+                    submitRegion();
+                }
+                if ($("button#marker").hasClass("active")) {
+                    if (!$("button#marker").hasClass("active"))
+                        modeBtnPress($("button#marker"));
+                    //$("button#marker").toggleClass("active");
+
+                    needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+                    console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+
+                    comparisonMap.fromFormatStr = undefined;
+                    comparisonMap.toFormatStr = undefined;
+
+                    firstMap.zoomToSelectedLocation();
+                    submitMarker();
+                }
+                //button class reset
+
+                if (isServiceLayerShowing) {
+                    openService();
+                }
+
+                if (isDealerLayerShowing) {
+                    openDealer();
+                }
+
+                //reset time section button
+                $("#timeSection button").each(function () {
+                    $(this).removeClass("btn_pressed").addClass("btn_unpressed");
+                });
+
+                break;
+            case FUNC_LIFEZONE:
+                enableLifezoneControl();
+
+                $('#tableContainer').hide();
+                $('#workset').show('medium');
+                firstMap.zoomToSelectedLocation();
+                submitHeatMap();
+                break;
+
+            case FUNC_ACTIVATION_TABLE:
+                //clear the content
+                $(tableContainer).empty();
+
+                //hide map
+                $('#workset').hide();
+                $('#tableContainer').show('medium');
+
+                showTable();
+
+                break;
+
+            case FUNC_GAP:
+                if (!isGapButtonCanShow) {
+                    showAlert('GAP mode only supported in single selected country');
+                    return;
+                }
+
+                $('#tableContainer').hide();
+                $('#workset').show('medium');
+                submitGap();
+                firstMap.zoomToSelectedLocation();
+                break;
+
+            case FUNC_QC:
+                enableQCControl();
+
+                $('#tableContainer').hide();
+                $('#workset').show('medium');
+                if ($("#qcMode button.active").length == 0 || $("button#qcRegion").hasClass("active")) {
+                    setModeOn(MODE_QC_REGION);
+                    if (!$("button#qcRegion").hasClass("active"))
+                        modeBtnPress($("button#qcRegion"));
+
+                    submitSQRegion();
+                }
+                if ($("button#qcMarker").hasClass("active")) {
+                    if (!$("button#qcMarker").hasClass("active"))
+                        modeBtnPress($("button#qcMarker"));
+
+                    submitSQMarker();
+                }
+                if (!$('#qcView button[data-value="' + currentView + '"]').hasClass("active"))
+                    $('#qcView button[data-value="' + currentView + '"]').addClass("active");
+
+                needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
+                console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
+                firstMap.zoomToSelectedLocation();
+                break;
+
+            case FUNC_PARALLEL:
+                enableParallelControl();
+                $('#tableContainer').hide();
+                $('#workset').show('medium');
+
+                //first time launching
+                if (!isModeActive(MODE_PARALLEL_IMPORT) && !isModeActive(MODE_PARALLEL_EXPORT)) {
+                    setModeOn(MODE_PARALLEL_IMPORT);
+                    $('button#' + MODE_PARALLEL_IMPORT).addClass('active');
+                }
+
+                submitParallel();
+                break;
             }
             //text in date button
             var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("<br>(" + $('button.btn_pressed').children('span').text() + ")");
@@ -1075,19 +1127,18 @@ function submitGap() {
     needToForceExtractMap = false;
 }
 
-function submitParallel(){
+function submitParallel() {
     loading("Data loading...");
-    
-    if(observeTarget.length == 0){
+
+    if (observeTarget.length == 0) {
         firstMap.info.update();
         firstMap.cleanMap();
         loadingDismiss();
-    }else{
-        if(JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !needToForceExtractMap){
+    } else {
+        if (JSON.stringify(firstMap.currentRegionIso) == JSON.stringify(observeLoc) && !needToForceExtractMap) {
             console.log("same world region");
             ajaxFetchParallelValue();
-        }
-        else{
+        } else {
             console.log("diff world region");
             ajaxExtractParallelMap(ajaxFetchParallelValue);
         }
@@ -1351,18 +1402,18 @@ function enableParallelControl() {
 function disableQCControl() {
     //    console.log('disable activation');
     $("#qcControlPanel button").attr("disabled", true);
-    $("#qcCategory").selectmenu( "disable" );
-    
+    $("#qcCategory").selectmenu("disable");
+
 }
 
 function enableQCControl() {
     //    console.log('enable activation');
     $("#qcControlPanel button").removeAttr("disabled");
-    $("#qcCategory").selectmenu( "enable" );
+    $("#qcCategory").selectmenu("enable");
 }
 
 //return current mode whether need check country or not
-function isNeedCheckCountry(){
+function isNeedCheckCountry() {
     return $('#filterCountryContainer').is(':visible')
 }
 

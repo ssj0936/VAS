@@ -1,7 +1,7 @@
 "use strict";
-var countryGapModeSupported = ['IND','IDN','VNM','PHL','BGD','MMR'];
+var countryGapModeSupported = ['IND', 'IDN', 'VNM', 'PHL', 'BGD', 'MMR'];
 var countryNeedToShowDistBranch = ['IND'];
-var countryNeedToShowGAPInL1 = new Set(['VNM','PHL']);
+var countryNeedToShowGAPInL1 = new Set(['VNM', 'PHL']);
 
 //2016-11-23 update: only apply to enable item
 function checkChild(el, check) {
@@ -54,8 +54,10 @@ function checkParent(el) {
 }
 
 function checkboxDeviceInit() {
-    
-    var productUl = jQuery('<ul/>',{id:'productUl'}).appendTo($("#deviceFilter"));
+
+    var productUl = jQuery('<ul/>', {
+        id: 'productUl'
+    }).appendTo($("#deviceFilter"));
     //ui-icon-squaresmall-plus
     for (var productName in allDevicesList) {
         var li = jQuery('<li/>').appendTo($(productUl));
@@ -87,10 +89,10 @@ function checkboxDeviceInit() {
             value: productName,
             datatype: "product",
             devices: productName,
-            'data-productID':productTopProductIDList[productName],
-            'data-productName':productName,
-            'data-modelName':productName,
-            'data-devicesName':productName,
+            'data-productID': productTopProductIDList[productName],
+            'data-productName': productName,
+            'data-modelName': productName,
+            'data-devicesName': productName,
             name: "devicesList",
         }).css('display', 'inline-block').appendTo($(li));
 
@@ -101,7 +103,7 @@ function checkboxDeviceInit() {
 
         var modelUl = jQuery('<ul/>').appendTo($(productUl)).hide();
 
-        for(var modelName in allDevicesList[productName]){
+        for (var modelName in allDevicesList[productName]) {
             var li = jQuery('<li/>').appendTo(modelUl);
             //all product
             //collapse icon
@@ -129,10 +131,10 @@ function checkboxDeviceInit() {
                 type: 'checkbox',
                 value: modelName,
                 datatype: "model",
-                'data-productID':productTopProductIDList[productName],
-                'data-productName':productName,
-                'data-modelName':modelName,
-                'data-devicesName':modelName,
+                'data-productID': productTopProductIDList[productName],
+                'data-productName': productName,
+                'data-modelName': modelName,
+                'data-devicesName': modelName,
                 name: "devicesList",
             }).css('display', 'inline-block').appendTo($(li));
 
@@ -150,10 +152,10 @@ function checkboxDeviceInit() {
                     type: 'checkbox',
                     value: allDevicesList[productName][modelName][i],
                     datatype: "devices",
-                    'data-productID':productTopProductIDList[productName],
-                    'data-productName':productName,
-                    'data-modelName':modelName,
-                    'data-devicesName':allDevicesList[productName][modelName][i],
+                    'data-productID': productTopProductIDList[productName],
+                    'data-productName': productName,
+                    'data-modelName': modelName,
+                    'data-devicesName': allDevicesList[productName][modelName][i],
                     name: "devicesList",
                 }).appendTo($(li));
                 jQuery('<label/>', {
@@ -175,10 +177,10 @@ function checkboxDeviceInit() {
             observeTargetDeviceOnlyTmp.length = 0;
             var checktarget = $("#productUl");
             checkDevicePush(checktarget);
-//            console.log(observeTargetTmp);
+            //            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
-//            console.log(specDeviceTmp);
-            
+            //            console.log(specDeviceTmp);
+
             ajaxGetDeviceSpec(specDeviceTmp);
             disableSubmit();
         });
@@ -186,58 +188,58 @@ function checkboxDeviceInit() {
 }
 
 function checkboxLocationInit(locSet) {
-    
+
     $("#locationFilter input").off();
     $("#locationFilter").empty();
     var worldList = [];
-  
+
     var allUl = jQuery('<ul/>').appendTo($("#locationFilter"));
 
     for (var terrorityName in locSet) {
         //work around
-        if(terrorityName == "CHINA")
+        if (terrorityName == "CHINA")
             continue;
-        
+
         var li = jQuery('<li/>').attr("class", "filter_country").appendTo($(allUl));
         jQuery('<span />', {
-            class: "ui-icon ui-icon-circlesmall-plus",
-        })
-        .css({
-            'display': 'inline-block',
-            'font-size': '18px',
-            'height': '12px',
-            'width': '12px',
-            'margin-right': '3px',
-        })
-        .click(function () {
-            if ($(this).hasClass('ui-icon-circlesmall-plus')) {
-                $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
-            } else {
-                $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
-            }
-            $(this).parent().next('ul').slideToggle();
-        })
-        .appendTo(li);
+                class: "ui-icon ui-icon-circlesmall-plus",
+            })
+            .css({
+                'display': 'inline-block',
+                'font-size': '18px',
+                'height': '12px',
+                'width': '12px',
+                'margin-right': '3px',
+            })
+            .click(function () {
+                if ($(this).hasClass('ui-icon-circlesmall-plus')) {
+                    $(this).removeClass("ui-icon-circlesmall-plus").addClass("ui-icon-circlesmall-minus");
+                } else {
+                    $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+                }
+                $(this).parent().next('ul').slideToggle();
+            })
+            .appendTo(li);
 
-            //continents
-            jQuery('<input/>', {
-                    id: 'filter_location_' + terrorityName,
-                    type: 'checkbox',
-                    datatype: "terrority",
-                    name: "loc",
-                })
-                .css('display', 'inline-block')
-                .appendTo($(li));
+        //continents
+        jQuery('<input/>', {
+                id: 'filter_location_' + terrorityName,
+                type: 'checkbox',
+                datatype: "terrority",
+                name: "loc",
+            })
+            .css('display', 'inline-block')
+            .appendTo($(li));
 
-            jQuery('<label/>', {
-                text: terrorityName,
-                for: 'filter_location_' + terrorityName
-            }).appendTo(li);
-        
-    
+        jQuery('<label/>', {
+            text: terrorityName,
+            for: 'filter_location_' + terrorityName
+        }).appendTo(li);
+
+
         var terrorityUl = jQuery('<ul/>').appendTo($(allUl)).hide();
-    
-        for(var countryName in locSet[terrorityName]){
+
+        for (var countryName in locSet[terrorityName]) {
             var li = jQuery('<li/>').attr("class", "filter_country").appendTo($(terrorityUl));
 
             //continents
@@ -258,9 +260,9 @@ function checkboxLocationInit(locSet) {
             }).appendTo(li);
         }
     }
-    
+
     //check the item already check
-    if(observeLocTmp.length != 0){
+    if (observeLocTmp.length != 0) {
         for (var i = 0; i < observeLocTmp.length; i++) {
             $("input[iso='" + observeLocTmp[i] + "']").each(function () {
                 var $this = $(this);
@@ -271,32 +273,32 @@ function checkboxLocationInit(locSet) {
         }
         //preventing observeLocTmp contain country not in Range while switching function from Activation to Gap(or Dist/Branch)
         //ex. ['TWN','IDN','IND'] -> ['IDN','IND'] need to remove country not in GAP list
-        
+
         //so need to re-check
         observeLocTmp.length = 0;
         observeLocFullNameTmp.length = 0;
         checkLocPush();
-        if(activeFunctionTmp == FUNC_DISTBRANCH){
+        if (activeFunctionTmp == FUNC_DISTBRANCH) {
             var needToShowDistBranch = false;
-            for(var i in observeLocTmp){
-                if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+            for (var i in observeLocTmp) {
+                if (countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1) {
                     needToShowDistBranch = true;
                     break;
                 }
             }
 
             //create dist branch filter
-            if(needToShowDistBranch && observeLocTmp.length == 1){
-                if(!isDistBranchFilterShowing){
+            if (needToShowDistBranch && observeLocTmp.length == 1) {
+                if (!isDistBranchFilterShowing) {
                     isDistBranchFilterShowing = true;
                     //filter show up
-                    $('#section_branch_dist').stop(true,true).fadeIn('medium');
+                    $('#section_branch_dist').stop(true, true).fadeIn('medium');
                     $('#section_branch_dist').collapsible('open');
 
                     ajaxLoadBranchDist();
                 }
-            }else{
-                if(isDistBranchFilterShowing){
+            } else {
+                if (isDistBranchFilterShowing) {
                     //data delete
                     observeDistBranch.length = 0;
                     //UI remove
@@ -305,52 +307,52 @@ function checkboxLocationInit(locSet) {
             }
         }
     }
-    
+
     //listener setting
     $("#locationFilter input").each(function (index) {
         $(this).on("click", function () {
 
             checkChild(this, ($(this).prop("checked") ? true : false));
             checkParent(this);
-            
+
             if (getFunction() == FUNC_LIFEZONE) {
                 var locStr = '';
-                $('input:checked[name="loc"][datatype="country"][inLifezone="0"]').each(function(){
-                    locStr += $(this).val()+', ';
+                $('input:checked[name="loc"][datatype="country"][inLifezone="0"]').each(function () {
+                    locStr += $(this).val() + ', ';
                     $(this).prop('checked', false);
                     checkParent(this);
                 });
-                
-                if(locStr != '')
+
+                if (locStr != '')
                     showAlert("cannot choose this location<br>because <b>" + locStr + "</b> is not in the dataset [<b>Lifezone</b>]");
             }
 
             observeLocTmp.length = 0;
             observeLocFullNameTmp.length = 0;
             checkLocPush();
-//            console.log(observeLocTmp);
-//            console.log(observeLocFullNameTmp);
-            if(activeFunctionTmp == FUNC_DISTBRANCH){
+            //            console.log(observeLocTmp);
+            //            console.log(observeLocFullNameTmp);
+            if (activeFunctionTmp == FUNC_DISTBRANCH) {
                 var needToShowDistBranch = false;
-                for(var i in observeLocTmp){
-                    if(countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1){
+                for (var i in observeLocTmp) {
+                    if (countryNeedToShowDistBranch.indexOf(observeLocTmp[i]) != -1) {
                         needToShowDistBranch = true;
                         break;
                     }
                 }
 
                 //create dist branch filter
-                if(needToShowDistBranch && observeLocTmp.length == 1){
-                    if(!isDistBranchFilterShowing){
+                if (needToShowDistBranch && observeLocTmp.length == 1) {
+                    if (!isDistBranchFilterShowing) {
                         isDistBranchFilterShowing = true;
                         //filter show up
-                        $('#section_branch_dist').stop(true,true).fadeIn('medium');
+                        $('#section_branch_dist').stop(true, true).fadeIn('medium');
                         $('#section_branch_dist').collapsible('open');
 
                         ajaxLoadBranchDist();
                     }
-                }else{
-                    if(isDistBranchFilterShowing){
+                } else {
+                    if (isDistBranchFilterShowing) {
                         //data delete
                         observeDistBranch.length = 0;
                         //UI remove
@@ -447,35 +449,34 @@ function checkboxSpecInit(checkOption) {
     );
 }
 
-function branchDistInit(){
+function branchDistInit() {
     //branch / Dist
     $('#locset').buttonset();
 
     $('.locset').each(function () {
         $(this).click(function ($this) {
             return function () {
-                if(!$this.hasClass('active'))
-                {
+                if (!$this.hasClass('active')) {
                     $('.locset').removeClass('active');
                     $this.addClass('active');
 
                     cleanDistBranchFilter();
-                    switch($this.attr('id')){
-                        case 'branch':
-                            $('#distToBranch').stop(true,true).fadeOut('medium');
-                            $('#onlineDist').stop(true,true).fadeOut('medium');
-                            $('#branchToDist').stop(true,true).fadeIn('medium');
-                            break;
-                        case 'dist':
-                            $('#branchToDist').stop(true,true).fadeOut('medium');
-                            $('#onlineDist').stop(true,true).fadeOut('medium');
-                            $('#distToBranch').stop(true,true).fadeIn('medium');
-                            break;
-                        case 'online':
-                            $('#branchToDist').stop(true,true).fadeOut('medium');
-                            $('#distToBranch').stop(true,true).fadeOut('medium');
-                            $('#onlineDist').stop(true,true).fadeIn('medium');
-                            break;
+                    switch ($this.attr('id')) {
+                    case 'branch':
+                        $('#distToBranch').stop(true, true).fadeOut('medium');
+                        $('#onlineDist').stop(true, true).fadeOut('medium');
+                        $('#branchToDist').stop(true, true).fadeIn('medium');
+                        break;
+                    case 'dist':
+                        $('#branchToDist').stop(true, true).fadeOut('medium');
+                        $('#onlineDist').stop(true, true).fadeOut('medium');
+                        $('#distToBranch').stop(true, true).fadeIn('medium');
+                        break;
+                    case 'online':
+                        $('#branchToDist').stop(true, true).fadeOut('medium');
+                        $('#distToBranch').stop(true, true).fadeOut('medium');
+                        $('#onlineDist').stop(true, true).fadeIn('medium');
+                        break;
                     }
                 }
             }
@@ -483,20 +484,20 @@ function branchDistInit(){
     });
 }
 
-function createDistBranchCheckBox(){
+function createDistBranchCheckBox() {
 
     //dist -> branch
     var container = $('#distToBranch');
-    
+
     var ul = jQuery('<ul/>').appendTo(container);
     var li = jQuery('<li/>').attr("id", "filter_distBranch_li").appendTo(ul);
     jQuery('<input/>', {
         id: 'filter_distBranch_' + "all",
         type: 'checkbox',
         value: 'all',
-        'data-dist':'all',
-        'data-branch':'all',
-        'data-isDeepestLevel':false,
+        'data-dist': 'all',
+        'data-branch': 'all',
+        'data-isDeepestLevel': false,
         name: "distBranch",
     }).appendTo($(li));
     jQuery('<label/>', {
@@ -505,12 +506,12 @@ function createDistBranchCheckBox(){
     }).appendTo(li);
 
     var distUl = jQuery('<ul/>').appendTo(ul);
-    
-    
-    for(var i in distBranch){
+
+
+    for (var i in distBranch) {
         var dist = distBranch[i].dist;
         var branchList = distBranch[i].branch;
-        
+
         var li = jQuery('<li/>').appendTo(distUl);
         //all product
         //collapse icon
@@ -538,9 +539,9 @@ function createDistBranchCheckBox(){
             id: 'filter_distBranch_' + dist,
             type: 'checkbox',
             value: dist,
-            'data-dist':dist,
-            'data-branch':dist,
-            'data-isDeepestLevel':false,
+            'data-dist': dist,
+            'data-branch': dist,
+            'data-isDeepestLevel': false,
             name: "distBranch",
         }).css('display', 'inline-block').appendTo($(li));
 
@@ -551,16 +552,16 @@ function createDistBranchCheckBox(){
 
         var branchUl = jQuery('<ul/>').appendTo(distUl).hide();
 
-        for(var index in branchList){
+        for (var index in branchList) {
             var branchName = branchList[index]
             var li = jQuery('<li/>').appendTo(branchUl);
             jQuery('<input/>', {
                 id: 'filter_distBranch_' + dist + '_' + branchName,
                 type: 'checkbox',
                 value: branchName,
-                'data-dist':dist,
-                'data-branch':branchName,
-                'data-isDeepestLevel':true,
+                'data-dist': dist,
+                'data-branch': branchName,
+                'data-isDeepestLevel': true,
                 name: "distBranch",
             }).css('display', 'inline-block').appendTo($(li));
 
@@ -570,19 +571,19 @@ function createDistBranchCheckBox(){
             }).appendTo(li);
         }
     }
-    
+
     //branch -> dist
     var container = $('#branchToDist');
-    
+
     var ul = jQuery('<ul/>').appendTo(container);
     var li = jQuery('<li/>').attr("id", "filter_branchDist_li").appendTo(ul);
     jQuery('<input/>', {
         id: 'filter_branchDist' + "all",
         type: 'checkbox',
         value: 'all',
-        'data-dist':'all',
-        'data-branch':'all',
-        'data-isDeepestLevel':false,
+        'data-dist': 'all',
+        'data-branch': 'all',
+        'data-isDeepestLevel': false,
         name: "branchDist",
     }).appendTo($(li));
     jQuery('<label/>', {
@@ -591,11 +592,11 @@ function createDistBranchCheckBox(){
     }).appendTo(li);
 
     var branchUl = jQuery('<ul/>').appendTo(ul);
-    
-    for(var i in branchDist){
+
+    for (var i in branchDist) {
         var distList = branchDist[i].dist;
         var branch = branchDist[i].branch;
-        
+
         var li = jQuery('<li/>').appendTo(branchUl);
         //all product
         //collapse icon
@@ -623,9 +624,9 @@ function createDistBranchCheckBox(){
             id: 'filter_branchDist' + branch,
             type: 'checkbox',
             value: branch,
-            'data-dist':branch,
-            'data-branch':branch,
-            'data-isDeepestLevel':false,
+            'data-dist': branch,
+            'data-branch': branch,
+            'data-isDeepestLevel': false,
             name: "branchDist",
         }).css('display', 'inline-block').appendTo($(li));
 
@@ -636,16 +637,16 @@ function createDistBranchCheckBox(){
 
         var distUl = jQuery('<ul/>').appendTo(branchUl).hide();
 
-        for(var index in distList){
+        for (var index in distList) {
             var distName = distList[index]
             var li = jQuery('<li/>').appendTo(distUl);
             jQuery('<input/>', {
                 id: 'filter_branchDist' + branch + '_' + distName,
                 type: 'checkbox',
                 value: distName,
-                'data-dist':distName,
-                'data-branch':branch,
-                'data-isDeepestLevel':true,
+                'data-dist': distName,
+                'data-branch': branch,
+                'data-isDeepestLevel': true,
                 name: "branchDist",
             }).css('display', 'inline-block').appendTo($(li));
 
@@ -658,16 +659,16 @@ function createDistBranchCheckBox(){
 
     //online -> dist
     var container = $('#onlineDist');
-    
+
     var ul = jQuery('<ul/>').appendTo(container);
     var li = jQuery('<li/>').attr("id", "filter_onlineDist_li").appendTo(ul);
     jQuery('<input/>', {
         id: 'filter_onlineDist_' + "all",
         type: 'checkbox',
         value: 'all',
-        'data-online':'all',
-        'data-dist':'all',
-        'data-isDeepestLevel':false,
+        'data-online': 'all',
+        'data-dist': 'all',
+        'data-isDeepestLevel': false,
         name: "onlineDist",
     }).appendTo($(li));
     jQuery('<label/>', {
@@ -676,12 +677,12 @@ function createDistBranchCheckBox(){
     }).appendTo(li);
 
     var onlineUl = jQuery('<ul/>').appendTo(ul);
-    
-    
-    for(var i in onlineDist){
+
+
+    for (var i in onlineDist) {
         var online = onlineDist[i].online_dist;
         var distList = onlineDist[i].dist;
-        
+
         var li = jQuery('<li/>').appendTo(onlineUl);
         //all product
         //collapse icon
@@ -709,9 +710,9 @@ function createDistBranchCheckBox(){
             id: 'filter_onlineDist_' + online,
             type: 'checkbox',
             value: online,
-            'data-online':online,
-            'data-dist':online,
-            'data-isDeepestLevel':false,
+            'data-online': online,
+            'data-dist': online,
+            'data-isDeepestLevel': false,
             name: "onlineDist",
         }).css('display', 'inline-block').appendTo($(li));
 
@@ -722,16 +723,16 @@ function createDistBranchCheckBox(){
 
         var distUl = jQuery('<ul/>').appendTo(onlineUl).hide();
 
-        for(var index in distList){
+        for (var index in distList) {
             var distName = distList[index]
             var li = jQuery('<li/>').appendTo(distUl);
             jQuery('<input/>', {
                 id: 'filter_onlineDist_' + online + '_' + distName,
                 type: 'checkbox',
                 value: distName,
-                'data-online':online,
-                'data-dist':distName,
-                'data-isDeepestLevel':true,
+                'data-online': online,
+                'data-dist': distName,
+                'data-isDeepestLevel': true,
                 name: "onlineDist",
             }).css('display', 'inline-block').appendTo($(li));
 
@@ -748,17 +749,17 @@ function createDistBranchCheckBox(){
             checkParent(this);
         });
     });
-    
+
 }
 
-function filterRecord(){
+function filterRecord() {
     //dist branch
     observeDistBranch.length = 0;
     var isOnlineDist = false;
-    $('input:checked[data-isdeepestlevel=true]').each(function(){
+    $('input:checked[data-isdeepestlevel=true]').each(function () {
         if ($(this)[0].hasAttribute('data-branch')) {
             observeDistBranch.push({
-                dist : $(this).attr('data-dist'),
+                dist: $(this).attr('data-dist'),
                 branch: $(this).attr('data-branch'),
             });
         } else if ($(this)[0].hasAttribute('data-online')) {
@@ -774,30 +775,30 @@ function filterRecord(){
     //get selected branch
     observeBranchName.length = 0;
     var observeBranchNameTmp = [];
-    $('input:checked[name="branchDist"], input:checked[name="distBranch"]').each(function(){
+    $('input:checked[name="branchDist"], input:checked[name="distBranch"]').each(function () {
         observeBranchNameTmp.push($(this).attr('data-branch'));
     });
     observeBranchName = observeBranchNameTmp.filter(
-        function(value, index, self) { 
+        function (value, index, self) {
             return self.indexOf(value) === index;
         }
     );
 
     observeDistName.length = 0;
-    $('input:checked[name="onlineDist"]').each(function(){
+    $('input:checked[name="onlineDist"]').each(function () {
         observeDistName.push($(this).attr('data-dist'));
     });
 }
 
-function filterRecordClean(){
+function filterRecordClean() {
     //dist branch
     observeDistBranch.length = 0;
     observeBranchName.length = 0;
     observeDistName.length = 0;
 }
 
-function destroyDistBranchCheckBox(){
-    
+function destroyDistBranchCheckBox() {
+
     //clean
     $('#distToBranch').empty();
     $('#distToBranch').hide();
@@ -808,35 +809,35 @@ function destroyDistBranchCheckBox(){
     distBranch.length = 0;
     branchDist.length = 0;
     onlineDist.length = 0;
-    
-    
+
+
     $('#locset button').removeClass('active');
-    
+
     //filter show up
-    if(!$('#section_branch_dist').collapsible('collapsed'))
+    if (!$('#section_branch_dist').collapsible('collapsed'))
         $('#section_branch_dist').collapsible('close');
-    $('#section_branch_dist').stop(true,true).fadeOut('medium');
-    
+    $('#section_branch_dist').stop(true, true).fadeOut('medium');
+
     isDistBranchFilterShowing = false;
 }
 
 function checkDevicePush(el) {
-    el.children("li").each(function(){
-        if($(this).children("input").is(":checked")){
+    el.children("li").each(function () {
+        if ($(this).children("input").is(":checked")) {
             observeTargetTmp.push({
                 model: $("input", this).attr("data-modelName"),
                 devices: $("input", this).val(),
                 product: $("input", this).attr("data-productName"),
                 datatype: $("input", this).attr("datatype"),
             });
-        }else{
+        } else {
             checkDevicePush($(this).next("ul"));
         }
     });
 }
 
 function checkLocPush() {
-    $('input:checked[name="loc"][datatype="country"]').each(function(){
+    $('input:checked[name="loc"][datatype="country"]').each(function () {
         observeLocTmp.push($(this).attr("iso"));
         observeLocFullNameTmp.push($(this).val());
     });
@@ -854,9 +855,9 @@ function checkSpecPush(el, hardware) {
 
 
 function updateSpecFilter(el) {
-    $('input:checked[name="devicesList"][datatype="devices"]').each(function(){
+    $('input:checked[name="devicesList"][datatype="devices"]').each(function () {
         specDeviceTmp.push($(this).val());
-        
+
         observeTargetDeviceOnlyTmp.push({
             model: $(this).attr("data-modelName"),
             devices: $(this).val(),
@@ -866,14 +867,14 @@ function updateSpecFilter(el) {
     });
 }
 
-function getFilterModel(){
+function getFilterModel() {
     var model = [];
-    $('input:checked[name="devicesList"][datatype="devices"]').each(function(){
+    $('input:checked[name="devicesList"][datatype="devices"]').each(function () {
         model.push($(this).attr("data-modelName"));
     });
-    
+
     return model.filter(
-        function(value, index, self) { 
+        function (value, index, self) {
             return self.indexOf(value) === index;
         }
     );

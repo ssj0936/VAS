@@ -12,22 +12,23 @@ var TAB_ACTIVATION = 'activation',
     TAB_LIFEZONE = 'lifezone';
 var defaultTab = TAB_ACTIVATION,
     currentTab = TAB_ACTIVATION;
+
 function overviewSetting() {
-    
+
     $('li#info').click(function () {
         //container init
         $('#popupChartContainer')
             .append('<div id="overview" style="height:100%"><div id="overviewContainer" class="container" style="height: 100%;"><ul style="margin-top:10px;" class="nav nav-tabs"><li class="active overviewtab" id="tabActivation" data-value="activation"><a href="#">Activation</a></li><li class="overviewtab" id="tabLifezone" data-value="lifezone"><a href="#">Lifezone</a></li></ul><div id="overviewContent" class="container" style="height: 90%;"></div></div></div>');
 
         //tab pager
-        $('.overviewtab').click(function(){
-            if($(this).attr('data-value') == currentTab) return;
+        $('.overviewtab').click(function () {
+            if ($(this).attr('data-value') == currentTab) return;
 
             $('.overviewtab').removeClass('active');
             $(this).addClass('active');
 
             currentTab = $(this).attr('data-value');
-//            console.log(currentTab);
+            //            console.log(currentTab);
             overviewInit();
         });
         popupChartShow(true);
@@ -35,24 +36,23 @@ function overviewSetting() {
     });
 }
 
-function overviewInit(){
+function overviewInit() {
     $('#overviewContent').empty();
 
     $.ajax({
         url: 'php/_dbqueryGetOverview.php',
         type: "GET",
         dataType: 'json',
-        data:{
-            dataset:currentTab,
+        data: {
+            dataset: currentTab,
         },
         success: function (json) {
-//            console.log(json);
-            
+            //            console.log(json);
+
             //no data
-            if(json.allCount == 0){
+            if (json.allCount == 0) {
                 $('#overviewContent').html('<h2> No history record </h2>');
-            }
-            else{
+            } else {
                 overviewElementCreate();
                 //btn setting
                 $('#overviewDatebtn button').button({
@@ -66,7 +66,7 @@ function overviewInit(){
                         secondary: "ui-icon-carat-1-s",
                     }
                 }).css({
-//                    width: '180px'
+                    //                    width: '180px'
                 });
 
                 overviewDateBtnInit();
@@ -92,7 +92,7 @@ function overviewInit(){
 
 function overviewElementCreate() {
     var container = $('#overviewContent')
-        .append('<div id="overviewTop"></div><div id="overviewCenter"><div class="row " style="height: 100%;"><div class="overviewCenter col-xs-3" style="height: 100%;" id="overviewCenterLeft"><div id="todayLogin"></div><div id="divider"></div><div id="topTenLogin"></div></div><div class="col-xs-3" style="height: 100%;"><div class="overviewCenter" id="overviewCenterCenter"></div></div><div class="col-xs-6" style="height: 100%;"><div class="overviewCenter" id="overviewCenterRight"><div id="overviewDatebtn" style="display:none;"><label style="margin-right: 5px;"><b>Date Range</b></label><button class="overviewDate jqueryUIButton">Date</button><div id="overviewDateDropdown" class="selector"><div id="overviewTimeSection"><button class="btn_unpressed" id="overviewBtnToday">Today</button><button class="btn_unpressed" id="overviewBtnYesterday">Yesterday</button><button class="btn_unpressed" id="overviewBtnLastSeven">Last 7 Days</button><button class="btn_unpressed" id="overviewBtnLastThirty">Last 30 Days</button><button class="btn_unpressed" id="overviewBtnThisMonth">This Month</button><button class="btn_unpressed" id="overviewBtnLastMonth">Last Month</button></div><p style="margin-left:3%"><b>Custom date range</b></p><div><input value="From Time" type="text" id="overviewFrom" name="from" />-<input value="To Time" type="text" id="overviewTo" name="to" /></div><div style="display: block;"><button class="overviewSubmit jqueryUIButton">Apply</button></div></div></div></div></div></div></div>');
+        .append('<div id="overviewTop"></div><div id="overviewCenter"><div class="row " style="height: 100%;"><div class="overviewCenter col-xs-3" style="height: 100%;" id="overviewCenterLeft"><div id="todayLogin"></div><div id="divider"></div><div id="topTenLogin"></div></div><div class="col-xs-3" style="height: 100%;"><div class="overviewCenter" id="overviewCenterCenter"></div></div><div class="col-xs-6" style="height: 100%;"><div class="overviewCenter" id="overviewCenterRight"><div id="overviewDatebtn" style="display:none;"><label style="margin-right: 5px;"><b>Date Range</b></label><button class="overviewDate jqueryUIButton">Date</button><div id="overviewDateDropdown"><div id="overviewTimeSection"><button class="btn_unpressed" id="overviewBtnToday">Today</button><button class="btn_unpressed" id="overviewBtnYesterday">Yesterday</button><button class="btn_unpressed" id="overviewBtnLastSeven">Last 7 Days</button><button class="btn_unpressed" id="overviewBtnLastThirty">Last 30 Days</button><button class="btn_unpressed" id="overviewBtnThisMonth">This Month</button><button class="btn_unpressed" id="overviewBtnLastMonth">Last Month</button></div><div style="background-color: white;"><p style="margin-left:3%;-webkit-margin-before: 0px;"><b>Custom date range</b></p><div><input value="From Time" type="text" id="overviewFrom" name="from" />-<input value="To Time" type="text" id="overviewTo" name="to" /></div><div style="padding: 5px;display: block;"><button class="overviewSubmit jqueryUIButton">Apply</button></div></div></div></div></div></div></div></div>');
 
 
 }
@@ -234,13 +234,13 @@ function overviewTimePeriodBtnSetting() {
         var yyyy = day.getFullYear();
 
         //back shift one month
-        if (mm < 1) {
+        if (mm == 1) {
             mm = 12;
             --yyyy;
         } else {
             --mm;
         }
-
+        console.log(yyyy + ' ' + mm);
         if (mm < 10) {
             mm = '0' + mm;
         }
@@ -301,7 +301,7 @@ function overviewSubmitSetting() {
             url: URLs,
             type: "GET",
             data: {
-                dataset:currentTab,
+                dataset: currentTab,
                 start: newFrom,
                 end: newTo,
             },
@@ -397,7 +397,7 @@ function overviewInitCenterLeft(json) {
 
     var table = jQuery('<table/>').css({
         'width': '90%',
-//        'margin': '10px auto',
+        //        'margin': '10px auto',
     }).appendTo(tableContainer);
     for (var i in json.topTenUserArray) {
         var accountName = json.topTenUserArray[i].username;
@@ -512,8 +512,8 @@ function overviewInitCenterRight(json) {
     var title = jQuery('<div/>', {
         class: 'centerRightTitle'
     }).css({
-        'display':'inline-block',
-        'margin-left':'10px'
+        'display': 'inline-block',
+        'margin-left': '10px'
     }).appendTo(container);
 
     jQuery('<label/>', {
@@ -541,8 +541,8 @@ function overviewInitCenterRight(json) {
         .css('margin-right', '5px')
         .appendTo(
             jQuery('<div/>').css({
-                'display':'inline-block',
-                'margin-left':'10px',
+                'display': 'inline-block',
+                'margin-left': '10px',
             }).appendTo(container)
         );
 
@@ -552,7 +552,7 @@ function overviewInitCenterRight(json) {
         change: function (event, data) {
             //remove login history
             $('#loginHistoryContainer').remove();
-            
+
             //not allow switching while loading
             overviewGroupBy = data.item.value;
             overviewGroupByChange(overviewGroupBy);
@@ -653,7 +653,7 @@ function setDauData(json) {
     var color = getRandomColor();
     var highlight = ColorLuminance(color, 0.5);
     var transparentColor = colorHexToRGBString(color, 0.2);
-    var dataset = new lineDatasetsObj('', transparentColor, color, highlight, false);
+    var dataset = new lineDatasetsObj('User Count', transparentColor, color, highlight, false);
 
     //first
     //handle the data group by date 
@@ -734,7 +734,7 @@ function setDauData(json) {
     dataset.dataByWeek.push(sumInThatWeek);
 
     trendObj.datasets.push(dataset);
-//    console.log(trendObj);
+    //    console.log(trendObj);
 }
 
 function createDauChartElement(c) {
@@ -744,7 +744,7 @@ function createDauChartElement(c) {
 
     var container = jQuery('<div/>', {
         class: 'customScrollBar',
-        id:'trendContainer',
+        id: 'trendContainer',
     }).css({
         'border': '10px solid rgba(255,255,255,0)',
         "overflow-y": "hidden",
@@ -762,103 +762,107 @@ function createDauChartElement(c) {
 
     $("#overviewCenterRight").append(container);
     var ctx = node.getContext("2d");
-    linechart = new Chart(ctx).Overlay(trendObj, newOptions);
-    
-    container.scrollLeft(parseInt(node.style.width)); 
+    linechart = new Chart(ctx, {
+        type: 'line',
+        data: trendObj,
+        options: newOptions
+    });
+    //    console.log(trendObj);
+    container.scrollLeft(parseInt(node.style.width));
 
-    node.onclick = function(evt)
-    {   
-        $('#loginHistoryContainer').remove();
+    node.onclick = function (evt) {
+            $('#loginHistoryContainer').remove();
 
-        var activePoints = linechart.getPointsAtEvent(evt);
-//        console.log(activePoints[0].label);
-        var loginHistoryContainer = jQuery('<div/>', {
-            class: 'customScrollBar',
-            id:'loginHistoryContainer',
-        }).css({
-            'margin-top':'10px',
-            'height':'30%',
-        }).appendTo($('#overviewCenterRight'));
-        
-        var startTime,endTime;
-        switch($('#overviewTimePeriodSelect').val()){
+            var activePoints = linechart.getElementsAtEvent(evt);
+            if (activePoints.length == 0)
+                return;
+
+            var loginHistoryContainer = jQuery('<div/>', {
+                class: 'customScrollBar',
+                id: 'loginHistoryContainer',
+            }).css({
+                'margin-top': '10px',
+                'height': '30%',
+            }).appendTo($('#overviewCenterRight'));
+
+            var pointingLabel = activePoints[0]._chart.config.data.labels[activePoints[0]._index];
+            var startTime, endTime;
+            switch ($('#overviewTimePeriodSelect').val()) {
             case 'By Day':
-                startTime = activePoints[0].label;
-                endTime = activePoints[0].label;
+                startTime = pointingLabel;
+                endTime = pointingLabel;
                 break;
             case 'By Week':
-                var dateSplit = activePoints[0].label.split('- W');
+                var dateSplit = pointingLabel.split('- W');
                 var year = dateSplit[0];
                 var week = dateSplit[1];
-                var startDate = getDateOfISOWeek(week,year);
-                startTime = startDate.getFullYear()+'-'+(startDate.getMonth()+1)+'-'+startDate.getDate();
-                
+                var startDate = getDateOfISOWeek(week, year);
+                startTime = startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate();
+
                 var endDate = new Date(startTime);
                 endDate.setDate(endDate.getDate() + 6);
-                endTime = endDate.getFullYear()+'-'+(endDate.getMonth()+1)+'-'+endDate.getDate();
+                endTime = endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate();
                 break;
             case 'By Month':
-                var dateSplit = activePoints[0].label.split('-');
+                var dateSplit = pointingLabel.split('-');
                 var year = dateSplit[0];
                 var month = dateSplit[1];
-                startTime = year+'-'+month+'-1';
+                startTime = year + '-' + month + '-1';
                 var endTimeTmp = new Date(startTime);
                 endTimeTmp.setMonth(endTimeTmp.getMonth() + 1);
                 endTimeTmp.setDate(endTimeTmp.getDate() - 1);
-                endTime = endTimeTmp.getFullYear()+'-'+(endTimeTmp.getMonth()+1)+'-'+endTimeTmp.getDate();
+                endTime = endTimeTmp.getFullYear() + '-' + (endTimeTmp.getMonth() + 1) + '-' + endTimeTmp.getDate();
 
                 break;
-        }
-        
-        $.ajax({
-            url: 'php/_dbqueryGetOverviewLoginCnt.php',
-            type: "GET",
-            data: {
-                dataset:currentTab,
-                startTime: startTime,
-                endTime: endTime,
-            },
-            dataType: 'json',
-
-            success: function (json) {
-//                console.log(json);
-                jQuery('<label/>', {
-                    class: 'overviewTitle'
-                })
-                .text('['+activePoints[0].label+']:')
-                .css('margin-bottom', '5px')
-                .appendTo(loginHistoryContainer);
-                
-                if(json.length == 0){
-                    jQuery('<h4/>').text('no history').appendTo(loginHistoryContainer);
-                }
-                else{
-                    var table = jQuery('<table/>')
-                    .css('width','40%')
-                    .append(
-                        jQuery('<tr/>').html('<th>user</th><th>count</th>')
-                    )
-                    .appendTo(loginHistoryContainer);
-
-                    for(var i in json){
-                        var username = json[i].username;
-                        var count = json[i].count;
-                        jQuery('<tr/>')
-                        .append(
-                            jQuery('<td/>').text(username)
-                        ).append(
-                            jQuery('<td/>').text(count)
-                        ).appendTo(table);
-                    }
-                }
-            },
-            error: function (xhr, ajaxOptions, thrownError) {
-                alert("GetLogUserCount:" + xhr.status);
-                alert(thrownError);
             }
-        });
-    }
-    //show up
+            $.ajax({
+                url: 'php/_dbqueryGetOverviewLoginCnt.php',
+                type: "GET",
+                data: {
+                    dataset: currentTab,
+                    startTime: startTime,
+                    endTime: endTime,
+                },
+                dataType: 'json',
+
+                success: function (json) {
+                    //                console.log(json);
+                    jQuery('<label/>', {
+                            class: 'overviewTitle'
+                        })
+                        .text('[' + pointingLabel + ']:')
+                        .css('margin-bottom', '5px')
+                        .appendTo(loginHistoryContainer);
+
+                    if (json.length == 0) {
+                        jQuery('<h4/>').text('no history').appendTo(loginHistoryContainer);
+                    } else {
+                        var table = jQuery('<table/>')
+                            .css('width', '40%')
+                            .append(
+                                jQuery('<tr/>').html('<th>user</th><th>count</th>')
+                            )
+                            .appendTo(loginHistoryContainer);
+
+                        for (var i in json) {
+                            var username = json[i].username;
+                            var count = json[i].count;
+                            jQuery('<tr/>')
+                                .append(
+                                    jQuery('<td/>').text(username)
+                                ).append(
+                                    jQuery('<td/>').text(count)
+                                ).appendTo(table);
+                        }
+                    }
+                },
+                error: function (xhr, ajaxOptions, thrownError) {
+                    alert("GetLogUserCount:" + xhr.status);
+                    alert(thrownError);
+                }
+            });
+        }
+        //show up
     container.animate({
         opacity: 1,
     }, 'slow');
@@ -905,5 +909,5 @@ function overviewGroupByChange(chanegTo) {
     }
     auCalculation();
 
-    trendObj.labels.push("");
+    //    trendObj.labels.push("");
 }

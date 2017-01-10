@@ -1,6 +1,6 @@
 "use strict";
 var colorPattern = [50000, 5000, 500, 50];
-var parallelGrade = [0,20,40,60,80,100];
+var parallelGrade = [0, 20, 40, 60, 80, 100];
 var gapGrade = [-0.4, -0.2, 0, 0.2];
 
 function MapObject(mapname) {
@@ -25,7 +25,7 @@ function MapObject(mapname) {
     this.tileLayer = undefined;
     this.highlightLayer = undefined;
     this.isEmpty = false;
-    
+
     this.snapshotBtn;
     this.hasSnapshotBtn = false;
     //marker
@@ -37,7 +37,7 @@ function MapObject(mapname) {
         if (typeof this.map == "undefined") {
             this.map = L.map(containerID, {
                 layers: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),
-                minZoom : 2
+                minZoom: 2
             });
             this.setInfo();
             this.setHighlightFeature();
@@ -51,15 +51,15 @@ function MapObject(mapname) {
                 provider: new L.GeoSearch.Provider.Google(),
                 showMarker: false,
             }).addTo(this.map, true);
-            
+
             var mapobj = this;
-            this.snapshotBtn = L.easyButton('<img src="img/snapshot.png" style="width: 20px;">', function(btn, map){
-//                $('#drawMap').remove();
+            this.snapshotBtn = L.easyButton('<img src="img/snapshot.png" style="width: 20px;">', function (btn, map) {
+                //                $('#drawMap').remove();
                 sessionStorage.patternIndex = firstMap.getColorPattern();
                 sessionStorage.colorPattern = JSON.stringify(colorPattern);
                 sessionStorage.zoom = mapobj.map.getZoom();
                 window.open('popup.html');
-//                console.log(firstMap.map.getZoom());
+                //                console.log(firstMap.map.getZoom());
                 //alert("QQ");
                 //helloPopup.setLatLng(map.getCenter()).openOn(map);
             }); // probably just `map`
@@ -101,7 +101,7 @@ function MapObject(mapname) {
 
             //delete place not owned by any branch
             if (getFunction() == FUNC_GAP) {
-                if($.inArray(countryID,allBranchObject) == -1) {
+                if ($.inArray(countryID, allBranchObject) == -1) {
                     this.jsonData.features.splice(i, 1);
                     isMapModified = true;
                     i--;
@@ -129,8 +129,8 @@ function MapObject(mapname) {
             }
         }
     };
-    
-    this.updateParallelMapProperties = function(){
+
+    this.updateParallelMapProperties = function () {
         for (var i = 0; i < this.jsonData.features.length; ++i) {
             var iso = this.jsonData.features[i].properties.ISO_A3;
 
@@ -148,19 +148,19 @@ function MapObject(mapname) {
         }
         this.setParallelMaxMin();
     };
-    
-    this.setParallelMaxMin = function(){
+
+    this.setParallelMaxMin = function () {
         var parallelMode = isModeActive(parallelMode) ? 'importRatio' : 'exportRatio';
         this.max = null;
         this.min = null;
         console.log(this.jsonData);
         for (var i = 0; i < this.jsonData.features.length; ++i) {
             var value = parseFloat(this.jsonData.features[i].properties[parallelMode]);
-//            console.log(value);
-            this.max = (this.max == null || value>this.max) ? value : this.max;
-            this.min = (this.min == null || value<this.min) ? value : this.min;
+            //            console.log(value);
+            this.max = (this.max == null || value > this.max) ? value : this.max;
+            this.min = (this.min == null || value < this.min) ? value : this.min;
         }
-        console.log('this.max:'+this.max+'/this.min:'+this.min);
+        console.log('this.max:' + this.max + '/this.min:' + this.min);
     };
 
     this.mapDataLoad = function () {
@@ -205,49 +205,49 @@ function MapObject(mapname) {
                     type = feature.type;
 
                 //fillStyle setting
-                switch(getFunction()){
-                    case FUNC_GAP:
-                        var fillBranch;
-                        $.each(allHighlighBranch,function (branch,object) {
-                            if($.inArray(feature.tags.OBJECTID,object) != -1) {
-                                fillBranch = branch;
-                                return false;
-                            }
-                        });
+                switch (getFunction()) {
+                case FUNC_GAP:
+                    var fillBranch;
+                    $.each(allHighlighBranch, function (branch, object) {
+                        if ($.inArray(feature.tags.OBJECTID, object) != -1) {
+                            fillBranch = branch;
+                            return false;
+                        }
+                    });
 
-                        if (allBranchGap && fillBranch && allBranchGap[fillBranch]) {
-                            ctx.fillStyle = colorHexToRGBString(obj.getGapColor(allBranchGap[fillBranch].total) , 0.5);
-                        } else if (typeof fillbranch == 'undefined') {
-                            ctx.fillStyle = colorHexToRGBString(obj.getColor(0) , 0.5);
-                        }
-                        break;
-                        
-                    case FUNC_DISTBRANCH:
-                        // if not in gap mode and some branch has been selected, use another stroke
-                        if ($.inArray(feature.tags.OBJECTID,allBranchObject) != -1) {
-                            ctx.globalCompositeOperation = 'source-over';
-                            ctx.strokeStyle = "#66CC00";
-                            ctx.lineWidth = 2;
-                        } else {
-                            ctx.globalCompositeOperation = 'destination-over';
-                            ctx.strokeStyle = "white";
-                            ctx.lineWidth = 1;
-                        }
-                        ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
-                        break;
-                        
-                    case FUNC_PARALLEL:
-                        var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? feature.tags.importRatio : feature.tags.exportRatio ;
-                        ctx.strokeStyle = "white";
+                    if (allBranchGap && fillBranch && allBranchGap[fillBranch]) {
+                        ctx.fillStyle = colorHexToRGBString(obj.getGapColor(allBranchGap[fillBranch].total), 0.5);
+                    } else if (typeof fillbranch == 'undefined') {
+                        ctx.fillStyle = colorHexToRGBString(obj.getColor(0), 0.5);
+                    }
+                    break;
+
+                case FUNC_DISTBRANCH:
+                    // if not in gap mode and some branch has been selected, use another stroke
+                    if ($.inArray(feature.tags.OBJECTID, allBranchObject) != -1) {
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.strokeStyle = "#66CC00";
                         ctx.lineWidth = 2;
-                        ctx.fillStyle = colorHexToRGBString(obj.getParallelColor(parseFloat(targetRatio)) , 0.5);
-                        break;
-                        
-                    default:
-                        ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt) , 0.5);
-                        break;
+                    } else {
+                        ctx.globalCompositeOperation = 'destination-over';
+                        ctx.strokeStyle = "white";
+                        ctx.lineWidth = 1;
+                    }
+                    ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt), 0.5);
+                    break;
+
+                case FUNC_PARALLEL:
+                    var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? feature.tags.importRatio : feature.tags.exportRatio;
+                    ctx.strokeStyle = "white";
+                    ctx.lineWidth = 2;
+                    ctx.fillStyle = colorHexToRGBString(obj.getParallelColor(parseFloat(targetRatio)), 0.5);
+                    break;
+
+                default:
+                    ctx.fillStyle = colorHexToRGBString(obj.getColor(feature.tags.activationCnt), 0.5);
+                    break;
                 }
-                
+
                 ctx.beginPath();
 
                 for (var j = 0; j < feature.geometry.length; j++) {
@@ -299,43 +299,43 @@ function MapObject(mapname) {
         var obj = this;
         this.legend.onAdd = function (mymap) {
             var div = L.DomUtil.create('div', 'legend_' + leveltype);
-            
-            switch(getFunction()){
-                case FUNC_GAP:
-                    var grades = gapGrade;
-                    div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getGapColor(-99) + '"></i>< -40%</div> ';
-                    for (var i = 0; i < grades.length - 1; i++) {
-                        div.innerHTML +=
-                            '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getGapColor(grades[i]) + '"></i>' +
-                            numToString(grades[i]*100) + '% &ndash; ' + numToString(grades[i + 1]*100) + '%</div>';
-                    }
-                    div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getGapColor(99) + '"></i>>= 20%</div>';
-                    break;
-                    
-                case FUNC_PARALLEL:
-                    var grades = parallelGrade;
-                    
-                    div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor(0) + '"></i> 0 %</div> ';
-                    for (var i = 0; i < grades.length - 1; i++) {
-                        div.innerHTML +=
-                            '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i] + 1)) + '"></i> ' +
-                            numToString(grades[i]) + ' % &ndash;' + numToString(grades[i + 1]) + ' % </div>';
-                    }
-                    div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length-1]+1)) + '"></i> ' + numToString(grades[grades.length-1]) + " %+" + "</div>";
-                    break;
-                    
-                default:
-                    var patternIndex = obj.getColorPattern();
-                    var grades = [0, colorPattern[patternIndex] / 5 * 1, colorPattern[patternIndex] / 5 * 2, colorPattern[patternIndex] / 5 * 3, colorPattern[patternIndex] / 5 * 4, colorPattern[patternIndex]];
-                    
-                    div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
-                    for (var i = 0; i < grades.length - 1; i++) {
-                        div.innerHTML +=
-                            '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getColor((grades[i] + 1)) + '"></i> ' +
-                            numToString(grades[i]) + '&ndash;' + numToString(grades[i + 1]) + '</div>';
-                    }
-                    div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getColor((colorPattern[patternIndex] + 1)) + '"></i> ' + numToString(colorPattern[patternIndex]) + "+" + "</div>";
-                    break;
+
+            switch (getFunction()) {
+            case FUNC_GAP:
+                var grades = gapGrade;
+                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getGapColor(-99) + '"></i>< -40%</div> ';
+                for (var i = 0; i < grades.length - 1; i++) {
+                    div.innerHTML +=
+                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getGapColor(grades[i]) + '"></i>' +
+                        numToString(grades[i] * 100) + '% &ndash; ' + numToString(grades[i + 1] * 100) + '%</div>';
+                }
+                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getGapColor(99) + '"></i>>= 20%</div>';
+                break;
+
+            case FUNC_PARALLEL:
+                var grades = parallelGrade;
+
+                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor(0) + '"></i> 0 %</div> ';
+                for (var i = 0; i < grades.length - 1; i++) {
+                    div.innerHTML +=
+                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i] + 1)) + '"></i> ' +
+                        numToString(grades[i]) + ' % &ndash;' + numToString(grades[i + 1]) + ' % </div>';
+                }
+                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length - 1] + 1)) + '"></i> ' + numToString(grades[grades.length - 1]) + " %+" + "</div>";
+                break;
+
+            default:
+                var patternIndex = obj.getColorPattern();
+                var grades = [0, colorPattern[patternIndex] / 5 * 1, colorPattern[patternIndex] / 5 * 2, colorPattern[patternIndex] / 5 * 3, colorPattern[patternIndex] / 5 * 4, colorPattern[patternIndex]];
+
+                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getColor(0) + '"></i> 0</div> ';
+                for (var i = 0; i < grades.length - 1; i++) {
+                    div.innerHTML +=
+                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getColor((grades[i] + 1)) + '"></i> ' +
+                        numToString(grades[i]) + '&ndash;' + numToString(grades[i + 1]) + '</div>';
+                }
+                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getColor((colorPattern[patternIndex] + 1)) + '"></i> ' + numToString(colorPattern[patternIndex]) + "+" + "</div>";
+                break;
             }
             return div;
         };
@@ -380,153 +380,162 @@ function MapObject(mapname) {
         };
         // method that we will use to update the control based on feature properties passed
         this.info.update = function (props) {
-            switch (getFunction()){
-                case FUNC_GAP:
-                    var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>GAP</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
-                    currentPointingBranch = (props == undefined) ? (currentPointingBranch) : props;
-                    
-                    var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>"
-                        ,totalStr = "<table class = 'model_table'>"
-                        ,infoContent = ''
-                        ,branch = props;
-                    
-                    if (branch) {
-                        var displayName = branch;
-                        
-                        //model display
-                        if (!$.isEmptyObject(allBranchGap[branch])) {
-                            var liStr = '';
-                            $.each(allBranchGap[branch], function (k, e) {
-                                if (k != 'total') { 
-                                    liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e*100) + "%</td></tr>";
-                                }
-                            });
-                            modelStr += liStr;
-                        }
-                        
-                        //total display
-                        totalStr += "<tr>";
-                        totalStr += "<td>" + displayName + " </td>";
-                        if(allBranchGap[branch]){
-                            totalStr += "<td class = 'model_table_count'> " + numToString(parseInt(allBranchGap[branch].total*100)) + "%</td>";
-                        }
-                        totalStr+="</tr>";
-                        
-                    } else {
-                        if (!$.isEmptyObject(allBranchGap)) {
-                            var liStr = '';
-                            $.each(allBranchGap, function (k, e) {
-                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e.total*100) + "%</td></tr>";
-                            });
-                            modelStr += liStr;
-                        }
-                    }
-                    modelStr += "</table></div>";
-                    totalStr += "</table>";                    
+            switch (getFunction()) {
+            case FUNC_GAP:
+                var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>GAP</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+                currentPointingBranch = (props == undefined) ? (currentPointingBranch) : props;
 
-                    if (branch) {
-                        infoContent = ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
-                    }
-                    else {
-                        infoContent = ('<div class="infoDiv">' + modelStr + '</div>');
-                    }
-                    this._div.innerHTML = timeStr + infoContent;
-                    
-                    break;
-                    
-                case FUNC_PARALLEL:
-//                    console.log("isModeActive(MODE_PARALLEL_IMPORT):"+isModeActive(MODE_PARALLEL_IMPORT));
-                    var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio' ;
-                    var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>'+(isModeActive(MODE_PARALLEL_IMPORT) ? 'Import' : 'Export')+'</normalH4>');
-                    var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
-                    var totalStr = "<table class = 'model_table'>";
-                    
-                    //pointing on country region
-                    if (props) {
-//                        console.log(props);
-//                        var displayName = props.ISO_A3;
-                        var displayName = props.NAME;
+                var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>",
+                    totalStr = "<table class = 'model_table'>",
+                    infoContent = '',
+                    branch = props;
 
-                        if (!$.isEmptyObject(props.models)) {
-                            var countryModelData = [];
-                            $.each(props.models, function (k, e) {
-                                var model = k;
-                                countryModelData.push({model:model,ratio:e[targetRatio]})
-                            });
-                            countryModelData.sort(function(a, b){return parseFloat(b.ratio) - parseFloat(a.ratio)});
-                            
-                            var liStr = '';
-                            
-                            for(var i in countryModelData){
-                                liStr += "<tr><td>" + countryModelData[i].model + " </td><td class = 'model_table_count'> " + countryModelData[i].ratio + "</td></tr>";
-                            }
-                            modelStr += liStr;
-                        }
-                        modelStr += "</table></div>";
-                        totalStr += ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + props[targetRatio] + "</td></tr>");
-                        totalStr += "</table>";    
-                        this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
-                    } 
-                    //pointing on no where
-                    else {
+                if (branch) {
+                    var displayName = branch;
+
+                    //model display
+                    if (!$.isEmptyObject(allBranchGap[branch])) {
                         var liStr = '';
-                        var allCountryData = [];
-                        for(var i in mapObj.jsonData.features){
-                            var data = mapObj.jsonData.features[i].properties;
-                            
-                            var iso = data.NAME;
-                            allCountryData.push({iso:iso,ratio:data[targetRatio]})
-                        }
-                        allCountryData.sort(function(a, b){return parseFloat(b.ratio) - parseFloat(a.ratio)});
-                        for(var i in allCountryData){
-                            liStr += "<tr><td>" + allCountryData[i].iso + " </td><td class = 'model_table_count'> " + allCountryData[i].ratio + "</td></tr>";
-                        }
-                        
-//                        console.log(liStr);
+                        $.each(allBranchGap[branch], function (k, e) {
+                            if (k != 'total') {
+                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e * 100) + "%</td></tr>";
+                            }
+                        });
                         modelStr += liStr;
-                        
-                        this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + '</div>');
                     }
-                    
-                    
-                    
-                    break;
-                    
-                default:
-                    var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>Activation count</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
-                    var btnShowTrend = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
-                    var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
-                    var totalStr = "<table class = 'model_table'>";
-                    
-                    if (props) {
-                        var displayName = props.NAME_2;
-                        if (!isInArray(forcingName2List, props.ISO) && (isL1(mapObj) || isInArray(forcingName1List, props.ISO))) {
-                            displayName = props.NAME_1;
+
+                    //total display
+                    totalStr += "<tr>";
+                    totalStr += "<td>" + displayName + " </td>";
+                    if (allBranchGap[branch]) {
+                        totalStr += "<td class = 'model_table_count'> " + numToString(parseInt(allBranchGap[branch].total * 100)) + "%</td>";
+                    }
+                    totalStr += "</tr>";
+
+                } else {
+                    if (!$.isEmptyObject(allBranchGap)) {
+                        var liStr = '';
+                        $.each(allBranchGap, function (k, e) {
+                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e.total * 100) + "%</td></tr>";
+                        });
+                        modelStr += liStr;
+                    }
+                }
+                modelStr += "</table></div>";
+                totalStr += "</table>";
+
+                if (branch) {
+                    infoContent = ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
+                } else {
+                    infoContent = ('<div class="infoDiv">' + modelStr + '</div>');
+                }
+                this._div.innerHTML = timeStr + infoContent;
+
+                break;
+
+            case FUNC_PARALLEL:
+                //                    console.log("isModeActive(MODE_PARALLEL_IMPORT):"+isModeActive(MODE_PARALLEL_IMPORT));
+                var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio';
+                var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>' + (isModeActive(MODE_PARALLEL_IMPORT) ? 'Import' : 'Export') + '</normalH4>');
+                var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
+                var totalStr = "<table class = 'model_table'>";
+
+                //pointing on country region
+                if (props) {
+                    //                        console.log(props);
+                    //                        var displayName = props.ISO_A3;
+                    var displayName = props.NAME;
+
+                    if (!$.isEmptyObject(props.models)) {
+                        var countryModelData = [];
+                        $.each(props.models, function (k, e) {
+                            var model = k;
+                            countryModelData.push({
+                                model: model,
+                                ratio: e[targetRatio]
+                            })
+                        });
+                        countryModelData.sort(function (a, b) {
+                            return parseFloat(b.ratio) - parseFloat(a.ratio)
+                        });
+
+                        var liStr = '';
+
+                        for (var i in countryModelData) {
+                            liStr += "<tr><td>" + countryModelData[i].model + " </td><td class = 'model_table_count'> " + countryModelData[i].ratio + "</td></tr>";
                         }
-                        if (!$.isEmptyObject(props.models)) {
-                            var liStr = '';
-                            $.each(props.models, function (k, e) {
-                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
-                            });
-                            modelStr += liStr;
-                        }
-                    } else {
-                        if (!$.isEmptyObject(mapObj.modelCnt)) {
-                            var liStr = '';
-                            $.each(mapObj.modelCnt, function (k, e) {
-                                liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
-                            });
-                            modelStr += liStr;
-                        }
+                        modelStr += liStr;
                     }
                     modelStr += "</table></div>";
-                    totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + numToString(parseInt(props.activationCnt)) + "</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(parseInt(mapObj.totalCnt)) + "</td></tr>");
+                    totalStr += ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + props[targetRatio] + "</td></tr>");
                     totalStr += "</table>";
-                    this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnShowTrend);
-                    
-                    break;
+                    this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>');
+                }
+                //pointing on no where
+                else {
+                    var liStr = '';
+                    var allCountryData = [];
+                    for (var i in mapObj.jsonData.features) {
+                        var data = mapObj.jsonData.features[i].properties;
+
+                        var iso = data.NAME;
+                        allCountryData.push({
+                            iso: iso,
+                            ratio: data[targetRatio]
+                        })
+                    }
+                    allCountryData.sort(function (a, b) {
+                        return parseFloat(b.ratio) - parseFloat(a.ratio)
+                    });
+                    for (var i in allCountryData) {
+                        liStr += "<tr><td>" + allCountryData[i].iso + " </td><td class = 'model_table_count'> " + allCountryData[i].ratio + "</td></tr>";
+                    }
+
+                    //                        console.log(liStr);
+                    modelStr += liStr;
+
+                    this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + '</div>');
+                }
+
+
+
+                break;
+
+            default:
+                var timeStr = (mapObj.fromFormatStr == undefined) ? "" : ('<normalH4>Activation count</normalH4>' + '<normalH4>' + mapObj.fromFormatStr + " ~ " + mapObj.toFormatStr + '</normalH4>');
+                var btnShowTrend = "<button id='showPieChart_" + mapObj.mapName + "' onclick='showTrend(" + mapObj.mapName + ")'>Show trend</button>";
+                var modelStr = "<div id='showModelCount_" + mapObj.mapName + "' class='customScrollBar'><table class = 'model_table'>";
+                var totalStr = "<table class = 'model_table'>";
+
+                if (props) {
+                    var displayName = props.NAME_2;
+                    if (!isInArray(forcingName2List, props.ISO) && (isL1(mapObj) || isInArray(forcingName1List, props.ISO))) {
+                        displayName = props.NAME_1;
+                    }
+                    if (!$.isEmptyObject(props.models)) {
+                        var liStr = '';
+                        $.each(props.models, function (k, e) {
+                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
+                        });
+                        modelStr += liStr;
+                    }
+                } else {
+                    if (!$.isEmptyObject(mapObj.modelCnt)) {
+                        var liStr = '';
+                        $.each(mapObj.modelCnt, function (k, e) {
+                            liStr += "<tr><td>" + k + " </td><td class = 'model_table_count'> " + numToString(e) + "</td></tr>";
+                        });
+                        modelStr += liStr;
+                    }
+                }
+                modelStr += "</table></div>";
+                totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + numToString(parseInt(props.activationCnt)) + "</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(parseInt(mapObj.totalCnt)) + "</td></tr>");
+                totalStr += "</table>";
+                this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnShowTrend);
+
+                break;
             }
-            
+
             //set max-height
             if ($(".legend_" + mapObj.mapName).length > 0) {
                 var maxHeight = $("#mapContainer").height() - ($(".legend_" + mapObj.mapName).outerHeight() + 150);
@@ -540,7 +549,7 @@ function MapObject(mapname) {
                 $('.infoDiv').hide();
             }
         };
-        
+
         this.info.addTo(mapObj.map);
     };
 
@@ -553,39 +562,39 @@ function MapObject(mapname) {
         this.map.off('click');
         this.map.off('zoomstart');
 
-//      [20161222 ndealer and service function is disable for now]
-//        this.map.on('mousemove', function (e) {
-//            if (dealerTileIndex || scTileIndex) {
-//                var x = e.latlng.lng;
-//                var y = e.latlng.lat;
-//                var tileX = deg2num(y,x,mapObj.map.getZoom())[0];
-//                var tileY = deg2num(y,x,mapObj.map.getZoom())[1];
-//
-//                var selectCanvas = canvasArray.filter(function(params) {
-//                    return params.tilePoint.x == tileX && params.tilePoint.y == tileY
-//                });
-//
-//                if (dealerTileIndex)
-//                    var dealerTile = dealerTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
-//                if (scTileIndex)
-//                    var scTile = scTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
-//
-//
-//                if((dealerTile || scTile) && selectCanvas[0]) {
-//                        selectDealer = selectPoint(scTile,selectCanvas[0].canvas,scTileIndex,e);
-//                        selectDealer = (selectDealer.length > 0)?selectDealer:selectPoint(dealerTile,selectCanvas[0].canvas,dealerTileIndex,e);
-//
-//                    if (selectDealer.length > 0){
-//                        $(".leaflet-container").css("cursor", "pointer");
-//                        isPointPopup = true;
-//                        return;
-//                    }
-//                }
-//                $(".leaflet-container").css("cursor", "");
-//            }
-//            isPointPopup = false;
-//        });
-        this.map.on('click',clickPoint);
+        //      [20161222 ndealer and service function is disable for now]
+        //        this.map.on('mousemove', function (e) {
+        //            if (dealerTileIndex || scTileIndex) {
+        //                var x = e.latlng.lng;
+        //                var y = e.latlng.lat;
+        //                var tileX = deg2num(y,x,mapObj.map.getZoom())[0];
+        //                var tileY = deg2num(y,x,mapObj.map.getZoom())[1];
+        //
+        //                var selectCanvas = canvasArray.filter(function(params) {
+        //                    return params.tilePoint.x == tileX && params.tilePoint.y == tileY
+        //                });
+        //
+        //                if (dealerTileIndex)
+        //                    var dealerTile = dealerTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
+        //                if (scTileIndex)
+        //                    var scTile = scTileIndex.getTile(mapObj.map.getZoom(), tileX, tileY);
+        //
+        //
+        //                if((dealerTile || scTile) && selectCanvas[0]) {
+        //                        selectDealer = selectPoint(scTile,selectCanvas[0].canvas,scTileIndex,e);
+        //                        selectDealer = (selectDealer.length > 0)?selectDealer:selectPoint(dealerTile,selectCanvas[0].canvas,dealerTileIndex,e);
+        //
+        //                    if (selectDealer.length > 0){
+        //                        $(".leaflet-container").css("cursor", "pointer");
+        //                        isPointPopup = true;
+        //                        return;
+        //                    }
+        //                }
+        //                $(".leaflet-container").css("cursor", "");
+        //            }
+        //            isPointPopup = false;
+        //        });
+        this.map.on('click', clickPoint);
 
         this.map.on('mousemove', function (e) {
             //no need to enable high light feature if observation target is not exist
@@ -610,17 +619,17 @@ function MapObject(mapname) {
             };
 
             if (!layerJson) {
-                switch(getFunction()){
-                    case FUNC_PARALLEL:
-                        if (previousISO != 'nan') {
-                            previousISO = 'nan';
-                        }
-                        break;
-                    default:
-                        if (previousMapID != -1) {
-                            previousMapID = -1;
-                        }
-                        break;
+                switch (getFunction()) {
+                case FUNC_PARALLEL:
+                    if (previousISO != 'nan') {
+                        previousISO = 'nan';
+                    }
+                    break;
+                default:
+                    if (previousMapID != -1) {
+                        previousMapID = -1;
+                    }
+                    break;
                 }
                 if (mapObj.map.hasLayer(mapObj.highlight)) {
                     mapObj.map.removeLayer(mapObj.highlight)
@@ -630,15 +639,10 @@ function MapObject(mapname) {
                 }
             } else {
 
-                if(getFunction()!= FUNC_ACTIVATION
-                   && getFunction()!= FUNC_GAP
-                   && getFunction()!= FUNC_DISTBRANCH
-                   && getFunction()!= FUNC_PARALLEL
-                   && getFunction()!= FUNC_QC) return;
+                if (getFunction() != FUNC_ACTIVATION && getFunction() != FUNC_GAP && getFunction() != FUNC_DISTBRANCH && getFunction() != FUNC_PARALLEL && getFunction() != FUNC_QC) return;
 
-                if(!(getFunction() == FUNC_PARALLEL && layerJson.properties.ISO_A3 != previousISO)
-                   && !(getFunction() != FUNC_PARALLEL && layerJson.properties.OBJECTID != previousMapID)) return;
-                       
+                if (!(getFunction() == FUNC_PARALLEL && layerJson.properties.ISO_A3 != previousISO) && !(getFunction() != FUNC_PARALLEL && layerJson.properties.OBJECTID != previousMapID)) return;
+
                 if (mapObj.highlight) {
                     mapObj.map.removeLayer(mapObj.highlight)
                 }
@@ -657,10 +661,10 @@ function MapObject(mapname) {
                         simplifyJson.geometry.coordinates.push(simplifyGeometry(layerJson.geometry.coordinates[k], torance));
                     }
                 }
-                if(allHighlighBranch && getFunction() == FUNC_GAP) {
+                if (allHighlighBranch && getFunction() == FUNC_GAP) {
                     // highlight branch region
                     var branchLayer = mapObj.getHighlightBranchLayer(layerJson);
-                    simplifyJson = (branchLayer != null)?branchLayer:simplifyJson;
+                    simplifyJson = (branchLayer != null) ? branchLayer : simplifyJson;
                 }
                 //construct highlight layer
                 mapObj.highlight = new L.geoJson(simplifyJson, {
@@ -674,70 +678,70 @@ function MapObject(mapname) {
                     })
                     .on('click', function (e) {
                         //set popup
-//                        if (!isPointPopup) {
-                            switch(getFunction()){
-                                case FUNC_GAP:
-                                    if(currentPointingBranch == null) return;
+                        //                        if (!isPointPopup) {
+                        switch (getFunction()) {
+                        case FUNC_GAP:
+                            if (currentPointingBranch == null) return;
 
-                                    var displayName = currentPointingBranch;
-                                    var functionname = "showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')";
-                                    var buttonHTML = "<button class ='showChart' onclick ="+functionname+">Show trend</button>";
-                                    var popup = "<div class='pop'>" + displayName + buttonHTML+ "</div>";
-    
-                                    mapObj.map.openPopup(popup, e.latlng);
+                            var displayName = currentPointingBranch;
+                            var functionname = "showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')";
+                            var buttonHTML = "<button class ='showChart' onclick =" + functionname + ">Show trend</button>";
+                            var popup = "<div class='pop'>" + displayName + buttonHTML + "</div>";
 
-                                    //zoom to location
-                                    mapObj.zoomToFeature(e);
-                                    break;
-                                
-                                case FUNC_PARALLEL:
-//                                    console.log(layerJson.properties);
-                                    var iso = layerJson.properties.ISO_A3;
-                                    var displayName = layerJson.properties.NAME;
+                            mapObj.map.openPopup(popup, e.latlng);
 
-                                    var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio' ;
-                                    var targetRatioText = isModeActive(MODE_PARALLEL_IMPORT) ? 'Import rate of ' : 'Export rate of ' ;
-                                    
-                                    var displayNum = layerJson.properties[targetRatio];
-                                    var buttonHTML = "<button class ='showChart' " + "onclick =trendParallel.showChart('"+iso+"','"+displayName+"')>Show trend</button>";
-                                    var popup = "<div class='pop'>"+ targetRatioText+ displayName + " : " + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
-                                    mapObj.map.openPopup(popup, e.latlng);
-                                    mapObj.zoomToFeature(e);
+                            //zoom to location
+                            mapObj.zoomToFeature(e);
+                            break;
 
-                                    break;
-                                    
-                                case FUNC_QC:
-                                    var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
-                                    if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                                        displayName = layerJson.properties.NAME_1;
-                                    }
-                                    var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
-                                    var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
-                                    var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
-                                    mapObj.map.openPopup(popup, e.latlng);
+                        case FUNC_PARALLEL:
+                            //                                    console.log(layerJson.properties);
+                            var iso = layerJson.properties.ISO_A3;
+                            var displayName = layerJson.properties.NAME;
 
-                                    //zoom to location
-                                    mapObj.zoomToFeature(e);
-                                    break;
-                                    
-                                default:
-                                    var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
-                                    if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
-                                        displayName = layerJson.properties.NAME_1;
-                                    }
-                                    var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
-                                    var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
-                                    var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
-                                    mapObj.map.openPopup(popup, e.latlng);
+                            var targetRatio = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio';
+                            var targetRatioText = isModeActive(MODE_PARALLEL_IMPORT) ? 'Import rate of ' : 'Export rate of ';
 
-                                    //zoom to location
-                                    mapObj.zoomToFeature(e);
-                                    break;
+                            var displayNum = layerJson.properties[targetRatio];
+                            var buttonHTML = "<button class ='showChart' " + "onclick =trendParallel.showChart('" + iso + "','" + displayName + "')>Show trend</button>";
+                            var popup = "<div class='pop'>" + targetRatioText + displayName + " : " + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                            mapObj.map.openPopup(popup, e.latlng);
+                            mapObj.zoomToFeature(e);
+
+                            break;
+
+                        case FUNC_QC:
+                            var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
+                            if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
+                                displayName = layerJson.properties.NAME_1;
                             }
-                            
-//                        } else {
-//                            clickPoint(e);
-//                        }
+                            var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
+                            var buttonHTML = "<button class ='showChart' " + "onclick =trendQC.showChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
+                            var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                            mapObj.map.openPopup(popup, e.latlng);
+
+                            //zoom to location
+                            mapObj.zoomToFeature(e);
+                            break;
+
+                        default:
+                            var displayName = (layerJson.properties.NAME_2 == "") ? layerJson.properties.NAME_1 : layerJson.properties.NAME_2;
+                            if (!isInArray(forcingName2List, layerJson.properties.ISO) && (isL1(mapObj) || isInArray(forcingName1List, layerJson.properties.ISO))) {
+                                displayName = layerJson.properties.NAME_1;
+                            }
+                            var displayNum = numToString(parseInt(layerJson.properties.activationCnt));
+                            var buttonHTML = "<button class ='showChart' " + "onclick =showRegionChart(" + layerJson.properties.OBJECTID + ",'" + layerJson.properties.ISO + "','" + displayName.replace(/\s+/g, "_") + "','" + displayNum + "'," + mapObj.mapName + ")>Show trend</button>";
+                            var popup = "<div class='pop'>" + displayName + ":" + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
+                            mapObj.map.openPopup(popup, e.latlng);
+
+                            //zoom to location
+                            mapObj.zoomToFeature(e);
+                            break;
+                        }
+
+                        //                        } else {
+                        //                            clickPoint(e);
+                        //                        }
                     })
                     .addTo(mapObj.map);
                 //$('.leaflet-overlay-pane svg').css( "pointer-events", "none" );
@@ -752,25 +756,26 @@ function MapObject(mapname) {
                 simplifyJson = null;
             }
         });
-        this.map.on('zoomstart', function (e) {canvasArray = [];});
+        this.map.on('zoomstart', function (e) {
+            canvasArray = [];
+        });
 
-//        function clickPoint(e) {
-//            if ((dealerTileIndex || scTileIndex) && selectDealer.length > 0) {
-//                var popup = "<div class='pop'>Name:<br>" + selectDealer[0].tags.name +"</div>";
-//                mapObj.map.openPopup(popup, e.latlng);
-//            }
-//        }
+        //        function clickPoint(e) {
+        //            if ((dealerTileIndex || scTileIndex) && selectDealer.length > 0) {
+        //                var popup = "<div class='pop'>Name:<br>" + selectDealer[0].tags.name +"</div>";
+        //                mapObj.map.openPopup(popup, e.latlng);
+        //            }
+        //        }
 
-        function selectPoint(tile,canvas,index,event) {
+        function selectPoint(tile, canvas, index, event) {
             if (!tile) return [];
-            var select = tile.features.filter(function(dealer) {
-                var convertX = dealer.geometry[0][0]/ 4096 * 256;
-                var convertY = dealer.geometry[0][1]/ 4096 * 256;
+            var select = tile.features.filter(function (dealer) {
+                var convertX = dealer.geometry[0][0] / 4096 * 256;
+                var convertY = dealer.geometry[0][1] / 4096 * 256;
                 convertX = convertX + canvas._leaflet_pos.x;
                 convertY = convertY + canvas._leaflet_pos.y;
-                
-                return event.layerPoint.x > (convertX - index.radius) && event.layerPoint.x < (convertX + index.radius)
-                        && event.layerPoint.y > (convertY - index.radius) && event.layerPoint.y < (convertY + index.radius);
+
+                return event.layerPoint.x > (convertX - index.radius) && event.layerPoint.x < (convertX + index.radius) && event.layerPoint.y > (convertY - index.radius) && event.layerPoint.y < (convertY + index.radius);
             });
             return select;
         }
@@ -873,7 +878,7 @@ function MapObject(mapname) {
             '#FED976';
     };
 
-    this.getParallelColor = function(d){
+    this.getParallelColor = function (d) {
         return d > 100 ? '#800026' :
             d > 80 ? '#BD0026' :
             d > 60 ? '#E31A1C' :
@@ -882,7 +887,7 @@ function MapObject(mapname) {
             d == 0 ? '#FFFFFF' :
             '#FED976';
     }
-    
+
     this.getGapColor = function (d) {
         return d >= 0.2 ? '#FF0000' :
             d >= 0 ? '#FF8800' :
@@ -922,8 +927,8 @@ function MapObject(mapname) {
             }
         }
     };
-    
-    this.zoomFitTheWorld = function(){
+
+    this.zoomFitTheWorld = function () {
         this.map.fitWorld({
             reset: true
         }).zoomIn();
@@ -935,8 +940,8 @@ function MapObject(mapname) {
         var branchName;
         var branchObjectID;
         var highlightGeojsonArray;
-        $.each(allHighlighBranch,function(branch,array) {
-            if($.inArray(hoverLayer.properties.OBJECTID,array) != -1) {
+        $.each(allHighlighBranch, function (branch, array) {
+            if ($.inArray(hoverLayer.properties.OBJECTID, array) != -1) {
                 branchObjectID = array;
                 branchName = branch;
                 return false;
@@ -944,16 +949,16 @@ function MapObject(mapname) {
         });
 
         if (branchObjectID) {
-            highlightGeojsonArray = mapObj.jsonData.features.filter(function(feature) {
+            highlightGeojsonArray = mapObj.jsonData.features.filter(function (feature) {
                 return $.inArray(feature.properties.OBJECTID, branchObjectID) != -1;
             });
 
             if (highlightGeojsonArray.length > 0) {
                 highlightGeojson = {
-                    "type" : "FeatureCollection",
-                    "features" : []
+                    "type": "FeatureCollection",
+                    "features": []
                 }
-                $.each(highlightGeojsonArray,function(index,feature) {
+                $.each(highlightGeojsonArray, function (index, feature) {
                     var torance = 1 / (Math.pow(mapObj.map.getZoom(), 3) + 1);
                     highlightGeojson.features[index] = {
                         "type": "Feature",
@@ -984,13 +989,13 @@ function MapObject(mapname) {
         }
         return highlightGeojson;
     };
-    
-    this.removeSnapshot = function(){
+
+    this.removeSnapshot = function () {
         this.map.removeControl(this.snapshotBtn);
         this.hasSnapshotBtn = false;
     }
-    
-    this.addSnapshot = function(){
+
+    this.addSnapshot = function () {
         firstMap.snapshotBtn.addTo(firstMap.map);
         firstMap.hasSnapshotBtn = true;
     }

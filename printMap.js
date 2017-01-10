@@ -68,7 +68,7 @@ function draw(bounds, data, scale, needLegend) {
         var color = colorHexToRGBString(getColor(data[i].properties.activationCnt), 0.8);
         getEveryCoord(coordArray, context, scale, bounds, coundProjection, color);
     }
-    if(needLegend)
+    if (needLegend)
         legendDraw(context, height, width)
 }
 
@@ -80,7 +80,7 @@ function legendDraw(context, height, width) {
     context.fill();
 
     var grades = [colorPattern[patternIndex], colorPattern[patternIndex] / 5 * 4, colorPattern[patternIndex] / 5 * 3, colorPattern[patternIndex] / 5 * 2, colorPattern[patternIndex] / 5 * 1, 0];
-    for (var i=0; i<legendColor.length; ++i) {
+    for (var i = 0; i < legendColor.length; ++i) {
         var color = legendColor[i];
         context.beginPath();
         context.rect(width - (legendWidth + 10) + 10, height - (legendHeight + 10) + legendTopPadding + (i * (legendColorBlockGap + legendColorBlockWidth)), legendColorBlockWidth, legendColorBlockWidth);
@@ -90,13 +90,13 @@ function legendDraw(context, height, width) {
         context.beginPath();
         context.font = '14pt Calibri';
         context.fillStyle = 'black';
-        var str ;
-        if(i == 0)
-            str = grades[i]+'+';
-        else if(i == legendColor.length - 1)
+        var str;
+        if (i == 0)
+            str = grades[i] + '+';
+        else if (i == legendColor.length - 1)
             str = '0';
         else
-            str = ''+grades[i-1] + ' - ' + grades[i];
+            str = '' + grades[i - 1] + ' - ' + grades[i];
 
         context.fillText(str, width - (legendWidth + 10) + 10 + legendColorBlockWidth + 10, height - (legendHeight + 10) + legendTopPadding + (i * (legendColorBlockGap + legendColorBlockWidth) + 15));
 
@@ -147,8 +147,8 @@ function getColor(d) {
         legendColor[5];
 };
 
-function isCanvasOversize(width,height){
-    return (width > 32767 || height > 32767 || (width * height)>268435456);
+function isCanvasOversize(width, height) {
+    return (width > 32767 || height > 32767 || (width * height) > 268435456);
 }
 
 var Conv = ({
