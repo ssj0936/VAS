@@ -1012,7 +1012,9 @@
     #lifezonePartOfDayBtnset,
     #activationTrendBy,
     #activationTrendLevel,
-    #activationTrendTimeScale {
+    #activationTrendTimeScale,
+    #activationDistributedBy,
+    #activationDistributedLevel {
         display: inline-block;
     }
     

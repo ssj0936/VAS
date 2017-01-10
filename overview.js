@@ -240,7 +240,7 @@ function overviewTimePeriodBtnSetting() {
         } else {
             --mm;
         }
-        console.log(yyyy + ' ' + mm);
+
         if (mm < 10) {
             mm = '0' + mm;
         }
@@ -287,6 +287,8 @@ function overviewSubmitSetting() {
     $('button.overviewSubmit').click(function () {
         //dismiss menu
         $('#overviewDateDropdown').fadeOut(300);
+        //remove single day history
+        $('#loginHistoryContainer').remove();
         //load
         loading("Creating chart");
 

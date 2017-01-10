@@ -157,6 +157,7 @@
                                     <option value="qc">CFR Map</option>
                                     <option value="parallel">Parallel Goods</option>
                                     <option value="activationTrend">Activation Trend</option>
+                                    <option value="activationDistribution">Activation Distribution</option>
                                 </select>
                             </div>
                             <div id="dateContainer" class="filterSelector">
@@ -379,6 +380,29 @@
                                         <select id="showSelector">
                                             <option value="1" selected="selected">Top 5 </option>
                                         </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="activationDistributionControlPanel" class="needTohideAtFirst controlPanel">
+                                <div class="row">
+                                    <div class="col-xs-6">
+                                        <label class="buttonSetLable" for="activationDistributedBy">Distributed by</label>
+                                        <div id="activationDistributedBy" style="margin-top: 3px;">
+                                            <button class="activationDistributedBy" id="activationDistributedByModel">Model</button>
+                                            <button class="activationDistributedBy" id="activationDistributedByDevice">Device</button>
+                                            <button class="activationDistributedBy" id="activationDistributedByRegion">Region</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-xs-6">
+                                        <label class="buttonSetLable" for="activationDistributedLevel">Level</label>
+                                        <div id="activationDistributedLevel" style="margin-top: 3px;">
+                                            <button class="activationDistributedLevel" id="activationDistributedLevelCountry">Country</button>
+                                            <button class="activationDistributedLevel" id="activationDistributedLevelBranch">Branch</button>
+                                            <button class="activationDistributedLevel" id="activationDistributedLevelL1">L1</button>
+                                            <button class="activationDistributedLevel" id="activationDistributedLevelL2">L2</button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

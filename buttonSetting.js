@@ -134,6 +134,7 @@ function buttonInit() {
     rightControlPanelInit();
     parallelControlPanelInit();
     activationTrendControlPanelInit();
+    activationDistributedControlPanelInit();
 }
 
 function controlPanelDisplayRefresh(dataset) {
@@ -216,6 +217,17 @@ function controlPanelDisplayRefresh(dataset) {
         clearControlPanel();
         $('.control_panel_right').show('medium');
         $('#activationTrendControlPanel').show("medium");
+        $('#filterCountryContainer').show('medium');
+
+        break;
+
+    case FUNC_ACTIVATION_DISTRIBUTION:
+        //show date button
+        $('#dateContainer').show('medium');
+        //control panel switch
+        clearControlPanel();
+        $('.control_panel_right').hide();
+        $('#activationDistributionControlPanel').show("medium");
         $('#filterCountryContainer').show('medium');
 
         break;
@@ -319,10 +331,6 @@ function lifezoneControlPanelInit() {
 }
 
 function activationTrendControlPanelInit() {
-    //    $("#activationTrendControlPanel button").button();
-    //    $("#activationTrendControlPanel button").css({
-    //        width: '100px'
-    //    });
     $('#activationTrendControlPanel button').css({
         width: '70px'
     });
@@ -356,6 +364,37 @@ function activationTrendControlPanelInit() {
             showAlert(currentValue);
         }
     });
+}
+
+function activationDistributedControlPanelInit() {
+    $('#activationDistributionControlPanel button').css({
+        width: '70px'
+    });
+
+    $('div#activationDistributedBy button').click(function () {
+        if (isLoading()) return;
+        if ($(this).hasClass('active') && currentTrendTimescale == $(this).attr('id')) return;
+
+        radioButtonClick($('div#activationDistributedBy'), $(this));
+
+        currentTrendTimescale = $(this).attr('id');
+        console.log(currentTrendTimescale + '/' + currentDistributedLevel);
+    });
+
+    $('div#activationDistributedLevel button').click(function () {
+        if (isLoading()) return;
+        if ($(this).hasClass('active') && currentDistributedLevel == $(this).attr('id')) return;
+
+        radioButtonClick($('div#activationDistributedLevel'), $(this));
+        currentDistributedLevel = $(this).attr('id');
+
+        console.log(currentTrendTimescale + '/' + currentDistributedLevel);
+    });
+
+
+    $('div#activationDistributedBy').buttonset();
+    $('div#activationDistributedLevel').buttonset();
+
 }
 
 function lifezoneButtonsetValueReset() {
@@ -1066,6 +1105,10 @@ function submitBtnSetting() {
 
                 submitParallel();
                 break;
+
+            case FUNC_ACTIVATION_DISTRIBUTION:
+                break;
+
             }
             //text in date button
             var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("<br>(" + $('button.btn_pressed').children('span').text() + ")");
