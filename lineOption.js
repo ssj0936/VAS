@@ -219,104 +219,70 @@ function lineDatasetsObj(label, fillColor, pointColor, highlightColor, rightAxis
 //    datasetFill: true,
 //};
 
-var newOptions = {
-    animation: false,
-    populateSparseData: true,
-    overlayBars: false,
-    datasetFill: true,
-    responsive: true,
-    maintainAspectRatio: false,
-    showTooltips: true,
-    //    // String - Template string for single tooltips
-    //    tooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
-    //
-    //    // String - Template string for multiple tooltips
-    //    multiTooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
-
-    scales: {
-        yAxes: [{
-            ticks: {
-                callback: function (value) {
-                    return value.toFixed(2);
-                }
-            }
-      }]
-    },
-    tooltipTemplate: function (label) {
-        return '' + (label.datasetLabel) + ': ' + (label.value);
-    },
-    // String - Template string for multiple tooltips
-    multiTooltipTemplate: function (label) {
-        return '' + (label.datasetLabel) + ': ' + (label.value);
-    },
+function option() {
+    this.animation = false;
+    this.populateSparseData = true;
+    this.overlayBars = false;
+    this.datasetFill = true;
+    this.responsive = true;
+    this.maintainAspectRatio = false;
+    this.showTooltips = true;
+    this.legend = {
+        position: 'right',
+    };
 }
 
-var percentageOptions = {
-    scaleBeginAtZero: false,
-    animation: false,
-    populateSparseData: true,
-    overlayBars: false,
-    datasetFill: true,
-    responsive: true,
-    maintainAspectRatio: false,
-    showTooltips: true,
-
-    scales: {
-        yAxes: [{
-            ticks: {
-                // Create scientific notation labels
-                callback: function (value, index, values) {
-                    return value + ' %';
-                }
-            }
-            }]
-    },
-
-    tooltips: {
-        callbacks: {
-            label: function (tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + ' %';
+var newOptions = new option();
+newOptions.scales = {
+    yAxes: [{
+        ticks: {
+            callback: function (value) {
+                return value.toFixed(2);
             }
         }
-    },
-    scales: {
-        yAxes: [{
-            ticks: {
-                callback: function (value) {
-                    return '' + value.toFixed(2) + ' %';
-                }
-            }
       }]
-    },
-}
+};
+newOptions.legend = {
+    position: 'right',
+};
 
-var negOptions = {
-    scaleBeginAtZero: false,
-    animation: false,
-    populateSparseData: true,
-    overlayBars: false,
-    datasetFill: true,
-    responsive: true,
-    maintainAspectRatio: false,
-    showTooltips: true,
 
-    scales: {
-        yAxes: [{
-            ticks: {
-                // Create scientific notation labels
-                callback: function (value) {
-                    return (value * 100).toFixed(2) + ' %';
-                }
-            }
-            }]
-    },
-
-    tooltips: {
-        callbacks: {
-            label: function (tooltipItem, data) {
-                return data.datasets[tooltipItem.datasetIndex].label + ': ' + (tooltipItem.yLabel * 100).toFixed(2) + ' %';
+var percentageOptions = new option();
+percentageOptions.scales = {
+    yAxes: [{
+        ticks: {
+            // Create scientific notation labels
+            callback: function (value) {
+                return '' + value.toFixed(2) + ' %';
             }
         }
-    },
-   
-}
+            }]
+};
+percentageOptions.tooltips = {
+    callbacks: {
+        label: function (tooltipItem, data) {
+            return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + ' %';
+        }
+    }
+};
+
+
+var negOptions = new option();
+negOptions.scales = {
+    yAxes: [{
+        ticks: {
+            // Create scientific notation labels
+            callback: function (value) {
+                return (value * 100).toFixed(2) + ' %';
+            }
+        }
+            }]
+};
+
+negOptions.tooltips = {
+    callbacks: {
+        label: function (tooltipItem, data) {
+            return data.datasets[tooltipItem.datasetIndex].label + ': ' + (tooltipItem.yLabel * 100).toFixed(2) + ' %';
+        }
+    }
+};
