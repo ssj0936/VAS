@@ -233,6 +233,15 @@ var newOptions = {
     //    // String - Template string for multiple tooltips
     //    multiTooltipTemplate: "<%if (datasetLabel ){%><%=datasetLabel %>: <%}%><%= value %>",
 
+    scales: {
+        yAxes: [{
+            ticks: {
+                callback: function (value) {
+                    return value.toFixed(2);
+                }
+            }
+      }]
+    },
     tooltipTemplate: function (label) {
         return '' + (label.datasetLabel) + ': ' + (label.value);
     },
@@ -263,22 +272,22 @@ var percentageOptions = {
             }]
     },
 
-    //    scaleLabel:function(label) { 
-    //        return '' + label.value + ' %';
-    //    },
-
     tooltips: {
         callbacks: {
             label: function (tooltipItem, data) {
                 return data.datasets[tooltipItem.datasetIndex].label + ': ' + tooltipItem.yLabel + ' %';
-                //                return tooltipItem.yLabel + ' %';
             }
         }
     },
-
-    //    multiTooltipTemplate: function (label) {
-    //        return '' + (label.datasetLabel) + ': ' + label.value + ' %';
-    //    },
+    scales: {
+        yAxes: [{
+            ticks: {
+                callback: function (value) {
+                    return '' + value.toFixed(2) + ' %';
+                }
+            }
+      }]
+    },
 }
 
 var negOptions = {
@@ -295,16 +304,12 @@ var negOptions = {
         yAxes: [{
             ticks: {
                 // Create scientific notation labels
-                callback: function (value, index, values) {
+                callback: function (value) {
                     return (value * 100).toFixed(2) + ' %';
                 }
             }
             }]
     },
-
-    //    scaleLabel: function (label) {
-    //        return '' + ((label.value) * 100).toFixed(2) + ' %';
-    //    },
 
     tooltips: {
         callbacks: {
@@ -313,11 +318,5 @@ var negOptions = {
             }
         }
     },
-    //    tooltipTemplate: function (label) {
-    //        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
-    //    },
-
-    //    multiTooltipTemplate: function (label) {
-    //        return '' + (label.datasetLabel) + ': ' + ((label.value) * 100).toFixed(2) + ' %';
-    //    },
+   
 }
