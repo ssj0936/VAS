@@ -151,22 +151,22 @@ function MapObject(mapname) {
 
     this.setParallelMaxMin = function () {
         var parallelMode = isModeActive(MODE_PARALLEL_IMPORT) ? 'importRatio' : 'exportRatio';
-        this.max = null;
-        this.min = null;
         //        console.log(this.countryMapping);
+        var allValue = [];
         for (var i in this.countryMapping) {
-            var value = parseFloat(((this.countryMapping)[i].total)[parallelMode]);
-            //            console.log(value);
-            this.max = (this.max == null || value > this.max) ? value : this.max;
-            this.min = (this.min == null || value < this.min) ? value : this.min;
+            allValue.push(parseFloat(((this.countryMapping)[i].total)[parallelMode]));
         }
-
-
+        //sort from small to big
+        allValue.sort(function (a, b) {
+            return a - b
+        });
+        //        console.log(allValue);
         //update parallelGrade
         var length = this.max - this.min;
-        parallelGrade = [this.min, (this.min + length / 3), (this.min + length * 2 / 3), this.max];
-        //        console.log('this.max:' + this.max + '/this.min:' + this.min);
-        //        console.log(parallelGrade);
+        if (allValue.length >= 3)
+            parallelGrade = [allValue[0], allValue[(allValue.length) / 2], allValue[allValue.length - 1]];
+        else
+            parallelGrade = [allValue[0], allValue[0], allValue[allValue.length - 1]];
     };
 
     this.mapDataLoad = function () {
@@ -885,8 +885,7 @@ function MapObject(mapname) {
     };
 
     this.getParallelColor = function (d) {
-        return d >= parallelGrade[3] ? '#FF0000' :
-            d >= parallelGrade[2] ? '#FF8800' :
+        return d >= parallelGrade[2] ? '#FF8800' :
             d >= parallelGrade[1] ? '#77FF00' :
             d == parallelGrade[0] ? '#0000FF' :
             '#00FFCC';
