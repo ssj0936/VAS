@@ -99,7 +99,7 @@
 
     $db->query($sqlDeviceIn);
     while($row = $db->fetch_array()){
-        $str_in.="'".$row['part_no']."',";
+        $str_in.="'".$row['product_id']."',";
     }
     $str_in = substr($str_in,0,-1);
     
@@ -289,7 +289,7 @@
 
                         ." WHERE"
                         ." date BETWEEN '$from' AND '$to'"
-                        ." AND A1.product_id = part_device.part_no"
+                        ." AND A1.product_id = part_device.product_id"
                         .($isAll?"":" AND A1.product_id IN(".$str_in.")")
             //            ." AND branch='$branch'"
                         //." AND A1.model = mapping.device_name "
@@ -315,7 +315,7 @@
 
                         ." WHERE"
                         ." date BETWEEN '$from' AND '$to'"
-                        ." AND A1.product_id = part_device.part_no"
+                        ." AND A1.product_id = part_device.product_id"
                         .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                         ." AND A1.map_id = regionTam.mapid "
             //            ." AND branch='$branch'"

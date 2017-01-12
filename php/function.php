@@ -146,7 +146,7 @@ function getAllTargetPartNoSql($dataObj) {
         }
     }
 
-    $sqlDeviceIn = "SELECT A3.part_no "
+    $sqlDeviceIn = "SELECT A3.product_id "
             ."FROM $deviceTable A1, $productNameModelMapping A2, $productDescriptionMapping A3 "
             ."WHERE A1.model_name = A2.MODEL and A1.device_name = A3.device_name ";
 
@@ -175,7 +175,7 @@ function getDevicenameToPartNoSql($devices){
     
     $deviceArray=$devices;
 
-    $sqlDeviceIn = "SELECT A3.part_no "
+    $sqlDeviceIn = "SELECT A3.product_id "
             ."FROM $deviceTable A1, $productNameModelMapping A2, $productDescriptionMapping A3 "
             ."WHERE A1.model_name = A2.MODEL and A1.device_name = A3.device_name ";
     if(count($deviceArray)!=0)

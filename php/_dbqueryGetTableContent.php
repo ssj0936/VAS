@@ -86,7 +86,7 @@
 
         $db->query($sqlDeviceIn);
         while($row = $db->fetch_array()){
-            $str_in.="'".$row['part_no']."',";
+            $str_in.="'".$row['product_id']."',";
         }
         $str_in = substr($str_in,0,-1);
             

@@ -146,7 +146,7 @@
         $query = '';
         //device
         
-        $query = "SELECT distinct product_ID,A4.model_description device_name,A2.model_name,PRODUCT product
+        $query = "SELECT distinct A1.product_ID,A4.model_description device_name,A2.model_name,PRODUCT product
                     FROM (SELECT distinct product_ID,model_name FROM $productIdMapping) A1,$deviceTable A2,$productNameModelMapping A3,$productDescriptionMapping A4
                     where A2.model_name = A3.MODEL
                     and A1.model_name = A2.model_name
