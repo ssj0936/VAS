@@ -179,9 +179,7 @@ function controlPanelDisplayRefresh(dataset) {
         $('#qcControlPanel').show("medium");
         $('#filterCountryContainer').show('medium');
         collapseDeviceDescription();
-
-        cleanDevFilter();
-        filterRecordClean();
+        //        recheckDeviceCheckbox();
 
         break;
 

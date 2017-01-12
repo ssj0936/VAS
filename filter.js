@@ -177,7 +177,7 @@ function checkboxDeviceInit() {
             observeTargetDeviceOnlyTmp.length = 0;
             var checktarget = $("#productUl");
             checkDevicePush(checktarget);
-            //            console.log(observeTargetTmp);
+            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
             //            console.log(specDeviceTmp);
 
@@ -931,20 +931,18 @@ function collapseDeviceDescription() {
 }
 
 function recheckDeviceCheckbox() {
-    if (observeTargetTmp.length != 0) {
-        for (var i = 0; i < observeTargetTmp.length; i++) {
-            if (observeTargetTmp[i].datatype == 'devices') continue;
+    if (observeTargetTmp.length == 0) return;
+    if ($("input[datatype='devices']:checked").length == 0) return
 
-            var datatype = observeTargetTmp[i].datatype;
-            var devices = observeTargetTmp[i].devices;
-            var model = observeTargetTmp[i].model;
-            var product = observeTargetTmp[i].product;
-
-            var $this = $("input[datatype='" + datatype + "'][data-productname='" + product + "'][data-modelname='" + model + "'][data-devicesname='" + devices + "']");
-            $this.prop('checked', true);
-            checkChild($this, ($this.prop("checked") ? true : false));
-            checkParent($this);
-
-        }
-    }
+    $("input[datatype='devices']").prop('checked', false);
+    observeTargetTmp.length = 0;
+    specDeviceTmp.length = 0;
+    observeTargetDeviceOnlyTmp.length = 0;
+    var checktarget = $("#productUl");
+    checkDevicePush(checktarget);
+    console.log(observeTargetTmp);
+    updateSpecFilter(checktarget);
+    console.log(specDeviceTmp);
+    ajaxGetDeviceSpec(specDeviceTmp);
+    disableSubmit();
 }
