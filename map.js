@@ -160,11 +160,9 @@ function MapObject(mapname) {
         allValue.sort(function (a, b) {
             return a - b
         });
-        //        console.log(allValue);
         //update parallelGrade
-        var length = this.max - this.min;
         if (allValue.length >= 3)
-            parallelGrade = [allValue[0], allValue[(allValue.length) / 2], allValue[allValue.length - 1]];
+            parallelGrade = [allValue[0], allValue[parseInt((allValue.length) / 2)], allValue[allValue.length - 1]];
         else
             parallelGrade = [allValue[0], allValue[0], allValue[allValue.length - 1]];
     };
@@ -322,7 +320,9 @@ function MapObject(mapname) {
                 var grades = parallelGrade;
 
                 div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor((grades[0])) + '"></i> ' + numToString(grades[0]) + ' %</div> ';
+                console.log(grades);
                 for (var i = 0; i < grades.length - 1; i++) {
+                    console.log(grades[i]);
                     div.innerHTML +=
                         '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i] + 1)) + '"></i> ' +
                         numToString(grades[i]) + ' % &ndash;' + numToString(grades[i + 1]) + ' % </div>';
