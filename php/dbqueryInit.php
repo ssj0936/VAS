@@ -146,13 +146,14 @@
         $query = '';
         //device
         
-        $query = "SELECT distinct product_ID,A2.device_name device_name,A2.model_name,PRODUCT product
-                    FROM (SELECT distinct product_ID,model_name FROM $productIdMapping) A1,$deviceTable A2,$productNameModelMapping A3
+        $query = "SELECT distinct product_ID,A4.model_description device_name,A2.model_name,PRODUCT product
+                    FROM (SELECT distinct product_ID,model_name FROM $productIdMapping) A1,$deviceTable A2,$productNameModelMapping A3,$productDescriptionMapping A4
                     where A2.model_name = A3.MODEL
-                    and A1.model_name = A2.model_name"
+                    and A1.model_name = A2.model_name
+                    and A2.device_name = A4.device_name"
                     .((in_array('',$permissionProductId) || $isVIP) ? '' :" and product_ID IN ($permissionProductIdStr)")
                     ." ORDER BY PRODUCT,A2.model_name,device_name;";
-//        echo $query;
+
         $db->query($query);
 
         while($row = $db->fetch_array()){
@@ -191,24 +192,6 @@
             $allLoc[$terrority][$countryName][] = $row['iso'];
         }
 
-        $query = "SELECT DISTINCT * FROM "
-                .$_DB['repair']['dbnameMucModuleCode']
-                ." WHERE numcode != 0
-                ORDER BY numcode";
-        $db->query($query);
-        while($row = $db->fetch_array()){
-            $allCategory['muc'][$row['numcode']] = str_replace(' ','',$row['muc_module']);
-        }
-
-        $query = "SELECT DISTINCT * FROM "
-                .$_DB['repair']['dbnameLmdModuleCode']
-                ." WHERE numcode != 0
-                ORDER BY numcode";
-        $db->query($query);
-        while($row = $db->fetch_array()){
-            $allCategory['lmd'][$row['numcode']] = str_replace(' ','',$row['lmd_part_group']);
-        }
-
     }
 
     $allEmpty = true;
@@ -235,7 +218,6 @@
     $result['isVIP']= $isVIP;
     $result['accountPermission']= $permissionResult ;
     $result['productToProductID']= $productToProductID ;
-    $result['category'] = $allCategory;
 
     $json = json_encode($result);
     echo $json;

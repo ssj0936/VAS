@@ -1,4 +1,4 @@
-    <?php
+<?php
     ini_set("max_execution_time", 0);
 
     $detailIso = array('IND','IDN');
@@ -85,14 +85,8 @@
 //        echo $level;
         
         $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB[$dataset]['dbnameRegionL'.$level]);
-        $str_in='';
-		$sqlDeviceIn = getAllTargetDeviceSql($dataObj);
+		$sqlDeviceIn = getAllTargetPartNoSql($dataObj);
         
-        $db->query($sqlDeviceIn);
-        while($row = $db->fetch_array()){
-            $str_in.="'".$row['device_name']."',";
-        }
-        $str_in = substr($str_in,0,-1);
 		//echo $str_in;	
         //group by model_name
         
@@ -107,7 +101,7 @@
                 $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch"
                         ,"Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","ASUS Territory","Activation q'ty<br>by Territory"
                         ,"District","Activation q'ty<br>by District");
-                $fromTableStr="SELECT device,branch,map_id,count"
+                $fromTableStr="SELECT part_device.model_description as device,part_device.device_name as name,branch,map_id,count"
                     ." FROM "
                     .($isColorAll ? "" : "$colorMappingTable A2,")
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -115,12 +109,14 @@
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
                     .(($isFullPermission || $permissionResult['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                     ."$isoObj[0] A1,"
-                    ."$deviceTable device_model"
+                    ."$deviceTable device_model,"
+                    ."$productDescriptionMapping part_device"
 
                     ." WHERE "
                     ."date BETWEEN '".$from."' AND '".$to."'"
                     ." AND A1.device = device_model.device_name"
-                    .($isAll?"":" AND device IN(".$str_in.")")
+                    ." AND A1.product_id = part_device.part_no"
+                    .($isAll?"":" AND A1.product_id IN($sqlDeviceIn)")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -135,7 +131,7 @@
                 //2.get model name And sum group by model_name, branch, map_id
                 $queryStr = "SELECT sum(count)count,branch,map_id"
                     ." FROM ".$fromTableStrGroupByModel
-                    ." WHERE data.device = mapping.device_name"
+                    ." WHERE data.name = mapping.device_name"
                     ." GROUP BY branch, map_id";
 
                 //3.get district name/branchName of 
@@ -153,7 +149,7 @@
                     $tableColumnNameListModel = array("Period","Model","Country","ASUS Branch","TAM Share<br>by Branch","Activation Share<br>by Branch","Activation q'ty<br>by Branch","GAP % by Branch<br>(TAM v.s Actvation)","District","Activation q'ty<br>by District");
                     
                 
-                $fromTableStr="SELECT device,map_id,count"
+                $fromTableStr="SELECT part_device.model_description as device,part_device.device_name as name,map_id,count"
                     ." FROM "
                     .($isColorAll ? "" : "$colorMappingTable A2,")
                     .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -161,12 +157,14 @@
                     .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
                     .(($isFullPermission || $permissionResult['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                     ."$isoObj[0] A1,"
-                    ."$deviceTable device_model"
+                    ."$deviceTable device_model,"
+                    ."$productDescriptionMapping part_device"
 
                     ." WHERE "
                     ."date BETWEEN '".$from."' AND '".$to."'"
                     ." AND A1.device = device_model.device_name"
-                    .($isAll?"":" AND device IN(".$str_in.")")
+                    ." AND A1.product_id = part_device.part_no"
+                    .($isAll?"":" AND A1.product_id IN($sqlDeviceIn)")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -181,7 +179,7 @@
                 //2.get model name And sum group by model_name, branch, map_id
                     $queryStr = "SELECT sum(count)count,branchName as branchSell,map_id,name2"
                         ." FROM $fromTableStrGroupByModel , $regionTam regionTam"
-                        ." WHERE data.device = mapping.device_name"
+                        ." WHERE data.name = mapping.device_name"
                         ." AND data.map_id = regionTam.mapid"
                         ." AND regionTam.iso = '$isoObj[0]'"
                         ." GROUP BY branchName, map_id,name2";
@@ -498,7 +496,7 @@
         //group by branch:
         //need to get selected Model
         $allModelStr = '';
-        $query = getModel($str_in);
+        $query = getAllTargetModelSql($dataObj);
         $db->query($query);
         while($row = $db->fetch_array()){
            $allModelStr .= $row['model_name'].", ";

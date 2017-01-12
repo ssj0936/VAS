@@ -71,6 +71,7 @@ function getAllTargetDeviceSql($dataObj){
 function getAllTargetModelSql($dataObj){
     $deviceTable = $GLOBALS['deviceTable'];
     $productNameModelMapping = $GLOBALS['productNameModelMapping'];
+    $productDescriptionMapping = $GLOBALS['productDescriptionMapping'];
     
     $deviceArray=array();
     $modelArray=array();
@@ -96,14 +97,14 @@ function getAllTargetModelSql($dataObj){
     }
 
     $sqlDeviceIn = "SELECT distinct(model_name) "
-            ."FROM $deviceTable A1, $productNameModelMapping A2 "
-            ."WHERE A1.model_name = A2.MODEL ";
+            ."FROM $deviceTable A1, $productNameModelMapping A2, $productDescriptionMapping A3 "
+            ."WHERE A1.model_name = A2.MODEL and A1.device_name = A3.device_name ";
 
     if((count($deviceArray)!=0) || (count($modelArray)!=0) || (count($productArray)!=0)){
         $orArray = array();
         
         if(count($deviceArray)!=0)
-            $orArray[] = "device_name in (".arrayConvertToInstr($deviceArray).")";
+            $orArray[] = "A3.model_description in (".arrayConvertToInstr($deviceArray).")";
         if(count($modelArray)!=0)
             $orArray[] = "model_name in (".arrayConvertToInstr($modelArray).")";
         if(count($productArray)!=0)
@@ -113,6 +114,73 @@ function getAllTargetModelSql($dataObj){
         $sqlDeviceIn .= implode(" OR ",$orArray);
         $sqlDeviceIn .= ')';
     }
+
+    return $sqlDeviceIn;
+}
+
+function getAllTargetPartNoSql($dataObj) {
+    $deviceTable = $GLOBALS['deviceTable'];
+    $productNameModelMapping = $GLOBALS['productNameModelMapping'];
+    $productDescriptionMapping = $GLOBALS['productDescriptionMapping'];
+    
+    $deviceArray=array();
+    $modelArray=array();
+    $productArray=array();
+
+    for($i=0;$i<count($dataObj);++$i){
+        $product = $dataObj[$i]->product;
+        $model = $dataObj[$i]->model;
+        $devices = $dataObj[$i]->devices;
+        $datatype = $dataObj[$i]->datatype;
+
+        switch($datatype){
+            case "devices":
+                $deviceArray[] = $devices;
+                break;
+            case "model":
+                $modelArray[] = $model;
+                break;
+            case "product":
+                $productArray[] = $product;
+                break;
+        }
+    }
+
+    $sqlDeviceIn = "SELECT A3.part_no "
+            ."FROM $deviceTable A1, $productNameModelMapping A2, $productDescriptionMapping A3 "
+            ."WHERE A1.model_name = A2.MODEL and A1.device_name = A3.device_name ";
+
+    if((count($deviceArray)!=0) || (count($modelArray)!=0) || (count($productArray)!=0)){
+        $orArray = array();
+        
+        if(count($deviceArray)!=0)
+            $orArray[] = "A3.model_description in (".arrayConvertToInstr($deviceArray).")";
+        if(count($modelArray)!=0)
+            $orArray[] = "A1.model_name in (".arrayConvertToInstr($modelArray).")";
+        if(count($productArray)!=0)
+            $orArray[] = "A2.PRODUCT in (".arrayConvertToInstr($productArray).")";
+        $sqlDeviceIn .= 'AND';
+        $sqlDeviceIn .= '(';
+        $sqlDeviceIn .= implode(" OR ",$orArray);
+        $sqlDeviceIn .= ')';
+    }
+
+    return $sqlDeviceIn;
+}
+
+function getDevicenameToPartNoSql($devices){
+    $deviceTable = $GLOBALS['deviceTable'];
+    $productNameModelMapping = $GLOBALS['productNameModelMapping'];
+    $productDescriptionMapping = $GLOBALS['productDescriptionMapping'];
+    
+    $deviceArray=$devices;
+
+    $sqlDeviceIn = "SELECT A3.part_no "
+            ."FROM $deviceTable A1, $productNameModelMapping A2, $productDescriptionMapping A3 "
+            ."WHERE A1.model_name = A2.MODEL and A1.device_name = A3.device_name ";
+    if(count($deviceArray)!=0)
+        $sqlDeviceIn .= " AND A3.model_description in (".arrayConvertToInstr($deviceArray).")";
+
 
     return $sqlDeviceIn;
 }

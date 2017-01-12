@@ -77,9 +77,11 @@
         
         $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
         
+        $sqlDeviceIn = getAllTargetPartNoSql($dataObj);
+
         $db->query($sqlDeviceIn);
         while($row = $db->fetch_array()){
-            $str_in.="'".$row['device_name']."',";
+            $str_in.="'".$row['part_no']."',";
         }
         $str_in = substr($str_in,0,-1);
         
@@ -105,7 +107,7 @@
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
                         ." AND A1.device = device_model.device_name"
-                        .($isAll?"":" AND device IN(".$str_in.")")
+                        .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")

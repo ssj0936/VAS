@@ -95,11 +95,11 @@
     
     $str_in='';
         
-    $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
+    $sqlDeviceIn = getAllTargetPartNoSql($dataObj);
 
     $db->query($sqlDeviceIn);
     while($row = $db->fetch_array()){
-        $str_in.="'".$row['device_name']."',";
+        $str_in.="'".$row['part_no']."',";
     }
     $str_in = substr($str_in,0,-1);
     
@@ -123,10 +123,10 @@
                     ."$isoObj[0] A1,"
                     ."$deviceTable device_model"
 
-                    ." WHERE"
-                    ." date BETWEEN '$from' AND '$to'"
+                    ." WHERE "
+                    ."date BETWEEN '".$from."' AND '".$to."'"
                     ." AND A1.device = device_model.device_name"
-                    .($isAll?"":" AND device IN($str_in)")
+                    .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -153,10 +153,10 @@
                     ."$isoObj[0] A1,"
                     ."$deviceTable device_model"
 
-                    ." WHERE"
-                    ." date BETWEEN '$from' AND '$to'"
+                    ." WHERE "
+                    ."date BETWEEN '".$from."' AND '".$to."'"
                     ." AND A1.device = device_model.device_name"
-                    .($isAll?"":" AND device IN($str_in)")
+                    .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -214,7 +214,7 @@
 
                     ." WHERE"
                     ." date BETWEEN '$from' AND '$to'"
-                    .($isAll?"":" AND device IN($str_in)")
+                    .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                     ." AND A1.device = mapping.device_name "
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                     .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
@@ -235,9 +235,10 @@
                     ."$deviceTable mapping,"
                     ."$regionTam regionTam"
 
+
                     ." WHERE"
                     ." date BETWEEN '$from' AND '$to'"
-                    .($isAll?"":" AND device IN($str_in)")
+                    .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                     ." AND A1.device = mapping.device_name "
                     ." AND A1.map_id = regionTam.mapid "
                     .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
@@ -276,41 +277,46 @@
     //Group by Device
     switch($isoObj[0]){
             case 'IND':
-                $queryStr="SELECT device,date,SUM(count) AS count,branch"
-                        ." FROM "
-                        .($isColorAll ? "" : "$colorMappingTable A2,")
-                        .($isCpuAll ? "" : "$cpuMappingTable A3,")
-                        .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
-                        .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
-                        ."$isoObj[0] A1"
-                        //."$deviceTable mapping"
-
-                        ." WHERE"
-                        ." date BETWEEN '$from' AND '$to'"
-                        .($isAll?"":" AND device IN($str_in)")
-            //            ." AND branch='$branch'"
-                        //." AND A1.model = mapping.device_name "
-                        .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-                        .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-                        .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                        ." GROUP BY date, device, branch ORDER BY date,device";
-                break;
-            
-            default:
-                $queryStr="SELECT device,date,SUM(count) AS count,branchName AS branch"
+                $queryStr="SELECT part_device.model_description as device,date,SUM(count) AS count,branch"
                         ." FROM "
                         .($isColorAll ? "" : "$colorMappingTable A2,")
                         .($isCpuAll ? "" : "$cpuMappingTable A3,")
                         .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
                         .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
                         ."$isoObj[0] A1,"
-                        ."$regionTam regionTam"
+                        ."$productDescriptionMapping part_device"
                         //."$deviceTable mapping"
 
                         ." WHERE"
                         ." date BETWEEN '$from' AND '$to'"
-                        .($isAll?"":" AND device IN($str_in)")
+                        ." AND A1.product_id = part_device.part_no"
+                        .($isAll?"":" AND A1.product_id IN(".$str_in.")")
+            //            ." AND branch='$branch'"
+                        //." AND A1.model = mapping.device_name "
+                        .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
+                        .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
+                        .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
+                        .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
+                        ." GROUP BY date, part_device.model_description, branch ORDER BY date,part_device.model_description";
+                break;
+            
+            default:
+                $queryStr="SELECT part_device.model_description as device,date,SUM(count) AS count,branchName AS branch"
+                        ." FROM "
+                        .($isColorAll ? "" : "$colorMappingTable A2,")
+                        .($isCpuAll ? "" : "$cpuMappingTable A3,")
+                        .($isFrontCameraAll ? "" : "$frontCameraMappingTable A4,")
+                        .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
+                        ."$isoObj[0] A1,"
+                        ."$regionTam regionTam,"
+                        //."$deviceTable mapping"
+                        ."$productDescriptionMapping part_device"
+                        //."$deviceTable mapping"
+
+                        ." WHERE"
+                        ." date BETWEEN '$from' AND '$to'"
+                        ." AND A1.product_id = part_device.part_no"
+                        .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                         ." AND A1.map_id = regionTam.mapid "
             //            ." AND branch='$branch'"
                         //." AND A1.model = mapping.device_name "
@@ -318,7 +324,7 @@
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
                         .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                        ." GROUP BY date, device, branchName ORDER BY date,device";
+                        ." GROUP BY date, part_device.model_description, branchName ORDER BY date,part_device.model_description";
                 break;
     }
 //    echo "3:".$queryStr."<br>";

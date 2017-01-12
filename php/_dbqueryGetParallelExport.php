@@ -89,7 +89,7 @@
                         .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                     ." WHERE model IN ($str_in) "
                     ." AND country IN ($isoIn) "
-                    ." AND a1.MRRD_numcode = a2.numcode"
+                    ." AND a1.MD_numcode = a2.numcode"
                     ." AND geo.iso = a1.country"
                     ." AND $exportFileColumn != 0"
                     .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")

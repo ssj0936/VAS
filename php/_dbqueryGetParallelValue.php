@@ -85,7 +85,7 @@
                                 .$_DB['parallel']['mapping']." a2"
                                 .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                             ." where model IN ($str_in)"
-                            ." AND a1.MRRD_numcode = a2.numcode"
+                            ." AND a1.MD_numcode = a2.numcode"
                             .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                             ." group by country,a2.model"
                         .")foo"
@@ -106,7 +106,7 @@
                                   .$_DB['parallel']['mapping']." a2"
                                   .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                             ." where model IN ($str_in)"
-                            ." AND a1.MRRD_numcode = a2.numcode"
+                            ." AND a1.MD_numcode = a2.numcode"
                             .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                             ." group by country"
                        .")goo"

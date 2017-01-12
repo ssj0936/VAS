@@ -92,7 +92,7 @@
                               .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                         ." where model IN ($str_in)"
                         ." AND country = '$iso'"
-                        ." AND a1.MRRD_numcode = a2.numcode"
+                        ." AND a1.MD_numcode = a2.numcode"
                         ." AND geo.iso = a1.country"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by NAME_0,act_year,act_mon"
@@ -139,7 +139,7 @@
                               .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                         ." where model IN ($str_in)"
                         ." AND country = '$iso'"
-                        ." AND a1.MRRD_numcode = a2.numcode"
+                        ." AND a1.MD_numcode = a2.numcode"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by act_year,act_mon,model"
                     ." )foo "
@@ -171,7 +171,7 @@
                               .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                         ." where model IN ($str_in)"
                         ." AND country = '$iso'"
-                        ." AND a1.MRRD_numcode = a2.numcode"
+                        ." AND a1.MD_numcode = a2.numcode"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by act_year,act_mon,model"
                     ." ) foo"
@@ -202,7 +202,7 @@
                               .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                         ." where model IN ($str_in)"
                         ." AND country = '$iso'"
-                        ." AND a1.MRRD_numcode = a2.numcode"
+                        ." AND a1.MD_numcode = a2.numcode"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
                     ." group by act_year,act_mon,distributor_id"
                     ." ) foo"

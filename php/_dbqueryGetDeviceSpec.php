@@ -4,6 +4,7 @@
     ini_set("max_execution_time", 0);
     require_once("DBconfig.php");
     require_once("DBclass.php");
+    require_once("function.php");
 
     $tablename = array(
             "cpu",
@@ -16,24 +17,35 @@
 
     $deviceName =$_GET['device_name'];
     if($deviceName != '[]') {
+        $str_in='';
         $deviceName = json_decode($deviceName,true);
+        $sqlDeviceIn = getDevicenameToPartNoSql($deviceName);
+
+        $db->query($sqlDeviceIn);
+        while($row = $db->fetch_array()){
+            $str_in.="'".$row['part_no']."',";
+        }
+        $str_in = substr($str_in,0,-1);
         $deviceString = implode("','",$deviceName);
 
         $result = array();
         for ($i = 0; $i < count($tablename); $i++) {
-            $db->query(
-                "SELECT SPEC_DESC"
-                ." FROM [asus_spec_mapping].[dbo].[device_".$tablename[$i]."_mapping_".getCurrentDb('activation')."]"
-                ." where device_name in ('".$deviceString."')"
-                ."ORDER BY SPEC_DESC ;"
-            );
+            $queryStr = "SELECT distinct SPEC_DESC"
+                        ." FROM [asus_spec_mapping].[dbo].[product_".$tablename[$i]."_mapping_".getCurrentDb('activation')."]"
+                        ." where PART_NO in (".$str_in.")"
+                        ."ORDER BY SPEC_DESC ;";
+
+            $db->query($queryStr);
             $specUnion = array();
             while ($row = $db->fetch_array()) {
-                $tmp = json_decode($row['SPEC_DESC'],true);
+                $tmp = array($row['SPEC_DESC']);
                 $specUnion = array_unique(array_merge($specUnion,$tmp));
             }
             foreach($specUnion as $value) {
                 $result[$tablename[$i]][] = $value;
+            }
+            if (empty($result[$tablename[$i]])) {
+                $result[$tablename[$i]]= array();
             }
         }
     } else {

@@ -72,11 +72,11 @@ if(count($dataObj) != 0){
     $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['lifezone']['dbnameMarker_']);
     $str_in='';
 
-    $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
-    //echo $sqlDeviceIn."<br>";
+    $sqlDeviceIn = getAllTargetPartNoSql($dataObj);
+
     $db->query($sqlDeviceIn);
     while($row = $db->fetch_array()){
-        $str_in.="'".$row['device_name']."',";
+        $str_in.="'".$row['part_no']."',";
     }
     $str_in = substr($str_in,0,-1);
 
@@ -103,7 +103,7 @@ if(count($dataObj) != 0){
                     ." A1.mpp_numcode = device_model.mpp_numcode"
                     ." AND week = '".$lifeZoneTimeObj['week']."'"
                     ." AND time = '".$lifeZoneTimeObj['time']."'"
-                    .($isAll?"":" AND device_model.productdevice IN(".$str_in.")")
+                    .($isAll?"":" AND device_model.pno IN(".$str_in.")")
                     .($isColorAll ? "" : " AND device_model.pno = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                     .($isCpuAll ? "" : " AND device_model.pno = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                     .($isFrontCameraAll ? "" : " AND device_model.pno = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -119,7 +119,7 @@ if(count($dataObj) != 0){
             $queryStr.=(" UNION ALL ".$tmpQueryStr);
         }
     }
-//    echo $queryStr."<br>";
+    //echo $queryStr."<br>";
 
     //$queryStr = 'SELECT SUM(volume)as count,lng,lat,week,time FROM('.$queryStr.')foo GROUP BY lng,lat,week,time';
 

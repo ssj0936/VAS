@@ -86,11 +86,11 @@
     
     $str_in='';
         
-    $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
+    $sqlDeviceIn = getAllTargetPartNoSql($dataObj);
 
     $db->query($sqlDeviceIn);
     while($row = $db->fetch_array()){
-        $str_in.="'".$row['device_name']."',";
+        $str_in.="'".$row['part_no']."',";
     }
     $str_in = substr($str_in,0,-1);
     
@@ -110,10 +110,10 @@
             ."$iso A1,"
             ."$deviceTable device_model"
 
-            ." WHERE"
-            ." date BETWEEN '$from' AND '$to'"
+            ." WHERE "
+            ."date BETWEEN '".$from."' AND '".$to."'"
             ." AND A1.device = device_model.device_name"
-            .($isAll?"":" AND device IN($str_in)")
+            .($isAll?"":" AND A1.product_id IN(".$str_in.")")
             ." AND map_id='$countryID'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
@@ -154,11 +154,11 @@
             ."$iso A1,"
             ."$deviceTable device_model"
 
-            ." WHERE"
-            ." date BETWEEN '$from' AND '$to'"
-            .($isAll?"":" AND device IN($str_in)")
-            ." AND map_id='$countryID'"
+            ." WHERE "
+            ."date BETWEEN '".$from."' AND '".$to."'"
             ." AND A1.device = device_model.device_name"
+            .($isAll?"":" AND A1.product_id IN(".$str_in.")")
+            ." AND map_id='$countryID'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
             .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
@@ -179,7 +179,7 @@
     }
 
     //Group by Device
-    $queryStr="SELECT device,date,SUM(count) AS count"
+    $queryStr="SELECT part_device.model_description as device,date,SUM(count) AS count"
             ." FROM "
             .($isColorAll ? "" : "$colorMappingTable A2,")
             .($isCpuAll ? "" : "$cpuMappingTable A3,")
@@ -187,12 +187,14 @@
             .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
             .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
             ."$iso A1,"
-            ."$deviceTable device_model"
+            ."$deviceTable device_model,"
+            ."$productDescriptionMapping part_device"
 
-            ." WHERE"
-            ." date BETWEEN '$from' AND '$to'"
+            ." WHERE "
+            ."date BETWEEN '".$from."' AND '".$to."'"
             ." AND A1.device = device_model.device_name"
-            .($isAll?"":" AND device IN($str_in)")
+            ." AND A1.product_id = part_device.part_no"
+            .($isAll?"":" AND A1.product_id IN(".$str_in.")")
             ." AND map_id='$countryID'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
             .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
@@ -201,7 +203,7 @@
             .($isDistBranch ? " AND $distBranchStr " : "")
             .($isOnlineDist ? " AND $onlineDistStr " : "")
             .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : " AND device_model.model_name = product.model_name AND product.product_id IN (".$result['permissionProductIDStr'].")")
-            ." GROUP BY date, device ORDER BY date,device";
+            ." GROUP BY date, part_device.model_description ORDER BY date,part_device.model_description";
 //    echo "3:".$queryStr."<br>";
     $db->query($queryStr);
     while($row = $db->fetch_array())
@@ -225,10 +227,10 @@
                 ."$iso A1,"
                 ."$deviceTable device_model"
 
-                ." WHERE"
-                ." date BETWEEN '$from' AND '$to'"
+                ." WHERE "
+                ."date BETWEEN '".$from."' AND '".$to."'"
                 ." AND A1.device = device_model.device_name"
-                .($isAll?"":" AND device IN($str_in)")
+                .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                 ." AND map_id='$countryID'"
                 .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                 .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
@@ -259,10 +261,10 @@
                 ."$iso A1,"
                 ."$deviceTable device_model"
 
-                ." WHERE"
-                ." date BETWEEN '$from' AND '$to'"
+                ." WHERE "
+                ."date BETWEEN '".$from."' AND '".$to."'"
                 ." AND A1.device = device_model.device_name"
-                .($isAll?"":" AND device IN($str_in)")
+                .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                 ." AND map_id='$countryID'"
                 .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
                 .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")

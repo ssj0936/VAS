@@ -140,6 +140,7 @@ function buttonInit() {
 function controlPanelDisplayRefresh(dataset) {
     //hide all first
     $('.controlPanel').hide();
+    $('.model-plus').show();
 
     switch (dataset) {
     case FUNC_PARALLEL:
@@ -177,6 +178,10 @@ function controlPanelDisplayRefresh(dataset) {
         $('.control_panel_right').hide();
         $('#qcControlPanel').show("medium");
         $('#filterCountryContainer').show('medium');
+        collapseDeviceDescription();
+
+        cleanDevFilter();
+        filterRecordClean();
 
         break;
 
@@ -1090,6 +1095,7 @@ function submitBtnSetting() {
                 needToLoadTwoModeSameTime = (isRegionMarkerSametime()) ? true : false;
                 console.log("needToLoadTwoModeSameTime:" + needToLoadTwoModeSameTime);
                 firstMap.zoomToSelectedLocation();
+                setInitialZoom(firstMap.map.getZoom());
                 break;
 
             case FUNC_PARALLEL:

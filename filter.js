@@ -108,7 +108,7 @@ function checkboxDeviceInit() {
             //all product
             //collapse icon
             jQuery('<span />', {
-                    class: "ui-icon ui-icon-circlesmall-plus",
+                    class: "ui-icon ui-icon-circlesmall-plus model-plus",
                 })
                 .css({
                     'display': 'inline-block',
@@ -906,8 +906,45 @@ function cleanLocFilter() {
     observeLocFullNameTmp.length = 0;
 }
 
+function cleanDevFilter() {
+    $("input[datatype='product']").prop('checked', false);
+    $("input[datatype='model']").prop('checked', false);
+    $("input[datatype='devices']").prop('checked', false);
+
+    observeTargetTmp.length = 0;
+}
+
 function cleanDistBranchFilter() {
     $("input[name='distBranch']").prop('checked', false);
     $("input[name='branchDist']").prop('checked', false);
     $("input[name='onlineDist']").prop('checked', false);
+}
+
+function collapseDeviceDescription() {
+    $('.model-plus').each(function (el) {
+        if ($(this).hasClass('ui-icon-circlesmall-minus')) {
+            $(this).removeClass("ui-icon-circlesmall-minus").addClass("ui-icon-circlesmall-plus");
+            $(this).parent().next('ul').slideUp()
+        }
+    });
+    $('.model-plus').hide();
+}
+
+function recheckDeviceCheckbox() {
+    if (observeTargetTmp.length != 0) {
+        for (var i = 0; i < observeTargetTmp.length; i++) {
+            if (observeTargetTmp[i].datatype == 'devices') continue;
+
+            var datatype = observeTargetTmp[i].datatype;
+            var devices = observeTargetTmp[i].devices;
+            var model = observeTargetTmp[i].model;
+            var product = observeTargetTmp[i].product;
+
+            var $this = $("input[datatype='" + datatype + "'][data-productname='" + product + "'][data-modelname='" + model + "'][data-devicesname='" + devices + "']");
+            $this.prop('checked', true);
+            checkChild($this, ($this.prop("checked") ? true : false));
+            checkParent($this);
+
+        }
+    }
 }
