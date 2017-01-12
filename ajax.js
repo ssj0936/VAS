@@ -1124,3 +1124,35 @@ function ajaxGetSQRegion() {
         }
     });
 }
+
+function ajaxGetActivationDistribution() {
+    var mapObj = firstMap;
+    var URLs = "php/_dbqueryGetActivationDistribution.php";
+    $.ajax({
+        url: URLs,
+        data: {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            iso: JSON.stringify(observeLoc),
+            data: JSON.stringify(observeTarget),
+            from: mapObj.fromFormatStr,
+            to: mapObj.toFormatStr,
+            permission: JSON.stringify(permission),
+            distributedBy: currentDistributedBy,
+            distributedLevel: currentDistributedLevel,
+        },
+        type: "POST",
+        dataType: 'json',
+
+        success: function (json) {
+            console.log(json);
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxFetchMapValue:" + xhr.status);
+            alert(thrownError);
+        }
+    });
+}
