@@ -177,7 +177,7 @@ function checkboxDeviceInit() {
             observeTargetDeviceOnlyTmp.length = 0;
             var checktarget = $("#productUl");
             checkDevicePush(checktarget);
-            console.log(observeTargetTmp);
+            //            console.log(observeTargetTmp);
             updateSpecFilter(checktarget);
             //            console.log(specDeviceTmp);
 
@@ -931,6 +931,7 @@ function collapseDeviceDescription() {
 }
 
 function recheckDeviceCheckbox() {
+    //no need to do this if nothing has been checked
     if (observeTargetTmp.length == 0) return;
 
     var indexOfValueNeedToDelete = [];
@@ -939,9 +940,10 @@ function recheckDeviceCheckbox() {
             indexOfValueNeedToDelete.push(i);
         }
     }
+
+    //no need to d this if no device level checkbox has been checked
     if (indexOfValueNeedToDelete.length == 0) return
 
-    console.log(observeTargetTmp);
     for (var i = indexOfValueNeedToDelete.length - 1; i >= 0; i--) {
 
         //uncheck those [data-type = device] value in observaerTargetTmp
@@ -957,12 +959,11 @@ function recheckDeviceCheckbox() {
         //and delete those [data-type = device] value in observaerTargetTmp
         observeTargetTmp.splice(indexOfValueNeedToDelete[i], 1);
     }
-    console.log(observeTargetTmp);
 
+    //update hardware spec.
     specDeviceTmp.length = 0;
     var checktarget = $("#productUl");
     updateSpecFilter(checktarget);
-    console.log(specDeviceTmp);
     ajaxGetDeviceSpec(specDeviceTmp);
     disableSubmit();
 }

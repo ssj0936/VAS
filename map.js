@@ -161,10 +161,12 @@ function MapObject(mapname) {
             return a - b
         });
         //update parallelGrade
-        if (allValue.length >= 3)
-            parallelGrade = [allValue[0], allValue[parseInt((allValue.length) / 2)], allValue[allValue.length - 1]];
-        else
-            parallelGrade = [allValue[0], allValue[0], allValue[allValue.length - 1]];
+        var levelSpacing = allValue.length / 4;
+        parallelGrade = [allValue[0]
+                            , allValue[parseInt(levelSpacing)]
+                            , allValue[parseInt(levelSpacing * 2)]
+                            , allValue[parseInt(levelSpacing * 3)]
+                            , allValue[allValue.length - 1]];
     };
 
     this.mapDataLoad = function () {
@@ -319,15 +321,15 @@ function MapObject(mapname) {
             case FUNC_PARALLEL:
                 var grades = parallelGrade;
 
-                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor((grades[0])) + '"></i> ' + numToString(grades[0]) + ' %</div> ';
-                console.log(grades);
+                //                div.innerHTML += '<div><i level="level0_' + leveltype + '" style="background:' + obj.getParallelColor((grades[0])-1) + '"></i> ' + numToString(grades[0]) + ' %</div> ';
+                //                console.log(grades);
                 for (var i = 0; i < grades.length - 1; i++) {
-                    console.log(grades[i]);
+                    //                    console.log(grades[i]);
                     div.innerHTML +=
-                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i] + 1)) + '"></i> ' +
+                        '<div><i level="level' + (i + 1) + '_' + leveltype + '" style="background:' + obj.getParallelColor((grades[i])) + '"></i> ' +
                         numToString(grades[i]) + ' % &ndash;' + numToString(grades[i + 1]) + ' % </div>';
                 }
-                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length - 1] + 1)) + '"></i> ' + numToString(grades[grades.length - 1]) + " %" + "</div>";
+                //                div.innerHTML += '<div><i level="level6_' + leveltype + '" style="background:' + obj.getParallelColor((grades[grades.length - 1] + 1)) + '"></i> ' + numToString(grades[grades.length - 1]) + " %" + "</div>";
                 break;
 
             default:
@@ -885,11 +887,10 @@ function MapObject(mapname) {
     };
 
     this.getParallelColor = function (d) {
-        return d >= parallelGrade[2] ? '#FF8800' :
-            d >= parallelGrade[1] ? '#77FF00' :
-            d == parallelGrade[0] ? '#0000FF' :
-            '#00FFCC';
-
+        return (d <= parallelGrade[4] && d >= parallelGrade[3]) ? '#FF8800' :
+            (d <= parallelGrade[3] && d >= parallelGrade[2]) ? '#77FF00' :
+            (d <= parallelGrade[2] && d >= parallelGrade[1]) ? '#00FFCC' :
+            '#0000FF';
     }
 
     this.getGapColor = function (d) {
