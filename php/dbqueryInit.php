@@ -151,7 +151,7 @@
                     where A2.model_name = A3.MODEL
                     and A1.model_name = A2.model_name
                     and A2.device_name = A4.device_name"
-                    .((in_array('',$permissionProductId) || $isVIP) ? '' :" and product_ID IN ($permissionProductIdStr)")
+                    .((in_array('',$permissionProductId) || $isVIP) ? '' :" and A1.product_ID IN ($permissionProductIdStr)")
                     ." ORDER BY PRODUCT,A2.model_name,device_name;";
 
         $db->query($query);
@@ -198,7 +198,7 @@
     foreach($permissionResult as &$productArr){
 //        for($i=0;$i<count($productArr);++$i){
         for($i=count($productArr)-1;$i>=0;--$i){
-            if(!in_array($productArr[$i],$productToProductID)){
+            if(!in_array($productArr[$i],$productToProductID) && $productArr[$i] != ''){
                 unset($productArr[$i]);
             }
         }
