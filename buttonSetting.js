@@ -150,6 +150,8 @@ function controlPanelDisplayRefresh(dataset) {
         $('.control_panel_right').show();
         $('#parallelControlPanel').show("medium");
         $('#filterCountryContainer').show('medium');
+        collapseDeviceDescription();
+        recheckDeviceCheckbox();
         break;
 
     case FUNC_ACTIVATION:
@@ -179,7 +181,7 @@ function controlPanelDisplayRefresh(dataset) {
         $('#qcControlPanel').show("medium");
         $('#filterCountryContainer').show('medium');
         collapseDeviceDescription();
-        //        recheckDeviceCheckbox();
+        recheckDeviceCheckbox();
 
         break;
 

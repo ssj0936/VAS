@@ -932,15 +932,35 @@ function collapseDeviceDescription() {
 
 function recheckDeviceCheckbox() {
     if (observeTargetTmp.length == 0) return;
-    if ($("input[datatype='devices']:checked").length == 0) return
 
-    $("input[datatype='devices']").prop('checked', false);
-    observeTargetTmp.length = 0;
-    specDeviceTmp.length = 0;
-    observeTargetDeviceOnlyTmp.length = 0;
-    var checktarget = $("#productUl");
-    checkDevicePush(checktarget);
+    var indexOfValueNeedToDelete = [];
+    for (var i in observeTargetTmp) {
+        if (observeTargetTmp[i].datatype == 'devices') {
+            indexOfValueNeedToDelete.push(i);
+        }
+    }
+    if (indexOfValueNeedToDelete.length == 0) return
+
     console.log(observeTargetTmp);
+    for (var i = indexOfValueNeedToDelete.length - 1; i >= 0; i--) {
+
+        //uncheck those [data-type = device] value in observaerTargetTmp
+        var datatype = observeTargetTmp[indexOfValueNeedToDelete[i]].datatype;
+        var devices = observeTargetTmp[indexOfValueNeedToDelete[i]].devices;
+        var model = observeTargetTmp[indexOfValueNeedToDelete[i]].model;
+        var product = observeTargetTmp[indexOfValueNeedToDelete[i]].product;
+
+        $("input[datatype='" + datatype + "'][data-productname='" + product + "'][data-modelname='" + model + "'][data-devicesname='" + devices + "']")
+            .prop('checked', false);
+
+
+        //and delete those [data-type = device] value in observaerTargetTmp
+        observeTargetTmp.splice(indexOfValueNeedToDelete[i], 1);
+    }
+    console.log(observeTargetTmp);
+
+    specDeviceTmp.length = 0;
+    var checktarget = $("#productUl");
     updateSpecFilter(checktarget);
     console.log(specDeviceTmp);
     ajaxGetDeviceSpec(specDeviceTmp);
