@@ -13,7 +13,7 @@
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $iso = '["IND"]';
+//    $iso = '["IND","TWN"]';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 //    $permission = '{}';
 //    $exportFileType = 'Export';
@@ -69,55 +69,119 @@
         
         $isoIn = "'".implode("','",$isoObj)."'";
             
-            
         if(!$isFullPermission){
             $permissionResult = allPermissionCheck($permissionObj);
             //if(!$result['queryable']) continue;
         }
 
-        if($exportFileType == 'Import')
-            $exportFileColumn = 'ABC_is_dis_not';
-        else if($exportFileType == 'Export')
-            $exportFileColumn = 'ABC_not_dis_is';
         
-        //1.import/export ratio group by country
-        $queryStr = "SELECT NAME_0,act_year,act_mon,model,distributor_id,act_year,act_mon".",sum($exportFileColumn) count"
+        if($exportFileType == 'Import'){
+            $queryStr = "SELECT (select NAME_0 FROM $countryDataOnMap where iso = country)country
+                            ,act_year
+                            ,act_mon
+                            ,model
+                            ,(select NAME_0 FROM $countryDataOnMap where iso = dist_country)dist_country
+                            ,distributor_id
+                            ,shipping_year
+                            ,shipping_mon
+                            ,sum(ABC_is_dis_not) count"
                     ." FROM "
                         .$_DB['parallel']['name']." a1,"
-                        .$_DB['parallel']['mapping']." a2,"
-                        .$countryDataOnMap." geo" 
+                        .$_DB['parallel']['mapping']." a2"
                         .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
                     ." WHERE model IN ($str_in) "
                     ." AND country IN ($isoIn) "
                     ." AND a1.MD_numcode = a2.numcode"
-                    ." AND geo.iso = a1.country"
-                    ." AND $exportFileColumn != 0"
+                    ." AND ABC_is_dis_not != 0"
                     .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
-                    ." group by NAME_0,model,act_year,act_mon,distributor_id,act_year,act_mon"
-                    ." order by count DESC";
-                                    
-//		echo $queryStr."<br><br><br>";
-		
-		$db->query($queryStr);
-        $tableStr = '';
-        $tableStr.= '<table>';
-        $tableStr.= "<tr><td style ='$tableStyle'>Country</td><td style ='$tableStyle'>Activation Month</td><td style ='$tableStyle'>Model</td><td style ='$tableStyle'>Country-Disti</td><td style ='$tableStyle'>Shipping Month</td><td style ='$tableStyle'>Parallel ".$exportFileType." Number</td></tr>";
-//        $table = array();
-		while($row = $db->fetch_array())
-		{
-            $str = "<tr>";
-            $str .= "<td style ='$tableStyle'>".$row['NAME_0']."</td>";
-            $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
-            $str .= "<td style ='$tableStyle'>".$row['model']."</td>";
-            $str .= "<td style ='$tableStyle'>".$row['distributor_id']."</td>";
-            $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
-            $str .= "<td style ='$tableStyle'>".$row['count']."</td>";
+                    ." group by country,model,act_year,act_mon,dist_country,distributor_id,shipping_year,shipping_mon"
+                    ." order by country,count DESC";
             
-            $str .= "</tr>";
+            $db->query($queryStr);
+            $tableStr = '';
+            $tableStr.= '<table>';
+            $tableStr.= "<tr>
+                <td style ='$tableStyle'>Country</td>
+                <td style ='$tableStyle'>Activation Time</td>
+                <td style ='$tableStyle'>Model</td>
+                <td style ='$tableStyle'>Country-Disti</td>
+                <td style ='$tableStyle'>Import From</td>
+                <td style ='$tableStyle'>Shipping Month</td>
+                <td style ='$tableStyle'>Parallel Import Number</td>
+                </tr>";
+            while($row = $db->fetch_array())
+            {
+                $str = "<tr>";
+                $str .= "<td style ='$tableStyle'>".$row['country']."</td>";
+                $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['model']."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['dist_country'].'_'.$row['distributor_id']."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['dist_country']."</td>";
+                $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['count']."</td>";
+                $str .= "</tr>";
+                $tableStr .=$str;
+            }
+            $tableStr.= '</table>';
+        }else if($exportFileType == 'Export'){
+            $queryStr = '';
             
-            $tableStr .=$str;
-		}
-        $tableStr.= '</table>';
+            for($i = 0;$i<count($isoObj);++$i){
+                $country = $isoObj[$i];
+                $queryStr .= "SELECT (select NAME_0 FROM $countryDataOnMap where iso = dist_country)dist_country
+                            ,act_year
+                            ,act_mon
+                            ,model
+                            ,distributor_id
+                            ,(select NAME_0 FROM $countryDataOnMap where iso = country)country
+                            ,shipping_year
+                            ,shipping_mon
+                            ,sum(ABC_is_dis_not) count"
+                    ." FROM "
+                        .$_DB['parallel']['name']." a1,"
+                        .$_DB['parallel']['mapping']." a2"
+                        .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
+                    ." WHERE model IN ($str_in) "
+                    ." AND country != '$country'"
+                    ." AND dist_country = '$country'"
+                    ." AND a1.MD_numcode = a2.numcode"
+                    ." AND ABC_is_dis_not != 0"
+                    .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
+                    ." group by country,model,act_year,act_mon,dist_country,distributor_id,shipping_year,shipping_mon";
+                
+                if($i != count($isoObj)-1){
+                    $queryStr .= ' UNION ALL ';
+                }
+            }
+            $queryStr .= " order by dist_country,count DESC";
+
+            $db->query($queryStr);
+            $tableStr = '';
+            $tableStr.= '<table>';
+            $tableStr.= "<tr>
+                <td style ='$tableStyle'>Country</td>
+                <td style ='$tableStyle'>Activation Time</td>
+                <td style ='$tableStyle'>Model</td>
+                <td style ='$tableStyle'>Country-Disti</td>
+                <td style ='$tableStyle'>Export To</td>
+                <td style ='$tableStyle'>Shipping Month</td>
+                <td style ='$tableStyle'>Parallel Import Number</td>
+                </tr>";
+            while($row = $db->fetch_array())
+            {
+                $str = "<tr>";
+                $str .= "<td style ='$tableStyle'>".$row['dist_country']."</td>";
+                $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['model']."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['dist_country'].'_'.$row['distributor_id']."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['country']."</td>";
+                $str .= "<td style ='$tableStyle'>".(string)($row['act_year'].'-'.$row['act_mon'])."</td>";
+                $str .= "<td style ='$tableStyle'>".$row['count']."</td>";
+                $str .= "</tr>";
+                $tableStr .=$str;
+            }
+            $tableStr.= '</table>';
+        }
     }
     echo $tableStr;
 ?>
