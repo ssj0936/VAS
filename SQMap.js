@@ -70,6 +70,7 @@ function importToGeoJson(dataSet, type) {
                 'address': dataSet[i].address,
                 'type': type,
                 'site_id': dataSet[i].site_id,
+                'name': dataSet[i].name,
                 'status': 'unset'
             }
         } else if (type == 'device') {
@@ -207,11 +208,12 @@ function clickPoint(e) {
     if (SQCenterIndex && selectSQ.length > 0) {
         for (let i = 0; i < selectSQ.length; i++) {
             if (selectSQ[i].tags.status == "unset") {
-                //var popup = "<div class='pop'>Address:<br>" + selectSQ[0].tags.address +"</div>";
+                var popup = "<div class='pop'>Site ID: " + selectSQ[0].tags.site_id + "<br>Name: " + selectSQ[0].tags.name + "<br>Address: " + selectSQ[0].tags.address +"</div>";
                 selectSQ[i].tags.status = 'set'
                 selectSiteId = selectSQ[i].tags.site_id;
-                //firstMap.map.openPopup(popup, e.latlng);
+                firstMap.map.openPopup(popup, e.latlng);
             } else {
+                firstMap.map.closePopup();
                 selectSQ[i].tags.status = "unset"
                 selectSiteId = -1;
             }

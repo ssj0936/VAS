@@ -41,12 +41,13 @@
         $categoryList = array();
 
         $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], "SQ_map");
-        $queryStr = "SELECT [site_id],[country],[address],[lat],[lng] FROM [SQ_map].[dbo].[service_center_loc]";
+        $queryStr = "SELECT [site_id],[country],[address],[lat],[lng],[name] FROM [SQ_map].[dbo].[service_center_loc]";
         $db->query($queryStr);
         $key = 0;
         while($row = $db->fetch_array()) {
             $result['SC'][$key]['address'] = $row['address'];
             $result['SC'][$key]['site_id'] = $row['site_id'];
+            $result['SC'][$key]['name'] = $row['name'];
             $result['SC'][$key]['lng'] = $row['lng'];
             $result['SC'][$key]['lat'] = $row['lat'];
             $key++;

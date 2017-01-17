@@ -7,7 +7,7 @@ function removeHeatMap() {
     //firstMap.map.off("moveend");
     heatmapLayer = null;
     heatData = {
-        max: '',
+        max: maxCap,
         data: []
     };
     $('div.heatTip').remove();
@@ -27,7 +27,7 @@ function addHeatMap(json) {
         // if scaleRadius is false it will be the constant radius used in pixels
         "radius": 20,
         "maxOpacity": .85,
-        "minOpacity": .1,
+        "minOpacity": .01,
         // scales the radius based on map zoom
         "scaleRadius": true,
         // if set to false the heatmap uses the global maximum for colorization
@@ -74,8 +74,6 @@ function changeHeatData(data) {
         data: data[lifeZoneTime['week']][lifeZoneTime['time']]
     };
     heatmapLayer.setData(heatData);
-    maxCap = getMax();
-    heatData.max = maxCap;
     heatmapLayer.setData(heatData);
     currentTime['week'] = lifeZoneTime['week'];
     currentTime['time'] = lifeZoneTime['time'];

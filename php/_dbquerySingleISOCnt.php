@@ -193,7 +193,7 @@
             ." WHERE "
             ."date BETWEEN '".$from."' AND '".$to."'"
             ." AND A1.device = device_model.device_name"
-            ." AND A1.product_id = part_device.part_no"
+            ." AND A1.product_id = part_device.product_id"
             .($isAll?"":" AND A1.product_id IN(".$str_in.")")
             ." AND map_id='$countryID'"
             .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
