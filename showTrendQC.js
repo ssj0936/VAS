@@ -8,7 +8,7 @@ var trendQC = (function (mapObj) {
         TREND_BY_VIEW = 'trend_by_view';
 
     var TREND_BY_MODEL_DISPLAY = 'Trend by Model',
-        TREND_BY_DEVICE_DISPLAY = 'Trend by Device',
+        TREND_BY_DEVICE_DISPLAY = 'Trend by Model(RAM/ROM)',
         TREND_BY_COUNTRY_DISPLAY = 'Trend by Country',
         TREND_BY_VIEW_DISPLAY = 'Trend by Module';
 

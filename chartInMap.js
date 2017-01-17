@@ -14,7 +14,7 @@ var defaultGroupBy = groupByMode[0];
 var activeTrend;
 var TREND_MODEL = 'Model';
 var TREND_COUNTRY = 'Country';
-var TREND_DEVICE = 'Device';
+var TREND_DEVICE = 'Model(RAM/ROM)';
 var TREND_TABLE = 'Table';
 var TREND_REGION = 'Region';
 var TREND_DIST = 'Disti';
