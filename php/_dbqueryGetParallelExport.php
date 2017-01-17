@@ -105,9 +105,9 @@
                 <td style ='$tableStyle'>Activation Time</td>
                 <td style ='$tableStyle'>Model</td>
                 <td style ='$tableStyle'>Country-Disti</td>
-                <td style ='$tableStyle'>Import From</td>
+                <td style ='$tableStyle'>$exportFileType From</td>
                 <td style ='$tableStyle'>Shipping Month</td>
-                <td style ='$tableStyle'>Parallel Import Number</td>
+                <td style ='$tableStyle'>Parallel $exportFileType Number</td>
                 </tr>";
             while($row = $db->fetch_array())
             {
@@ -163,9 +163,9 @@
                 <td style ='$tableStyle'>Activation Time</td>
                 <td style ='$tableStyle'>Model</td>
                 <td style ='$tableStyle'>Country-Disti</td>
-                <td style ='$tableStyle'>Export To</td>
+                <td style ='$tableStyle'>$exportFileType To</td>
                 <td style ='$tableStyle'>Shipping Month</td>
-                <td style ='$tableStyle'>Parallel Import Number</td>
+                <td style ='$tableStyle'>Parallel $exportFileType Number</td>
                 </tr>";
             while($row = $db->fetch_array())
             {

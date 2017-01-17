@@ -941,6 +941,12 @@ function submitBtnSetting() {
                 console.log('diff');
             }
 
+            //need to close popup
+            if (firstMap.map)
+                firstMap.map.closePopup();
+            if (comparisonMap.map)
+                comparisonMap.map.closePopup();
+
             //clone decided filter from tmpFilter
             //then clear tmp filter
             observeTarget = observeTargetTmp.slice();

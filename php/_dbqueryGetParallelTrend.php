@@ -194,7 +194,7 @@
         
         //4.import/export count group by dist
         $queryStr = "SELECT * FROM("
-                    ."SELECT act_year,act_mon,distributor_id"
+                    ."SELECT act_year,act_mon,(select NAME_0 FROM $countryDataOnMap where iso = dist_country)dist_country,distributor_id"
                                 .(($exportFileType == 'Import') ? ",sum(ABC_is_dis_not) count" : ",sum(ABC_not_dis_is) count")
                         ." FROM "
                               .$_DB['parallel']['name']." a1,"
@@ -204,10 +204,10 @@
                         ." AND country = '$iso'"
                         ." AND a1.MD_numcode = a2.numcode"
                         .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
-                    ." group by act_year,act_mon,distributor_id"
+                    ." group by act_year,act_mon,dist_country,distributor_id"
                     ." ) foo"
                     ." WHERE count !=0 "
-                    ." order by distributor_id,act_year,act_mon";
+                    ." order by dist_country,distributor_id,act_year,act_mon";
                                     
 //		echo $queryStr."<br><br><br>";
 		
@@ -215,19 +215,69 @@
         $distFlowCount = array();
 		while($row = $db->fetch_array())
 		{
+            $distCountry = $row['dist_country'];
             $dist = $row['distributor_id'];
             $year = $row['act_year'];
             $month = $row['act_mon'];
             $count = $row['count'];
             
-            $distFlowCount[$dist][] = array('date' => ($year.'-'.$month), 'value'=>$count);
+            $distFlowCount[$distCountry.'_'.$dist][] = array('date' => ($year.'-'.$month), 'value'=>$count);
 		}
+        
+        //parallel import by sending country/parallel export by recevicing country
+        if($exportFileType == 'Import'){
+            //get all country import from
+            $queryStr = "SELECT act_year
+                            ,act_mon
+                            ,(select NAME_0 FROM $countryDataOnMap where iso = dist_country)targetCountry
+                            ,sum(ABC_is_dis_not) count"
+                    ." FROM "
+                        .$_DB['parallel']['name']." a1,"
+                        .$_DB['parallel']['mapping']." a2"
+                        .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
+                    ." WHERE model IN ($str_in) "
+                    ." AND country = '$iso'"
+                    ." AND a1.MD_numcode = a2.numcode"
+                    ." AND ABC_is_dis_not != 0"
+                    .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
+                    ." group by act_year,act_mon,dist_country"
+                    ." order by dist_country,act_year,act_mon DESC";
+        }else if($exportFileType == 'Export'){
+            $queryStr = "SELECT act_year
+                            ,act_mon
+                            ,(select NAME_0 FROM $countryDataOnMap where iso = country)targetCountry
+                            ,sum(ABC_is_dis_not) count"
+                    ." FROM "
+                        .$_DB['parallel']['name']." a1,"
+                        .$_DB['parallel']['mapping']." a2"
+                        .(($isFullPermission) ? "" : ",(SELECT distinct product_id,model_name FROM $productIDTable) product")
+                    ." WHERE model IN ($str_in) "
+                    ." AND country != '$iso'"
+                    ." AND dist_country = '$iso'"
+                    ." AND a1.MD_numcode = a2.numcode"
+                    ." AND ABC_is_dis_not != 0"
+                    .(($isFullPermission) ? "" : " AND model = product.model_name AND $permissionResult")
+                    ." group by country,act_year,act_mon"
+                    ." order by country,act_year,act_mon DESC";
+        }
+        $db->query($queryStr);
+        $targetCountryFlowCount = array();
+        while($row = $db->fetch_array())
+        {
+            $country = $row['targetCountry'];
+            $year = $row['act_year'];
+            $month = $row['act_mon'];
+            $count = $row['count'];
+
+            $targetCountryFlowCount[$country][] = array('date' => ($year.'-'.$month), 'value'=>$count);
+        }
     }
     
     $results['countryFlowRatio'] = $countryFlowRatio;
     $results['modelFlowRatio'] = $modelFlowRatio;
     $results['modelFlowCount'] = $modelFlowCount;
     $results['distFlowCount'] = $distFlowCount;   
+    $results['targetCountryFlowCount'] = $targetCountryFlowCount;   
     $results['timeRange'] = array('start' => $stratTime, 'end' => $endTime);
     $json = json_encode($results,JSON_UNESCAPED_UNICODE);
     echo $json;

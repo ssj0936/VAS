@@ -4,20 +4,25 @@ var trendParallel = (function (mapObj) {
     var TREND_COUNTRY_RATIO = 'trend_country_ratio',
         TREND_MODEL_RATIO = 'trend_model_ratio',
         TREND_MODEL_COUNT = 'trend_model_count',
-        TREND_DISTI_COUNT = 'trend_disti_count';
+        TREND_DISTI_COUNT = 'trend_disti_count',
+        TREND_TARGET_COUNTRY_COUNT = 'trend_target_country_count';
 
     var TREND_COUNTRY_RATIO_DISPLAY = 'rate by Country',
         TREND_MODEL_RATIO_DISPLAY = 'rate by Model',
         TREND_MODEL_COUNT_DISPLAY = 'by Model',
-        TREND_DISTI_COUNT_DISPLAY = 'by Disti';
+        TREND_DISTI_COUNT_DISPLAY = 'by Disti',
+        TREND_TARGET_COUNTRY_COUNT_DISPLAY;
+
+    var BY_SENDING_COUNTRY = 'by Sending Country',
+        BY_RECEVING_COUNTRY = 'by Receving Country';
 
     var FILE_EXPORT_TYPE_IMPORT = 'Import',
         FILE_EXPORT_TYPE_EXPORT = 'Export';
 
-    var trendList = [TREND_COUNTRY_RATIO, TREND_MODEL_RATIO, TREND_MODEL_COUNT, TREND_DISTI_COUNT];
-    var trendNameList = [TREND_COUNTRY_RATIO_DISPLAY, TREND_MODEL_RATIO_DISPLAY, TREND_MODEL_COUNT_DISPLAY, TREND_DISTI_COUNT_DISPLAY];
+    var trendList = [TREND_COUNTRY_RATIO, TREND_MODEL_RATIO, TREND_MODEL_COUNT, TREND_DISTI_COUNT, TREND_TARGET_COUNTRY_COUNT];
+    var trendNameList;
     var defaultTrendMode = trendList[0];
-    var defaultTrendModeName = trendNameList[0];
+    var defaultTrendModeName;
 
     var activeTrend = defaultTrendMode;
 
@@ -27,13 +32,20 @@ var trendParallel = (function (mapObj) {
     function showChart(iso) {
         if (observeTarget.length > 0 && !mapObj.isEmpty) {
             //            loading("Creating Chart...");
+            trendNameList = [TREND_COUNTRY_RATIO_DISPLAY, TREND_MODEL_RATIO_DISPLAY, TREND_MODEL_COUNT_DISPLAY, TREND_DISTI_COUNT_DISPLAY];
+            defaultTrendModeName = trendNameList[0];
             resetFilterStatus();
             scrollToTop();
             popupChartShow(true);
-            if (isModeActive(MODE_PARALLEL_IMPORT))
+            if (isModeActive(MODE_PARALLEL_IMPORT)) {
+                TREND_TARGET_COUNTRY_COUNT_DISPLAY = BY_SENDING_COUNTRY;
+                trendNameList.push(TREND_TARGET_COUNTRY_COUNT_DISPLAY);
                 ajaxParallelChart(iso, FILE_EXPORT_TYPE_IMPORT);
-            else if (isModeActive(MODE_PARALLEL_EXPORT))
-                ajaxParallelChart(iso, MODE_PARALLEL_EXPORT);
+            } else if (isModeActive(MODE_PARALLEL_EXPORT)) {
+                TREND_TARGET_COUNTRY_COUNT_DISPLAY = BY_RECEVING_COUNTRY;
+                trendNameList.push(TREND_TARGET_COUNTRY_COUNT_DISPLAY);
+                ajaxParallelChart(iso, FILE_EXPORT_TYPE_EXPORT);
+            }
         }
     }
 
@@ -228,6 +240,11 @@ var trendParallel = (function (mapObj) {
 
         case TREND_DISTI_COUNT:
             setTrendData(json.distFlowCount);
+            createChartElement();
+            break;
+
+        case TREND_TARGET_COUNTRY_COUNT:
+            setTrendData(json.targetCountryFlowCount);
             createChartElement();
             break;
         }
