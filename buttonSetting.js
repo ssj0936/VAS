@@ -1389,10 +1389,11 @@ function collapseBtnInit() {
         toggleTopBtnIcon.toggleClass("glyphicon-menu-up").toggleClass("glyphicon-menu-down");
         //collaspe
         if (toggleTopBtnIcon.hasClass('glyphicon-menu-down')) {
-            controlPanelTop.stop(true, true).slideUp("medium", function () {
-                optMapSize();
-                comparisionMapResize();
-            });
+            controlPanelTop.stop(true, true).slideUp("medium",
+function () {
+    optMapSize();
+    comparisionMapResize();
+});
         }
         //show up
         else {

@@ -498,10 +498,16 @@ var trendQC = (function (mapObj) {
             var target = $(this).text();
             if ($(this).css('text-decoration') == 'line-through') {
                 needToShow = true;
-                $(this).css('text-decoration', 'none');
+                $(this).css({
+                    'text-decoration': 'none',
+                    'opacity': '1',
+                });
             } else if ($(this).css('text-decoration') == 'none') {
                 needToShow = false;
-                $(this).css('text-decoration', 'line-through');
+                $(this).css({
+                    'text-decoration': 'line-through',
+                    'opacity': '0.3',
+                });
             }
 
             if (needToShow) {
