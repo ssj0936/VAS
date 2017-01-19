@@ -1173,7 +1173,7 @@ function labelChange(chanegTo) {
     }
 
     //in order to adding space
-//    trendObj.labels.push("");
+    //    trendObj.labels.push("");
     //    trendObj.labels.push(" ");
     //    trendObj.labels.push(" ");
 }
@@ -1651,6 +1651,8 @@ function getActiveTrend(trend) {
 }
 
 function createChartElement(opt) {
+    trendObjOriginal = jQuery.extend(true, {}, trendObj);
+
     var node = document.createElement("canvas");
     node.className = "chart";
     node.id = 'trendChart';
@@ -1660,42 +1662,51 @@ function createChartElement(opt) {
     });
     //    var container = document.createElement("div");
     container.css({
-        "position": "absolute",
-        "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
-        "left": "2%",
-        "width": "" + trendContainerWidthP * 100 + "%",
-        'border': '10px solid rgba(255,255,255,0)',
-        //        "overflow-x": "scroll",
-        "overflow-y": "hidden",
-        "display": "inline-block",
-        //hide first
-        "opacity": "0",
-    }).attr('id', 'trendContainer');
-
-
-    //    jQuery('<div/>', {
-    //            id: 'trendColorInfo',
-    //            class: "w3-light-grey customScrollBar",
-    //        })
-    //        .appendTo($("#rightPopupContainer"));
-
-    container.append($(node));
-    //    container.appendChild(node);
+            "position": "absolute",
+            "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
+            "left": "2%",
+            "width": "100%",
+            'border': '10px solid rgba(255,255,255,0)',
+            //        "overflow-x": "scroll",
+            "overflow-y": "hidden",
+            "display": "inline-block",
+            //hide first
+            "opacity": "0",
+        }).attr('id', 'trendContainer')
+        .append(jQuery('<div/>', {
+                id: "chartSide"
+            })
+            .css({
+                'width': '80%',
+                'display': 'inline-block',
+                'vertical-align': 'top'
+            })
+            .append(node)
+        )
+        .append(jQuery('<div/>', {
+                id: "legendSide",
+                class: 'customScrollBar',
+            })
+            .css({
+                'width': '20%',
+                'height': '' + chartHeight + 'px',
+                'display': 'inline-block',
+                'vertical-align': 'top'
+            })
+        );
 
     //width cal
     var labelCount = trendObj.labels.length;
-    //    console.log(container.width());
-    //    console.log(trendContainerWidthR);
     var tmpSpacing = (trendContainerWidthR - axisWidth) / (labelCount + 1);
     var spacing = (tmpSpacing < chartSpacing) ? chartSpacing : tmpSpacing;
 
     node.style.height = '' + chartHeight + 'px';
     node.style.width = (axisWidth + spacing * trendObj.labels.length > 32500) ? ('32500px') : '' + (axisWidth + spacing * trendObj.labels.length) + 'px';
 
-//    console.log(labelCount);
-//    console.log(tmpSpacing);
-//    console.log(spacing);
-//    console.log(axisWidth + spacing * trendObj.labels.length);
+    //    console.log(labelCount);
+    //    console.log(tmpSpacing);
+    //    console.log(spacing);
+    //    console.log(axisWidth + spacing * trendObj.labels.length);
     $('#rightPopupContainer').append(container);
     var ctx = node.getContext("2d");
 
@@ -1705,11 +1716,39 @@ function createChartElement(opt) {
         options: (opt ? opt : newOptions)
     });
 
-    //    if(opt)
-    //        linechart = new Chart(ctx).Overlay(trendObj, opt);
-    //    else
-    //        linechart = new Chart(ctx).Overlay(trendObj, newOptions);
-    //    
+    //seperate legend
+    var legend = linechart.generateLegend();
+    $('#legendSide').html(legend);
+    $('#legendSide li').click(function () {
+
+        var needToShow;
+        var target = $(this).text();
+        if ($(this).css('text-decoration') == 'line-through') {
+            needToShow = true;
+            $(this).css('text-decoration', 'none');
+        } else if ($(this).css('text-decoration') == 'none') {
+            needToShow = false;
+            $(this).css('text-decoration', 'line-through');
+        }
+
+        if (needToShow) {
+            for (var i in trendObjOriginal.datasets) {
+                if (trendObjOriginal.datasets[i].label == target) {
+                    trendObj.datasets.push(trendObjOriginal.datasets[i]);
+                    break;
+                }
+            }
+        } else {
+            for (var i in trendObj.datasets) {
+                if (trendObj.datasets[i].label == target) {
+                    trendObj.datasets.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        linechart.update();
+    });
+
     //show up
     container.animate({
         opacity: 1,

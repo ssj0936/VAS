@@ -318,32 +318,48 @@ var trendParallel = (function (mapObj) {
     }
 
     function createChartElement(opt) {
+        trendObjOriginal = jQuery.extend(true, {}, trendObj);
+
         var node = document.createElement("canvas");
         node.className = "chart";
         node.id = 'trendChart';
 
         var container = jQuery('<div/>', {
-            class: 'customScrollBar',
-        });
-        container.css({
-            "position": "absolute",
-            "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
-            "left": "2%",
-            "width": "" + trendContainerWidthP * 100 + "%",
-            'border': '10px solid rgba(255,255,255,0)',
-            "overflow-y": "hidden",
-            "display": "inline-block",
-            //hide first
-            "opacity": "0",
-        }).attr('id', 'trendContainer');
-
-        //        jQuery('<div/>', {
-        //                id: 'trendColorInfo',
-        //                class: "w3-light-grey customScrollBar",
-        //            })
-        //            .appendTo($("#rightPopupContainer"));
-
-        container.append($(node));
+                class: 'customScrollBar',
+            })
+            .css({
+                "position": "absolute",
+                "top": "" + getWindowHeightPercentagePx(0.3) + 'px',
+                "left": "2%",
+                "width": "100%",
+                'border': '10px solid rgba(255,255,255,0)',
+                "overflow-y": "hidden",
+                "display": "inline-block",
+                //hide first
+                "opacity": "0",
+            })
+            .attr('id', 'trendContainer')
+            .append(jQuery('<div/>', {
+                    id: "chartSide"
+                })
+                .css({
+                    'width': '80%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top'
+                })
+                .append(node)
+            )
+            .append(jQuery('<div/>', {
+                    id: "legendSide",
+                    class: 'customScrollBar',
+                })
+                .css({
+                    'width': '20%',
+                    'height': '' + chartHeight + 'px',
+                    'display': 'inline-block',
+                    'vertical-align': 'top'
+                })
+            );
 
         //width cal
         var labelCount = trendObj.labels.length;
@@ -359,6 +375,39 @@ var trendParallel = (function (mapObj) {
             type: 'line',
             data: trendObj,
             options: (opt ? opt : newOptions)
+        });
+
+        //seperate legend
+        var legend = linechart.generateLegend();
+        $('#legendSide').html(legend);
+        $('#legendSide li').click(function () {
+
+            var needToShow;
+            var target = $(this).text();
+            if ($(this).css('text-decoration') == 'line-through') {
+                needToShow = true;
+                $(this).css('text-decoration', 'none');
+            } else if ($(this).css('text-decoration') == 'none') {
+                needToShow = false;
+                $(this).css('text-decoration', 'line-through');
+            }
+
+            if (needToShow) {
+                for (var i in trendObjOriginal.datasets) {
+                    if (trendObjOriginal.datasets[i].label == target) {
+                        trendObj.datasets.push(trendObjOriginal.datasets[i]);
+                        break;
+                    }
+                }
+            } else {
+                for (var i in trendObj.datasets) {
+                    if (trendObj.datasets[i].label == target) {
+                        trendObj.datasets.splice(i, 1);
+                        break;
+                    }
+                }
+            }
+            linechart.update();
         });
 
         //show node info
