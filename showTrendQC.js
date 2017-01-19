@@ -120,39 +120,39 @@ var trendQC = (function (mapObj) {
             );
 
         //need to append total line btn
-        if (currentCategory == 'ALL') {
-            container.append(
-                jQuery('<button/>', {
-                    id: "btnTotalToggle",
-                    class: "trendFunctionBtn",
-                })
-                .text('Hide Total')
-                .click(function () {
-                    if (_getActiveTrend() == TREND_BY_COUNTRY) return;
-                    if (_getActiveTrend() == TREND_BY_REGION) return;
-
-                    //hide
-                    if (isTotalShowing) {
-                        removeTotalLine();
-                        $(this).button('option', 'label', 'Show Total');
-                        isTotalShowing = false;
-                    }
-                    //show
-                    else {
-                        addTotalLine();
-                        $(this).button('option', 'label', 'Hide Total');
-                        isTotalShowing = true;
-                    }
-                }).button()
-            );
-        }
+//        if (currentCategory == 'ALL') {
+    //            container.append(
+    //                jQuery('<button/>', {
+    //                    id: "btnTotalToggle",
+    //                    class: "trendFunctionBtn",
+    //                })
+    //                .text('Hide Total')
+    //                .click(function () {
+    //                    if (_getActiveTrend() == TREND_BY_COUNTRY) return;
+    //                    if (_getActiveTrend() == TREND_BY_REGION) return;
+    //
+    //                    //hide
+    //                    if (isTotalShowing) {
+    //                        removeTotalLine();
+    //                        $(this).button('option', 'label', 'Show Total');
+    //                        isTotalShowing = false;
+    //                    }
+    //                    //show
+    //                    else {
+    //                        addTotalLine();
+    //                        $(this).button('option', 'label', 'Hide Total');
+    //                        isTotalShowing = true;
+    //                    }
+    //                }).button()
+    //            );
+    //        }
         return container;
     }
 
-    function resetTotalToggleBtn() {
-        $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
-        isTotalShowing = true;
-    }
+//    function resetTotalToggleBtn() {
+//        $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
+//        isTotalShowing = true;
+//    }
 
     function updateQCChart(json) {
         //        if (json.countryFlowRatio.length == 0) return;
@@ -289,7 +289,7 @@ var trendQC = (function (mapObj) {
                             'opacity': 0
                         });
 
-                        resetTotalToggleBtn();
+                        //resetTotalToggleBtn();
                         createChart(json, trendList[index]);
 
                         //                        $('#currentTrendTitle p#optionTitle').text(displayTitle+'/'+currentCategory+'/'+currentView);

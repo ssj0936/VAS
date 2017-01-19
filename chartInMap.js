@@ -42,31 +42,31 @@ function createFunctionalBtn() {
             })
             .button()
         )
-        //total line toggle btn
-        .append(
-            jQuery('<button/>', {
-                id: "btnTotalToggle",
-                class: "trendFunctionBtn",
-            })
-            .text('Hide Total')
-            .click(function () {
-                //hide
-                if (isTotalShowing) {
-                    if (getActiveTrend() == TREND_REGION) return;
-
-                    removeTotalLine();
-                    $(this).button('option', 'label', 'Show Total');
-                    isTotalShowing = false;
-                }
-                //show
-                else {
-                    addTotalLine();
-                    $(this).button('option', 'label', 'Hide Total');
-                    isTotalShowing = true;
-                }
-            })
-            .button()
-        )
+        //        //total line toggle btn
+        //        .append(
+        //            jQuery('<button/>', {
+        //                id: "btnTotalToggle",
+        //                class: "trendFunctionBtn",
+        //            })
+        //            .text('Hide Total')
+        //            .click(function () {
+        //                //hide
+        //                if (isTotalShowing) {
+        //                    if (getActiveTrend() == TREND_REGION) return;
+        //
+        //                    removeTotalLine();
+        //                    $(this).button('option', 'label', 'Show Total');
+        //                    isTotalShowing = false;
+        //                }
+        //                //show
+        //                else {
+        //                    addTotalLine();
+        //                    $(this).button('option', 'label', 'Hide Total');
+        //                    isTotalShowing = true;
+        //                }
+        //            })
+        //            .button()
+        //        )
 
     var selectMenu = jQuery('<select/>', {
             id: "btnTimePeriodSelect",
@@ -88,6 +88,9 @@ function createFunctionalBtn() {
         width: '100px',
         change: function (event, data) {
             var groupBy = data.item.value;
+
+            //need to restore after user remove some dataline
+            trendObj.datasets = trendObjOriginal.datasets.slice(0);
             switch (groupBy) {
             case 'By Day':
                 labelChange(groupBy);
@@ -146,10 +149,10 @@ function createFunctionalBtn() {
     return container;
 }
 
-function resetTotalToggleBtn() {
-    $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
-    isTotalShowing = true;
-}
+//function resetTotalToggleBtn() {
+//    $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
+//    isTotalShowing = true;
+//}
 
 function resetGroupByDelectMenu() {
     $('#btnTimePeriodSelect').val(defaultGroupBy);
@@ -1764,7 +1767,7 @@ function createChartElement(opt) {
 function createsingleRegionChart(json, trendMode, regionName) {
     //data reset
     chartDestroy(true);
-    resetTotalToggleBtn();
+    //resetTotalToggleBtn();
     resetGroupByDelectMenu();
     //fetch data
     trendObj = new lineDataObj();
@@ -1807,7 +1810,7 @@ function createsingleRegionChart(json, trendMode, regionName) {
 function createBranchChart(json, trendMode, branchName) {
     //data reset
     chartDestroy(true);
-    resetTotalToggleBtn();
+    //resetTotalToggleBtn();
     resetGroupByDelectMenu();
     //fetch data
     trendObj = new lineDataObj();
@@ -1858,7 +1861,7 @@ function chartDestroy(dataNeedToSetNull) {
 function createTrendChart(json, trendMode) {
     //destroy old chart
     chartDestroy(true);
-    resetTotalToggleBtn();
+    //resetTotalToggleBtn();
     resetGroupByDelectMenu();
 
     trendObj = new lineDataObj();

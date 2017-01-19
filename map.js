@@ -161,19 +161,49 @@ function MapObject(mapname) {
             return a - b
         });
         //update parallelGrade
-        var levelSpacing = allValue.length / 4;
-        parallelGrade = [allValue[0]
-                            , allValue[parseInt(levelSpacing)]
-                            , allValue[parseInt(levelSpacing * 2)]
-                            , allValue[parseInt(levelSpacing * 3)]
-                            , allValue[allValue.length - 1]];
 
+        this.gapGradeDevide(4, allValue);
+
+
+    };
+
+    this.gapGradeDevide = function (devide, allValue) {
+        if (devide <= 0) return;
+        var levelSpacing = allValue.length / devide;
+
+        parallelGrade.length = 0;
+        for (var i = 0; i <= devide; ++i) {
+            if (i == devide)
+                parallelGrade.push(allValue[allValue.length - 1]);
+            else
+                parallelGrade.push(allValue[parseInt(levelSpacing * i)]);
+        }
+
+        console.log(parallelGrade);
         //uniqufy the array of grade
         //preventing two same level
-        parallelGrade = parallelGrade.filter(function (item, index, inputArray) {
-            return inputArray.indexOf(item) == index;
-        });
-    };
+        var count = 0;
+        var currentValue = null;
+        for (var i = parallelGrade.length - 1; i >= 0; i--) {
+            if (currentValue != parallelGrade[i]) {
+                currentValue = parallelGrade[i];
+                count = 0;
+            }
+            ++count;
+            console.log(currentValue);
+            console.log(count);
+            if (count >= 3) {
+                console.log('1111111');
+                parallelGrade.splice(i, 1);
+            }
+        }
+        console.log(parallelGrade);
+
+
+        //        parallelGrade = parallelGrade.filter(function (item, index, inputArray) {
+        //            return inputArray.indexOf(item) == index;
+        //        });
+    }
 
     this.mapDataLoad = function () {
         console.log(this.mapName + " mapDataLoad()");
@@ -717,7 +747,7 @@ function MapObject(mapname) {
                             var targetRatioText = isModeActive(MODE_PARALLEL_IMPORT) ? 'Import rate of ' : 'Export rate of ';
 
                             var displayNum = layerJson.properties[targetRatio];
-                            var buttonHTML = "<button class ='showChart' " + "onclick =trendParallel.showChart('" + iso + "','" + displayName + "')>Show trend</button>";
+                            var buttonHTML = "<button class ='showChart' " + "onclick =trendParallel.showChart('" + iso + "')>Show trend</button>";
                             var popup = "<div class='pop'>" + targetRatioText + displayName + " : " + displayNum + ((layerJson.properties.activationCnt == 0) ? "" : buttonHTML) + "</div>";
                             mapObj.map.openPopup(popup, e.latlng);
                             mapObj.zoomToFeature(e);
