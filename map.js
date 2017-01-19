@@ -167,6 +167,12 @@ function MapObject(mapname) {
                             , allValue[parseInt(levelSpacing * 2)]
                             , allValue[parseInt(levelSpacing * 3)]
                             , allValue[allValue.length - 1]];
+
+        //uniqufy the array of grade
+        //preventing two same level
+        parallelGrade = parallelGrade.filter(function (item, index, inputArray) {
+            return inputArray.indexOf(item) == index;
+        });
     };
 
     this.mapDataLoad = function () {

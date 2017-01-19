@@ -488,17 +488,17 @@ function ajaxTrendOfBranchChart(mapObj, branchName) {
     if (linechart != null) {
         linechart.destroy();
     }
-    console.log(FUNC_ACTIVATION);
-    console.log(JSON.stringify(observeSpec.color));
-    console.log(JSON.stringify(observeSpec.cpu));
-    console.log(JSON.stringify(observeSpec.rear_camera));
-    console.log(JSON.stringify(observeSpec.front_camera));
-    console.log(JSON.stringify(observeTarget));
-    console.log(mapObj.fromFormatStr);
-    console.log(mapObj.toFormatStr);
-    console.log(branchName);
-    console.log(JSON.stringify(observeLoc));
-    console.log(JSON.stringify(permission));
+//    console.log(FUNC_ACTIVATION);
+//    console.log(JSON.stringify(observeSpec.color));
+//    console.log(JSON.stringify(observeSpec.cpu));
+//    console.log(JSON.stringify(observeSpec.rear_camera));
+//    console.log(JSON.stringify(observeSpec.front_camera));
+//    console.log(JSON.stringify(observeTarget));
+//    console.log(mapObj.fromFormatStr);
+//    console.log(mapObj.toFormatStr);
+//    console.log(branchName);
+//    console.log(JSON.stringify(observeLoc));
+//    console.log(JSON.stringify(permission));
 
     var URLs = "php/_dbqueryGetTrendOfBranch.php";
     $.ajax({
