@@ -36,11 +36,11 @@ var trendQC = (function (mapObj) {
     function _init(displayname, id) {
 
         if (currentCategory == 'ALL') {
-            trendList = [TREND_BY_MODEL, TREND_BY_DEVICE, TREND_BY_COUNTRY, TREND_BY_VIEW];
-            trendNameList = [TREND_BY_MODEL_DISPLAY, TREND_BY_DEVICE_DISPLAY, TREND_BY_COUNTRY_DISPLAY, TREND_BY_VIEW_DISPLAY];
+            trendList = [TREND_BY_MODEL, TREND_BY_COUNTRY, TREND_BY_VIEW];
+            trendNameList = [TREND_BY_MODEL_DISPLAY, TREND_BY_COUNTRY_DISPLAY, TREND_BY_VIEW_DISPLAY];
         } else if (currentCategory != 'ALL') {
-            trendList = [TREND_BY_MODEL, TREND_BY_DEVICE, TREND_BY_COUNTRY];
-            trendNameList = [TREND_BY_MODEL_DISPLAY, TREND_BY_DEVICE_DISPLAY, TREND_BY_COUNTRY_DISPLAY];
+            trendList = [TREND_BY_MODEL, TREND_BY_COUNTRY];
+            trendNameList = [TREND_BY_MODEL_DISPLAY, TREND_BY_COUNTRY_DISPLAY];
         }
 
         defaultTrendMode = trendList[0];
@@ -321,9 +321,9 @@ var trendQC = (function (mapObj) {
             setTrendData(json.resultByModel);
             break;
 
-        case TREND_BY_DEVICE:
-            setTrendData(json.resultByDevice);
-            break;
+//        case TREND_BY_DEVICE:
+       //            setTrendData(json.resultByDevice);
+       //            break;
 
         case TREND_BY_VIEW:
             setTrendData(json.resultByModule);
