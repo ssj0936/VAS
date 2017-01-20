@@ -206,8 +206,11 @@ function setSQInfo() {
         };
         modelStr += liStr;
         modelStr += "</table></div>";
-        if (currentCategory == 'ALL')
+        if (currentCategory == 'ALL') {
             totalStr += (props) ? ("<tr><td>" + displayName + " </td><td class = 'model_table_count'> " + ((props.totalCFR) ? numToString(props.totalCFR.toFixed(2)) : 0) + "%</td></tr>") : ("<tr><td>" + 'Total' + " </td><td class = 'model_table_count'> " + numToString(totalRecord.totalCFR.toFixed(2)) + "%</td></tr>");
+        } else {
+            totalStr += (props) ? ("<tr><td>" + displayName + " </td>") : '';
+        }
         totalStr += "</table>";
         this._div.innerHTML = timeStr + ('<div class="infoDiv">' + modelStr + totalStr + '</div>') + (btnPieChartStr);
 

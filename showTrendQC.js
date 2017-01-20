@@ -67,10 +67,6 @@ var trendQC = (function (mapObj) {
         if (linechart != null) {
             linechart.destroy();
         }
-        //        console.log("countryID:"+countryID);
-        //        console.log("iso:"+iso);
-        //        console.log("repairCategory:"+currentCategory);
-        //        console.log("repairView:"+currentView);
         var URLs = "php/_dbqueryGetQcCountryTrend.php";
         $.ajax({
             url: URLs,
@@ -118,44 +114,10 @@ var trendQC = (function (mapObj) {
                 })
                 .button()
             );
-
-        //need to append total line btn
-//        if (currentCategory == 'ALL') {
-    //            container.append(
-    //                jQuery('<button/>', {
-    //                    id: "btnTotalToggle",
-    //                    class: "trendFunctionBtn",
-    //                })
-    //                .text('Hide Total')
-    //                .click(function () {
-    //                    if (_getActiveTrend() == TREND_BY_COUNTRY) return;
-    //                    if (_getActiveTrend() == TREND_BY_REGION) return;
-    //
-    //                    //hide
-    //                    if (isTotalShowing) {
-    //                        removeTotalLine();
-    //                        $(this).button('option', 'label', 'Show Total');
-    //                        isTotalShowing = false;
-    //                    }
-    //                    //show
-    //                    else {
-    //                        addTotalLine();
-    //                        $(this).button('option', 'label', 'Hide Total');
-    //                        isTotalShowing = true;
-    //                    }
-    //                }).button()
-    //            );
-    //        }
         return container;
     }
 
-//    function resetTotalToggleBtn() {
-//        $('button#btnTotalToggle').button('option', 'label', 'Hide Total');
-//        isTotalShowing = true;
-//    }
-
     function updateQCChart(json) {
-        //        if (json.countryFlowRatio.length == 0) return;
 
         if (linechart != null) {
             linechart.destroy();
@@ -220,10 +182,9 @@ var trendQC = (function (mapObj) {
                 jQuery('<p/>', {
                     'id': 'optionTitle'
                 })
-                .text(displayTitle + '/' + currentCategory + '/' + currentView)
+                .text(displayTitle + '/' + currentView.toUpperCase() + '/' + currentCategory)
                 .css({
                     'margin': '0px',
-                    //                    'display': 'inline-block',
                     'font-size': '42px',
                 })
             )
@@ -292,7 +253,6 @@ var trendQC = (function (mapObj) {
                         //resetTotalToggleBtn();
                         createChart(json, trendList[index]);
 
-                        //                        $('#currentTrendTitle p#optionTitle').text(displayTitle+'/'+currentCategory+'/'+currentView);
                         $('#currentTrendTitle p#option').text(trendNameList[index]);
                         $('#trendContainer').fadeTo(300, 1);
 
@@ -320,10 +280,6 @@ var trendQC = (function (mapObj) {
         case TREND_BY_MODEL:
             setTrendData(json.resultByModel);
             break;
-
-//        case TREND_BY_DEVICE:
-       //            setTrendData(json.resultByDevice);
-       //            break;
 
         case TREND_BY_VIEW:
             setTrendData(json.resultByModule);
