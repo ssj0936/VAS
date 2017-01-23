@@ -24,14 +24,14 @@
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
-//    $from = "2016-11-02";
-//    $to = "2016-12-02";    
-//    $iso ='["TWN","IND"]';
+//    $from = "2016-12-19";
+//    $to = "2017-1-18";    
+//    $iso ='["IND"]';
 //    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
-////    $permission = '{}';
-//    $distributedBy = $MODE_ACTIVATION_DISTRIBUTED_BY_MODEL;
-//    $distributedLevel = $MODE_ACTIVATION_DISTRIBUTED_LEVEL_COUNTRY;
+//    $permission = '{}';
+//    $distributedBy = $MODE_ACTIVATION_DISTRIBUTED_BY_REGION;
+//    $distributedLevel = $MODE_ACTIVATION_DISTRIBUTED_LEVEL_L2;
 
 
     $color = $_POST['color'];
@@ -78,13 +78,14 @@
         $db->connect_db($_DB['host'], $_DB['username'], $_DB['password']);
 		$str_in='';
         
-        $sqlDeviceIn = getAllTargetDeviceSql($dataObj);
+        $sqlDeviceIn = getAllTargetPartNoSql($dataObj);
+
         $db->query($sqlDeviceIn);
         while($row = $db->fetch_array()){
-            $str_in.="'".$row['device_name']."',";
+            $str_in.="'".$row['product_id']."',";
         }
         $str_in = substr($str_in,0,-1);
-        
+//        echo $str_in."<br>";
         switch($distributedBy){
             case $MODE_ACTIVATION_DISTRIBUTED_BY_MODEL:
             case $MODE_ACTIVATION_DISTRIBUTED_BY_DEVICE:
@@ -92,7 +93,7 @@
                 if($distributedBy == $MODE_ACTIVATION_DISTRIBUTED_BY_MODEL)
                     $selectColumn = 'device_model.model_name';
                 else if($distributedBy == $MODE_ACTIVATION_DISTRIBUTED_BY_DEVICE)
-                    $selectColumn = 'device';
+                    $selectColumn = 'part_device.model_description device';
                 
                 $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['activation']['dbnameRegionL1']);
                 $fromTableStr='';
@@ -112,12 +113,14 @@
                         .($isRearCameraAll ? "" : "$rearCameraMappingTable A5,")
                         .(($isFullPermission || $result['isFullPermissionThisIso']) ? "" : "(SELECT distinct product_id,model_name FROM $productIDTable) product,")
                         ."$isoObj[$i] A1,"
-                        ."$deviceTable device_model"
+                        ."$deviceTable device_model,"
+                        ."$productDescriptionMapping part_device"
 
                         ." WHERE "
                         ."date BETWEEN '".$from."' AND '".$to."'"
                         ." AND A1.device = device_model.device_name"
-                        .($isAll?"":" AND device IN(".$str_in.")")
+                        ." AND A1.product_id = part_device.product_id"
+                        .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                         .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                         .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                         .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -174,7 +177,7 @@
                                 ." WHERE "
                                 ."date BETWEEN '".$from."' AND '".$to."'"
                                 ." AND A1.device = device_model.device_name"
-                                .($isAll?"":" AND device IN(".$str_in.")")
+                                .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                                 .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                                 .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                                 .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -208,17 +211,17 @@
                         
                         if($distributedLevel == $MODE_ACTIVATION_DISTRIBUTED_LEVEL_L1){
                             $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['activation']['dbnameRegionL1']);
-                            $selectColumn = 'map_id';
+                            $selectColumn = "(SELECT name FROM $nameToMapidL1 where mapid = map_id)";
                         }
                         else if($distributedLevel == $MODE_ACTIVATION_DISTRIBUTED_LEVEL_L2){
                             $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['activation']['dbnameRegionL2']);
-                            $selectColumn = 'map_id';
+                            $selectColumn = "(SELECT name FROM $nameToMapidL2 where mapid = map_id)";
                         }
                         else if($distributedLevel == $MODE_ACTIVATION_DISTRIBUTED_LEVEL_BRANCH){
                             $db->connect_db($_DB['host'], $_DB['username'], $_DB['password'], $_DB['activation']['dbnameRegionL2']);
                             $selectColumn = 'branch';
                         }
-                        echo $selectColumn;
+//                        echo $selectColumn;
                         $fromTableStr='';
                         $declareQuery = "set nocount on;DECLARE @result TABLE (name nvarchar(50),count int);INSERT INTO @result ";
                         for($i=0;$i<count($isoObj);++$i){
@@ -241,7 +244,7 @@
                                 ." WHERE "
                                 ."date BETWEEN '".$from."' AND '".$to."'"
                                 ." AND A1.device = device_model.device_name"
-                                .($isAll?"":" AND device IN(".$str_in.")")
+                                .($isAll?"":" AND A1.product_id IN(".$str_in.")")
                                 .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN(".$color_in.")")
                                 .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN(".$cpu_in.")")
                                 .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN(".$frontCamera_in.")")
@@ -275,7 +278,8 @@
         $db->query($queryStr);
         while($row = $db->fetch_array())
         {
-            $results[$row['name']] = array('count'=>$row['count'],'percentage'=>$row['percentage']);
+            $results[] = array('name'=>$row['name'], 'count'=>$row['count'], 'percentage'=>$row['percentage']);
+//            $results[$row['name']] = array('count'=>$row['count'],'percentage'=>$row['percentage']);
         }
     }    
     $json = json_encode($results);

@@ -378,12 +378,19 @@ function activationDistributedControlPanelInit() {
 
     $('div#activationDistributedBy button').click(function () {
         if (isLoading()) return;
-        if ($(this).hasClass('active') && currentTrendTimescale == $(this).attr('id')) return;
+        if ($(this).hasClass('active') && currentDistributedBy == $(this).attr('id')) return;
 
         radioButtonClick($('div#activationDistributedBy'), $(this));
+        currentDistributedBy = $(this).attr('id');
 
-        currentTrendTimescale = $(this).attr('id');
-        console.log(currentTrendTimescale + '/' + currentDistributedLevel);
+
+        if (currentDistributedBy == MODE_ACTIVATION_DISTRIBUTED_BY_REGION) {
+            $('#activationDistributedRight').show('medium');
+        } else {
+            $('#activationDistributedRight').hide('medium');
+            submitActivateDistribution();
+        }
+        //        submitActivateDistribution();
     });
 
     $('div#activationDistributedLevel button').click(function () {
@@ -393,13 +400,14 @@ function activationDistributedControlPanelInit() {
         radioButtonClick($('div#activationDistributedLevel'), $(this));
         currentDistributedLevel = $(this).attr('id');
 
-        console.log(currentTrendTimescale + '/' + currentDistributedLevel);
+        submitActivateDistribution();
     });
 
 
     $('div#activationDistributedBy').buttonset();
     $('div#activationDistributedLevel').buttonset();
-
+    $('div#activationDistributedBy').buttonset("disable");
+    $('div#activationDistributedLevel').buttonset("disable");
 }
 
 function lifezoneButtonsetValueReset() {
@@ -846,13 +854,16 @@ function submitBtnSetting() {
             //UI display change
             dateMenuHide();
             //init
-            if (document.getElementById('workset').style.display == "none") {
+            if (document.getElementById('workset').style.display == "none" && activeFunctionTmp != FUNC_ACTIVATION_TABLE && activeFunctionTmp != FUNC_ACTIVATION_DISTRIBUTION) {
                 $("#workset").show();
                 $("#homepage").hide();
                 $("#homepage").empty();
                 if (document.getElementById("mapid").childNodes.length == 0) {
                     mapInit();
                 }
+            } else if (activeFunctionTmp == FUNC_ACTIVATION_TABLE || activeFunctionTmp == FUNC_ACTIVATION_DISTRIBUTION) {
+                $("#homepage").hide();
+                $("#homepage").empty();
             }
 
             //if change dataset
@@ -860,7 +871,17 @@ function submitBtnSetting() {
             if (getFunction() != null && activeFunctionTmp != null && getFunction() != activeFunctionTmp) {
                 console.log('switch to ' + activeFunctionTmp);
                 switch (getFunction()) {
-                    //switch from activation
+
+                case FUNC_ACTIVATION_DISTRIBUTION:
+                    $('#activationDistributedLeft button').removeClass('active');
+                    $('#activationDistributedRight button').removeClass('active');
+                    $('#activationDistributedRight').hide();
+                    currentDistributedLevel = defaultDistributedLevel;
+                    currentDistributedBy = defaultDistributedBy;
+                    activationDistribution.chartDestroy();
+                    disableActivationDistributionControl();
+                    break;
+
                 case FUNC_PARALLEL:
                     //console.log("region");
                     firstMap.removePolygonMap();
@@ -1119,6 +1140,18 @@ function submitBtnSetting() {
                 break;
 
             case FUNC_ACTIVATION_DISTRIBUTION:
+                enableActivationDistributionControl();
+
+                if (!$('button#' + currentDistributedBy).hasClass('active'))
+                    $('button#' + currentDistributedBy).addClass('active');
+                if (currentDistributedBy == MODE_ACTIVATION_DISTRIBUTED_BY_REGION && !$('button#' + currentDistributedLevel).hasClass('active'))
+                    $('button#' + currentDistributedLevel).addClass('active');
+
+                $(tableContainer).empty();
+                //hide map
+                $('#workset').hide();
+                $('#tableContainer').show('medium');
+                submitActivateDistribution();
                 break;
 
             }
@@ -1139,6 +1172,15 @@ function modeBtnPress($this) {
     $(".mode.active").removeClass("active");
 
     $this.addClass("active");
+}
+
+function submitActivateDistribution() {
+    loading("Data loading...");
+    ajaxGetActivationDistribution();
+    //button class reset
+    $("#timeSection button").each(function () {
+        $(this).removeClass("btn_pressed").addClass("btn_unpressed");
+    });
 }
 
 function submitGap() {
@@ -1390,10 +1432,10 @@ function collapseBtnInit() {
         //collaspe
         if (toggleTopBtnIcon.hasClass('glyphicon-menu-down')) {
             controlPanelTop.stop(true, true).slideUp("medium",
-function () {
-    optMapSize();
-    comparisionMapResize();
-});
+                function () {
+                    optMapSize();
+                    comparisionMapResize();
+                });
         }
         //show up
         else {
@@ -1443,6 +1485,18 @@ function enableLifezoneControl() {
     //    console.log('enable lifezone');
     $('div#lifezoneWeekDayBtnset').buttonset("enable");
     $('div#lifezonePartOfDayBtnset').buttonset("enable");
+}
+
+function disableActivationDistributionControl() {
+    //    console.log('disable lifezone');
+    $('div#activationDistributedBy').buttonset("disable");
+    $('div#activationDistributedLevel').buttonset("disable");
+}
+
+function enableActivationDistributionControl() {
+    //    console.log('enable lifezone');
+    $('div#activationDistributedBy').buttonset("enable");
+    $('div#activationDistributedLevel').buttonset("enable");
 }
 
 function disableParallelControl() {

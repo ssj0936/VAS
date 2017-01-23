@@ -143,3 +143,54 @@ negOptions.tooltips = {
         }
     }
 };
+
+
+var barchartOptions = new option();
+barchartOptions.tooltips = {
+    mode: 'label'
+};
+//barchartOptions.responsive = true;
+//barchartOptions.maintainAspectRatio = false;
+barchartOptions.scales = {
+    xAxes: [
+        {
+            display: true,
+            gridLines: {
+                display: true
+            },
+            labels: {
+                show: true,
+            }
+        }
+    ],
+    yAxes: [
+        {
+            type: "linear",
+            display: true,
+            position: "left",
+            id: "y-axis-1",
+            gridLines: {
+                display: false
+            },
+            labels: {
+                show: true,
+            }
+        }, {
+            type: "linear",
+            display: true,
+            position: "right",
+            id: "y-axis-2",
+            gridLines: {
+                display: false
+            },
+            labels: {
+                show: true,
+            },
+            ticks: {
+                callback: function (value) {
+                    return '' + value.toFixed(2) + ' %';
+                }
+            }
+        }
+    ]
+};

@@ -5,8 +5,8 @@ function init_() {
 
     //account isVIP init
     isVip = isVIP();
-    //    console.log('account:'+account);
-    //    console.log('isVip:'+isVip);
+    //    console.log('account:' + account);
+    //    console.log('isVip:' + isVip);
     //selector option init
     var URLs = "php/dbqueryInit.php";
     $.ajax({
@@ -270,6 +270,8 @@ function showFilterResult() {
                         submitSQMarker();
                 } else if (getFunction() == FUNC_PARALLEL) {
                     submitParallel();
+                } else if (getFunction() == FUNC_ACTIVATION_DISTRIBUTION) {
+                    submitActivateDistribution();
                 }
 
                 $(this).off();
