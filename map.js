@@ -450,7 +450,7 @@ function MapObject(mapname) {
 
                     //total display
                     totalStr += "<tr>";
-                    totalStr += "<td>" + displayName + " </td>";
+                    totalStr += "<td>" + removeBaseline(displayName) + " </td>";
                     if (allBranchGap[branch]) {
                         totalStr += "<td class = 'model_table_count'> " + numToString(parseInt(allBranchGap[branch].total * 100)) + "%</td>";
                     }
@@ -730,7 +730,7 @@ function MapObject(mapname) {
                             var displayName = currentPointingBranch;
                             var functionname = "showGapTrend(" + mapObj.mapName + ",'" + currentPointingBranch + "')";
                             var buttonHTML = "<button class ='showChart' onclick =" + functionname + ">Show trend</button>";
-                            var popup = "<div class='pop'>" + displayName + buttonHTML + "</div>";
+                            var popup = "<div class='pop'>" + removeBaseline(displayName) + buttonHTML + "</div>";
 
                             mapObj.map.openPopup(popup, e.latlng);
 

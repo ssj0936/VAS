@@ -1374,7 +1374,7 @@ function setGapTrendData(jsonObj, gapDevide, branchName) {
         var data = jsonObj[name];
 
         if (branchName) {
-            name = branchName;
+            name = removeBaseline(branchName);
             data = jsonObj[branchName];
         }
 

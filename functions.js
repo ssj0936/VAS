@@ -538,6 +538,9 @@ function optMapSize() {
     $('#mapContainer').css("height", '' + (window.innerHeight - $('#mapContainer').offset().top - 30) + 'px');
 }
 
+function removeBaseline(str) {
+    return str.replace(/_/g, " ");
+}
 //map printing
 
 //REF: http://www.epochconverter.com/weeknumbers
