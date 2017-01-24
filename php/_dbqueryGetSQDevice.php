@@ -69,7 +69,7 @@
                         from $moduleEncodeTable tblA 
                         where
                             tblA.$moduleEncodeMappingColumn = '[0]'";
-
+/*
 //get non-repair device
         for($i=0;$i<count($isoObj);++$i){
             
@@ -96,12 +96,12 @@
             else{
                 $queryStr.=(" UNION ALL ".$tmpQueryStr);
             }
-        }
+        }*/
 
-        $db->query($queryStr);
+        //$db->query($queryStr);
         $result['device']= array();
         $key = 0;
-        while($row = $db->fetch_array())
+        /*while($row = $db->fetch_array())
         {
             $result['device'][$key]['site_id'] = 0;
             $result['device'][$key]['service'] = "N";
@@ -109,7 +109,7 @@
             $result['device'][$key]['lng'] = $row['lng'];
             $result['device'][$key]['lat'] = $row['lat'];
             $key++;
-        }
+        }*/
 
 
         $categoryStr = "select  distinct tblA.encode 

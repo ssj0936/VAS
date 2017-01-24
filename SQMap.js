@@ -16,12 +16,12 @@ let SQMarkerSetting = {
     },
     'activate_device': {
         'radius': 1,
-        'color_unset': "rgba(0, 136, 0, 0.5)",
+        'color_unset': "rgba(0, 136, 0, 0.8)",
         'color_set': "rgba(0, 136, 0, 1)"
     },
     'service_device': {
         'radius': 2,
-        'color_unset': "rgba(255, 0, 0, 0.5)",
+        'color_unset': "rgba(255, 0, 0, 0.8)",
         'color_set': "rgba(255, 0, 0, 1)"
     }
 };
