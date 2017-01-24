@@ -257,8 +257,11 @@ function rightControlPanelInit() {
 
 function qcControlPanelInit() {
     $("#qcControlPanel button").button();
-    $("#qcControlPanel button").css({
+    $("#qcMode button").css({
         width: '100px'
+    });
+    $("#qcView button").css({
+        width: '130px'
     });
 
     $("#qcCategory").selectmenu({

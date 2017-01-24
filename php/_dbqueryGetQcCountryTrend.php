@@ -301,21 +301,12 @@
                 
                 $resultByModule[$module][$shippingYear.'-'.$shippingMon] = $ratio;
             }
-            
-            
+
             //------------------------------------------------------------------------
             //by model
-            $query = "
-                set nocount on;DECLARE @topFive TABLE (model nvarchar(10), ratio nvarchar(10));
-
-                INSERT INTO @topFive
-                SELECT TOP 5 foo.model,FORMAT(((CAST(partSum AS DECIMAL(18,2)))/(CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
-                FROM
-                (
-                    SELECT model
-                        ,sum(count) partSum
-
-                    FROM $iso data 
+            $deviceQuery ="
+                SELECT distinct model
+                FROM $iso data 
                         ,$moduleCodeTable part_mapping 
                         ,$deviceTable device_mapping"
                 .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : ",(SELECT distinct product_id,model_name FROM $productIDTable) product ")
@@ -329,85 +320,8 @@
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                     .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
                     ."AND $moduleCodeMappingColumn = 'ALL'
-                    group by model
-                )foo,
-                (
-                    SELECT model
-                        ,sum(count) total
-                    FROM $iso data 
-                        ,$moduleCodeTable part_mapping 
-                        ,$deviceTable device_mapping"
-                .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : ",(SELECT distinct product_id,model_name FROM $productIDTable) product ")
-                    ."WHERE data.$moduleCodeDatatableColumn = part_mapping.numcode
-                    AND data.mp_numcode = device_mapping.numcode
-                    AND device_mapping.productdevice IN($str_in)"
-                    .(($countryID == 'null') ? "" :" AND data.l2code = $countryID")
-                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND $moduleCodeMappingColumn IN ( 'ALL' ,'unrepair')
-                    group by model
-                )goo
-                where foo.model = goo.model
-                order by ratio DESC
-
-                SELECT foo.model
-                    ,foo.shipping_year
-                    ,foo.shipping_mon
-                    ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
-                FROM
-                (
-                    SELECT model = 'The Rest'
-                        ,shipping_year
-                        ,shipping_mon
-                        ,sum(count) partSum
-
-                    FROM $iso data 
-                        ,$moduleCodeTable part_mapping 
-                        ,$deviceTable device_mapping"
-                .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : ",(SELECT distinct product_id,model_name FROM $productIDTable) product ")
-                    ."WHERE data.$moduleCodeDatatableColumn = part_mapping.numcode
-                    AND data.mp_numcode = device_mapping.numcode
-                    AND device_mapping.productdevice IN($str_in)"
-                    .(($countryID == 'null') ? "" :" AND data.l2code = $countryID")
-                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND model NOT IN (SELECT model FROM @topFive)
-                    AND $moduleCodeMappingColumn = 'ALL'
-                    group by shipping_year,shipping_mon
-                )foo,
-                (
-                    SELECT model = 'The Rest'
-                        ,shipping_year
-                        ,shipping_mon
-                        ,sum(count) total
-                    FROM $iso data 
-                        ,$moduleCodeTable part_mapping 
-                        ,$deviceTable device_mapping"
-                .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : ",(SELECT distinct product_id,model_name FROM $productIDTable) product ")
-                    ."WHERE data.$moduleCodeDatatableColumn = part_mapping.numcode
-                    AND data.mp_numcode = device_mapping.numcode
-                    AND device_mapping.productdevice IN($str_in)"
-                    .(($countryID == 'null') ? "" :" AND data.l2code = $countryID")
-                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND model NOT IN (SELECT model FROM @topFive)
-                    AND $moduleCodeMappingColumn IN ( 'ALL' ,'unrepair')
-                    group by shipping_year,shipping_mon
-                )goo
-                where foo.shipping_year = goo.shipping_year
-                and foo.shipping_mon = goo.shipping_mon
-
-                union all
-
+            ";
+            $query = "
                 SELECT foo.model
                     ,foo.shipping_year
                     ,foo.shipping_mon
@@ -432,7 +346,7 @@
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                     .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND model IN (SELECT model FROM @topFive)
+                    ."AND model IN ($deviceQuery)
                     AND $moduleCodeMappingColumn = 'ALL'
                     group by shipping_year,shipping_mon,model
                 )foo,
@@ -454,69 +368,15 @@
                     .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
                     .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
                     .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND model IN (SELECT model FROM @topFive)
+                    ."AND model IN ($deviceQuery)
                     AND $moduleCodeMappingColumn IN ( 'ALL' ,'unrepair')
                     group by shipping_year,shipping_mon,model
                 )goo
                 where foo.shipping_year = goo.shipping_year
                 and foo.shipping_mon = goo.shipping_mon
                 and foo.model = goo.model
-
-                union all
-
-                SELECT foo.model
-                    ,foo.shipping_year
-                    ,foo.shipping_mon
-                    ,FORMAT(((CAST(partSum AS DECIMAL(18,2))) / (CAST(total AS DECIMAL(18,2))))*100,'N4') ratio
-                FROM
-                (
-                    SELECT model = 'All'
-                        ,shipping_year
-                        ,shipping_mon
-                        ,sum(count) partSum
-
-                    FROM $iso data 
-                        ,$moduleCodeTable part_mapping 
-                        ,$deviceTable device_mapping"
-                .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : ",(SELECT distinct product_id,model_name FROM $productIDTable) product ")
-                    ."WHERE data.$moduleCodeDatatableColumn = part_mapping.numcode
-                    AND data.mp_numcode = device_mapping.numcode
-                    AND device_mapping.productdevice IN($str_in)"
-                    .(($countryID == 'null') ? "" :" AND data.l2code = $countryID")
-                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND $moduleCodeMappingColumn = 'ALL'
-                    group by shipping_year,shipping_mon
-                )foo,
-                (
-                    SELECT model = 'All'
-                        ,shipping_year
-                        ,shipping_mon
-                        ,sum(count) total
-                    FROM $iso data 
-                        ,$moduleCodeTable part_mapping 
-                        ,$deviceTable device_mapping"
-                .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : ",(SELECT distinct product_id,model_name FROM $productIDTable) product ")
-                    ."WHERE data.$moduleCodeDatatableColumn = part_mapping.numcode
-                    AND data.mp_numcode = device_mapping.numcode
-                    AND device_mapping.productdevice IN($str_in)"
-                    .(($countryID == 'null') ? "" :" AND data.l2code = $countryID")
-                    .($isColorAll ? "" : " AND A1.product_id = A2.PART_NO AND A2.SPEC_DESC IN($color_in)")
-                    .($isCpuAll ? "" : " AND A1.product_id = A3.PART_NO AND A3.SPEC_DESC IN($cpu_in)")
-                    .($isFrontCameraAll ? "" : " AND A1.product_id = A4.PART_NO AND A4.SPEC_DESC IN($frontCamera_in)")
-                    .($isRearCameraAll ? "" : " AND A1.product_id = A5.PART_NO AND A5.SPEC_DESC IN($rearCamera_in)")
-                    .(($isFullPermission || $result['isFullPermissionThisIso']) ? " " : " AND product.model_name = device_mapping.model AND product.product_id IN (".$result['permissionProductIDStr'].") ")
-                    ."AND $moduleCodeMappingColumn IN ( 'ALL' ,'unrepair')
-                    group by shipping_year,shipping_mon
-                )goo
-                where foo.shipping_year = goo.shipping_year
-                and foo.shipping_mon = goo.shipping_mon
-
                 order by model,shipping_year,shipping_mon;";
-//            echo '2222';
+//            echo $query;
             $db->query($query);
             while($row = $db->fetch_array()){
                 $model = $row['model'];

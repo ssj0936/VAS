@@ -86,7 +86,7 @@ var trendQC = (function (mapObj) {
             dataType: 'json',
 
             success: function (json) {
-                console.log(json);
+//                console.log(json);
                 //empty data set
                 updateQCChart(json);
             },
@@ -363,9 +363,8 @@ var trendQC = (function (mapObj) {
                 trendObj.datasets.push(dataset);
         }
 
-        //like by Country/by Region
-        //dont need to show total line
-        if (currentCategory == 'ALL' && _getActiveTrend() != TREND_BY_COUNTRY && _getActiveTrend() != TREND_BY_REGION)
+        //only while ALL category/trend by module need to push total line
+        if (currentCategory == 'ALL' && _getActiveTrend() == TREND_BY_VIEW)
             trendObj.datasets.push(totalDataset);
     }
 
