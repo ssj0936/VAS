@@ -1041,14 +1041,15 @@ function popupChartShow(needToLockScroll) {
     //close btn
     jQuery('<span/>', {
             id: 'closeLineChart',
-            class: 'ui-icon ui-icon-close',
+            class: 'ui-icon ui-icon-arrow-1-w',
         })
         .hover(
             function () {
-                $(this).removeClass("ui-icon-close").addClass("ui-icon-circle-close");
+                $(this).removeClass("ui-icon-arrow-1-w").addClass("ui-icon-circle-arrow-w");
             },
+
             function () {
-                $(this).removeClass("ui-icon-circle-close").addClass("ui-icon-close");
+                $(this).removeClass("ui-icon-circle-arrow-w").addClass("ui-icon-arrow-1-w");
             }
         )
         .appendTo($('#popupChartContainer'))

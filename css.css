@@ -783,7 +783,7 @@
     span#closeLineChart {
         position: absolute;
         top: 5px;
-        right: 5px;
+        left: 10px;
         background-color: Transparent;
         border: none;
         color: black;
