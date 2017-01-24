@@ -1157,3 +1157,37 @@ function ajaxGetActivationDistribution() {
         }
     });
 }
+
+function ajaxGetActivationTrend() {
+    var mapObj = firstMap;
+    var URLs = "php/_dbqueryGetActivationTrend.php";
+    $.ajax({
+        url: URLs,
+        data: {
+            color: JSON.stringify(observeSpec.color),
+            cpu: JSON.stringify(observeSpec.cpu),
+            rearCamera: JSON.stringify(observeSpec.rear_camera),
+            frontCamera: JSON.stringify(observeSpec.front_camera),
+            iso: JSON.stringify(observeLoc),
+            data: JSON.stringify(observeTarget),
+            from: mapObj.fromFormatStr,
+            to: mapObj.toFormatStr,
+            permission: JSON.stringify(permission),
+            trendBy: currentTrendBy,
+            trendLevel: currentTrendLevel,
+            trendTime: currentTrendTimescale,
+        },
+        type: "POST",
+        dataType: 'json',
+
+        success: function (json) {
+            //            activationDistribution.showChart(json);
+            console.log(json);
+        },
+
+        error: function (xhr, ajaxOptions, thrownError) {
+            alert("ajaxGetActivationDistribution:" + xhr.status);
+            alert(thrownError);
+        }
+    });
+}

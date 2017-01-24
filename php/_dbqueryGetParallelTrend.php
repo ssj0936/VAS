@@ -11,8 +11,13 @@
 //    $cpu = '["all"]';
 //    $rearCamera = '["all"]';
 //    $frontCamera = '["all"]';
-//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}]';
-//    $iso = 'TWN';
+//    $data = '[{"model":"ZENFONE","devices":"ZENFONE","product":"ZENFONE","datatype":"product"}
+//    ,{"model":"ZB450KL","devices":"ZB450KL","product":"ZENFONE-D","datatype":"model"}
+//    ,{"model":"ZC520TL","devices":"ZC520TL","product":"ZENFONE-D","datatype":"model"}
+//    ,{"model":"ZC553KL","devices":"ZC553KL","product":"ZENFONE-D","datatype":"model"}
+//    ,{"model":"ZENFONE-P","devices":"ZENFONE-P","product":"ZENFONE-P","datatype":"product"}
+//    ,{"model":"ZENPAD","devices":"ZENPAD","product":"ZENPAD","datatype":"product"}]';
+//    $iso = 'JPN';
 //    $permission = '{"":["AK","AT","AZ"],"HKG":["AK","AT","AX","AZ"],"IND":["AK","AT","AX","AZ"],"IDN":["AK","AT","AX","AZ"],"JPN":["AK","AT","AX","AZ"],"MYS":["AK","AT","AX","AZ"],"PHL":["AK","AT","AX","AZ"],"SGP":["AK","AT","AX","AZ"],"THA":["AK","AT","AX","AZ"],"VNM":["AK","AT","AX","AZ"],"BGD":["AK","AT","AX","AZ"],"MMR":["AK","AT","AX","AZ"],"KOR":["AK","AT","AX","AZ"],"KHM":["AK","AT","AX","AZ"]}';
 //    $permission = '{}';
 //    $exportFileType = 'Import';

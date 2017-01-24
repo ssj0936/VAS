@@ -342,25 +342,45 @@ function activationTrendControlPanelInit() {
 
     $('div#activationTrendBy button').click(function () {
         if (isLoading()) return;
+        if ($(this).hasClass('active') && currentTrendBy == $(this).attr('id')) return;
 
         radioButtonClick($('div#activationTrendBy'), $(this));
+        currentTrendBy = $(this).attr('id');
+
+        if (currentTrendBy == MODE_ACTIVATION_TREND_BY_REGION) {
+            $('#activationTrendRight').show('medium');
+        } else {
+            $('#activationTrendRight').hide('medium');
+        }
+
+        console.log(currentTrendBy + '/' + currentTrendLevel + '/' + currentTrendTimescale);
     });
 
     $('div#activationTrendLevel button').click(function () {
         if (isLoading()) return;
+        if ($(this).hasClass('active') && currentTrendLevel == $(this).attr('id')) return;
+        currentTrendLevel = $(this).attr('id');
 
         radioButtonClick($('div#activationTrendLevel'), $(this));
+        console.log(currentTrendBy + '/' + currentTrendLevel + '/' + currentTrendTimescale);
     });
 
     $('div#activationTrendTimeScale button').click(function () {
         if (isLoading()) return;
+        if ($(this).hasClass('active') && currentTrendTimescale == $(this).attr('id')) return;
+        currentTrendTimescale = $(this).attr('id');
 
         radioButtonClick($('div#activationTrendTimeScale'), $(this));
+        console.log(currentTrendBy + '/' + currentTrendLevel + '/' + currentTrendTimescale);
     });
 
     $('div#activationTrendBy').buttonset();
     $('div#activationTrendLevel').buttonset();
     $('div#activationTrendTimeScale').buttonset();
+
+    $('div#activationTrendBy').buttonset("disable");
+    $('div#activationTrendLevel').buttonset("disable");
+    $('div#activationTrendTimeScale').buttonset("disable");
 
     $("#showSelector").selectmenu({
         width: '100px',
@@ -872,6 +892,19 @@ function submitBtnSetting() {
                 console.log('switch to ' + activeFunctionTmp);
                 switch (getFunction()) {
 
+                case FUNC_ACTIVATION_TREND:
+                    $('#activationTrendBy button').removeClass('active');
+                    $('#activationTrendLevel button').removeClass('active');
+                    $('#activationTrendTimeScale button').removeClass('active');
+
+                    $('#activationTrendRight').hide();
+                    currentTrendBy = defaultTrendBy;
+                    currentTrendLevel = defaultTrendLevel;
+                    currentTrendTimescale = defaultTrendTimescale;
+
+                    disableActivationTrendControl();
+                    break;
+
                 case FUNC_ACTIVATION_DISTRIBUTION:
                     $('#activationDistributedLeft button').removeClass('active');
                     $('#activationDistributedRight button').removeClass('active');
@@ -1154,6 +1187,22 @@ function submitBtnSetting() {
                 submitActivateDistribution();
                 break;
 
+            case FUNC_ACTIVATION_TREND:
+                enableActivationTrendControl();
+
+                if (!$('button#' + currentTrendBy).hasClass('active'))
+                    $('button#' + currentTrendBy).addClass('active');
+                if (!$('button#' + currentTrendTimescale).hasClass('active'))
+                    $('button#' + currentTrendTimescale).addClass('active');
+                if (currentTrendBy == MODE_ACTIVATION_TREND_BY_REGION && !$('button#' + currentTrendLevel).hasClass('active'))
+                    $('button#' + currentTrendLevel).addClass('active');
+
+
+                $(tableContainer).empty();
+                //hide map
+                $('#workset').hide();
+                $('#tableContainer').show('medium');
+                break;
             }
             //text in date button
             var buttonStr = ($('button.btn_pressed').length == 0) ? "" : ("<br>(" + $('button.btn_pressed').children('span').text() + ")");
@@ -1177,6 +1226,14 @@ function modeBtnPress($this) {
 function submitActivateDistribution() {
     loading("Data loading...");
     ajaxGetActivationDistribution();
+    //button class reset
+    $("#timeSection button").each(function () {
+        $(this).removeClass("btn_pressed").addClass("btn_unpressed");
+    });
+}
+
+function submitActivateTrend() {
+    ajaxGetActivationTrend();
     //button class reset
     $("#timeSection button").each(function () {
         $(this).removeClass("btn_pressed").addClass("btn_unpressed");
@@ -1497,6 +1554,18 @@ function enableActivationDistributionControl() {
     //    console.log('enable lifezone');
     $('div#activationDistributedBy').buttonset("enable");
     $('div#activationDistributedLevel').buttonset("enable");
+}
+
+function enableActivationTrendControl() {
+    $('div#activationTrendBy').buttonset("enable");
+    $('div#activationTrendLevel').buttonset("enable");
+    $('div#activationTrendTimeScale').buttonset("enable");
+}
+
+function disableActivationTrendControl() {
+    $('div#activationTrendBy').buttonset("disable");
+    $('div#activationTrendLevel').buttonset("disable");
+    $('div#activationTrendTimeScale').buttonset("disable");
 }
 
 function disableParallelControl() {
